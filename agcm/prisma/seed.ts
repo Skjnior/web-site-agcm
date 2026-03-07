@@ -493,9 +493,9 @@ async function main() {
   console.log(`✅ ${TARGET_COUNT} médias événements créés\n`);
 
   // ============================================
-  // 13b. CRÉER ÉVÉNEMENTS RÉELS (Forum des Associations, etc.)
+  // 13b. CRÉER ÉVÉNEMENTS VISIBLES SUR LE SITE (minimum 10 à venir)
   // ============================================
-  console.log('📅 Création des événements réels...');
+  console.log('📅 Création des événements affichés sur le site (min 10)...');
   const mandatActifEvents = mandats.find(m => m.statut === 'ACTIF') || mandats[0];
   const postePresident = postes.find(p => p.nom.startsWith('Président')) || postes[0];
 
@@ -504,8 +504,8 @@ async function main() {
       titre: 'Appel aux Bénévoles pour le Forum des Associations',
       slug: 'appel-aux-benevoles-forum-associations',
       description: "L'AGCM sera présente au prochain Forum des Associations. Nous recherchons des bénévoles pour tenir notre stand et présenter nos activités au grand public. Inscrivez-vous via le formulaire de contact.",
-      dateDebut: new Date('2026-03-01'),
-      dateFin: new Date('2026-03-01'),
+      dateDebut: new Date('2026-03-15'),
+      dateFin: new Date('2026-03-15'),
       lieu: 'La Rochelle',
       imageUrl: 'https://images.unsplash.com/photo-1559027615-cd9d7a915140?auto=format&fit=crop&w=800&q=80',
     },
@@ -513,8 +513,8 @@ async function main() {
       titre: 'Assemblée Générale Ordinaire 2026',
       slug: 'assemblee-generale-ordinaire-2026',
       description: "Assemblée générale annuelle de l'AGCM : bilan des activités, présentation des projets et élection du bureau.",
-      dateDebut: new Date('2026-02-15'),
-      dateFin: new Date('2026-02-15'),
+      dateDebut: new Date('2026-04-10'),
+      dateFin: new Date('2026-04-10'),
       lieu: 'La Rochelle',
       imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
     },
@@ -526,6 +526,69 @@ async function main() {
       dateFin: new Date('2026-10-02'),
       lieu: 'La Rochelle',
       imageUrl: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=800&q=80',
+    },
+    {
+      titre: 'Atelier Cuisine Guinéenne',
+      slug: 'atelier-cuisine-guineenne-2026',
+      description: 'Découvrez les saveurs de la Guinée : riz au poisson, sauce feuilles et mafé. Un moment convivial et gourmand.',
+      dateDebut: new Date('2026-05-20'),
+      dateFin: new Date('2026-05-20'),
+      lieu: 'La Rochelle',
+      imageUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80',
+    },
+    {
+      titre: 'Journée Portes Ouvertes AGCM',
+      slug: 'journee-portes-ouvertes-2026',
+      description: 'Venez découvrir nos locaux, nos projets et rencontrer les membres du bureau. Café et pâtisseries offerts.',
+      dateDebut: new Date('2026-06-14'),
+      dateFin: new Date('2026-06-14'),
+      lieu: 'La Rochelle',
+      imageUrl: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80',
+    },
+    {
+      titre: 'Pique-nique de l\'été',
+      slug: 'pique-nique-ete-2026',
+      description: 'Grand pique-nique familial au parc. Apportez vos plats à partager. Animations pour les enfants.',
+      dateDebut: new Date('2026-07-20'),
+      dateFin: new Date('2026-07-20'),
+      lieu: 'La Rochelle',
+      imageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80',
+    },
+    {
+      titre: 'Soirée Solidarité Guinée',
+      slug: 'soiree-solidarite-guinee-2026',
+      description: 'Soirée caritative au profit de nos projets éducatifs en Guinée. Repas, animations et tombola.',
+      dateDebut: new Date('2026-09-12'),
+      dateFin: new Date('2026-09-12'),
+      lieu: 'La Rochelle',
+      imageUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80',
+    },
+    {
+      titre: 'Formation aux premiers secours',
+      slug: 'formation-premiers-secours-2026',
+      description: 'Session de formation PSC1 en partenariat avec la Croix-Rouge. Places limitées, inscription obligatoire.',
+      dateDebut: new Date('2026-08-05'),
+      dateFin: new Date('2026-08-06'),
+      lieu: 'La Rochelle',
+      imageUrl: 'https://images.unsplash.com/photo-1559027615-cd9d7a915140?auto=format&fit=crop&w=800&q=80',
+    },
+    {
+      titre: 'Carnaval des cultures',
+      slug: 'carnaval-cultures-2026',
+      description: 'L\'AGCM participe au défilé du Carnaval des cultures. Venez en costume traditionnel ou simplement nous encourager !',
+      dateDebut: new Date('2026-05-01'),
+      dateFin: new Date('2026-05-01'),
+      lieu: 'La Rochelle',
+      imageUrl: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=800&q=80',
+    },
+    {
+      titre: 'Réunion d\'information nouveaux adhérents',
+      slug: 'reunion-info-nouveaux-adherents-2026',
+      description: 'Session d\'accueil pour les nouveaux membres : présentation de l\'association, des activités et du bureau.',
+      dateDebut: new Date('2026-11-15'),
+      dateFin: new Date('2026-11-15'),
+      lieu: 'La Rochelle',
+      imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
     },
   ];
 
@@ -553,7 +616,7 @@ async function main() {
       },
     });
   }
-  console.log(`✅ ${realEvents.length} événements réels créés\n`);
+  console.log(`✅ ${realEvents.length} événements visibles sur le site créés\n`);
 
   // ============================================
   // 14. CRÉER DEMANDES ADHESION (600)
@@ -749,70 +812,101 @@ async function main() {
   console.log('✅ Citations de présidents créées\n');
 
   // ============================================
-  // 26. CRÉER ACTUALITÉS RÉELLES (6)
+  // 26. CRÉER ACTUALITÉS PUBLIÉES (minimum 10 pour le site public)
   // ============================================
-  console.log('📰 Création des actualités réelles...');
+  console.log('📰 Création des actualités publiées (min 10)...');
+  const mandatActifContent = mandats.find(m => m.statut === 'ACTIF') || mandats[0];
   const realNews = [
     {
       titre: 'Grande Assemblée Générale Annuelle de l\'AGCM',
       contenu: 'Nous convions tous nos membres à notre assemblée générale annuelle qui se tiendra ce samedi à 14h. Au programme : bilan des activités de l\'année écoulée, présentation des projets futurs et élection du nouveau bureau. Votre présence est capitale pour l\'avenir de notre association.',
-      type: 'ACTUALITE',
+      type: 'ACTUALITE' as const,
       imagePrincipale: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
       tags: ['AG', 'AGCM', 'Réunion'],
     },
     {
       titre: 'Distribution de kits scolaires : Succès de l\'opération',
       contenu: 'Grâce à votre générosité, nous avons pu distribuer plus de 100 kits scolaires aux enfants de la communauté. Un grand merci à tous les donateurs et bénévoles qui ont rendu ce projet possible. L\'éducation est notre priorité.',
-      type: 'PARTAGE',
+      type: 'PARTAGE' as const,
       imagePrincipale: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&q=80',
       tags: ['Éducation', 'Entraide', 'Succès'],
     },
     {
       titre: 'Célébration de la Fête de l\'Indépendance de la Guinée',
       contenu: 'Retour en images sur la magnifique célébration du 2 octobre. Une journée riche en couleurs, en musique et en partage gastronomique qui a réuni plus de 300 personnes. Vive la Guinée et vive la solidarité guinéenne en Charente-Maritime !',
-      type: 'ACTIVITE',
+      type: 'ACTIVITE' as const,
       imagePrincipale: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800&q=80',
       tags: ['Culture', 'Guinée', 'Fête'],
     },
     {
       titre: 'Nouveau Partenariat avec la Mairie de La Rochelle',
       contenu: 'C\'est avec fierté que nous annonçons le renforcement de notre partenariat avec la Mairie de La Rochelle. Ce soutien permettra de lancer de nouveaux ateliers d\'accompagnement administratif dès le mois prochain.',
-      type: 'ANNONCE',
+      type: 'ANNONCE' as const,
       imagePrincipale: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80',
       tags: ['Partenariat', 'Institutionnel'],
     },
     {
       titre: 'Atelier Cuisine : Découvrez les Saveurs de la Basse-Guinée',
       contenu: 'Rejoignez-nous ce week-end pour un atelier de cuisine traditionnelle. Apprenez à cuisiner le fameux riz au poisson et la sauce feuilles. Un moment de convivialité et de découverte culinaire à ne pas manquer.',
-      type: 'ACTIVITE',
+      type: 'ACTIVITE' as const,
       imagePrincipale: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80',
       tags: ['Cuisine', 'Atelier', 'Culture'],
     },
     {
       titre: 'Appel aux Bénévoles pour le Forum des Associations',
       contenu: 'L\'AGCM sera présente au prochain Forum des Associations. Nous recherchons des bénévoles pour tenir notre stand et présenter nos activités au grand public. Inscrivez-vous via le formulaire de contact.',
-      type: 'ACTUALITE',
+      type: 'ACTUALITE' as const,
       imagePrincipale: 'https://images.unsplash.com/photo-1559027615-cd9d7a915140?auto=format&fit=crop&w=800&q=80',
       tags: ['Bénévolat', 'Forum', 'Engagement'],
+    },
+    {
+      titre: 'Rentrée associative 2026 : Nouveaux projets à venir',
+      contenu: 'L\'AGCM prépare une rentrée riche en activités. Soutien scolaire, cours de français, ateliers culturels et événements festifs sont au programme. Restez connectés pour ne rien manquer !',
+      type: 'ACTUALITE' as const,
+      imagePrincipale: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80',
+      tags: ['Rentrée', 'Projets', 'AGCM'],
+    },
+    {
+      titre: 'Soirée de solidarité : Bilan et perspectives',
+      contenu: 'La soirée de solidarité du mois dernier a permis de collecter des fonds pour nos projets en Guinée. Merci à tous les participants et bénévoles. Prochaine édition prévue en septembre.',
+      type: 'ACTUALITE' as const,
+      imagePrincipale: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80',
+      tags: ['Solidarité', 'Événement', 'Bilan'],
+    },
+    {
+      titre: 'Formation aux premiers secours : Session réussie',
+      contenu: 'Une vingtaine de membres ont suivi la formation aux premiers secours organisée en partenariat avec la Croix-Rouge. Une compétence précieuse pour notre communauté.',
+      type: 'ACTUALITE' as const,
+      imagePrincipale: 'https://images.unsplash.com/photo-1559027615-cd9d7a915140?auto=format&fit=crop&w=800&q=80',
+      tags: ['Formation', 'Premiers secours', 'Santé'],
+    },
+    {
+      titre: 'Carnaval des cultures : L\'AGCM à l\'honneur',
+      contenu: 'Notre association a défilé lors du Carnaval des cultures de La Rochelle. Costumes traditionnels, danses et chants ont ravi le public. Une belle vitrine pour la culture guinéenne !',
+      type: 'ACTUALITE' as const,
+      imagePrincipale: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=800&q=80',
+      tags: ['Carnaval', 'Culture', 'La Rochelle'],
     },
   ];
 
   for (const news of realNews) {
     await prisma.content.create({
       data: {
-        ...news,
-        type: news.type as any,
+        titre: news.titre,
+        contenu: news.contenu,
+        type: news.type,
+        imagePrincipale: news.imagePrincipale,
+        tags: news.tags,
         statutWorkflow: 'PUBLIE',
         visibiliteCible: 'PUBLIC_SITE',
         auteurPosteId: postes[0].id,
-        mandatId: mandats.find(m => m.statut === 'ACTIF')?.id || mandats[0].id,
+        mandatId: mandatActifContent.id,
         approvedById: users[0].id,
         approvedAt: new Date(),
-        createdAt: new Date(), // Récent pour le badge "Nouveau"
       },
     });
   }
-  console.log('✅ 6 actualités réelles créées\n');
+  console.log(`✅ ${realNews.length} actualités publiées créées\n`);
 
   // ============================================
   // RÉSUMÉ FINAL
