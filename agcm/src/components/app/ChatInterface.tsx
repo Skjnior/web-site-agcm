@@ -3,15 +3,25 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, User, MessageCircle, Loader2, Trash2 } from 'lucide-react';
+import { Send, MessageCircle, Loader2, Trash2, Paperclip, FileText, Image, Video, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { format, isToday, isYesterday } from 'date-fns';
 import { fr } from 'date-fns/locale';
+
+interface Attachment {
+  id?: string;
+  url: string;
+  type: string;
+  fileName: string;
+  fileSize: number;
+  mimeType: string;
+}
 
 interface Message {
   id: string;
   texte: string;
   createdAt: Date | string;
+  attachments?: Attachment[];
   auteur: {
     id: string;
     email: string;
@@ -29,12 +39,18 @@ interface ChatInterfaceProps {
   canModerate?: boolean;
 }
 
+const ACCEPTED_FILE_TYPES = 'image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,application/pdf';
+const MAX_FILES = 5;
+
 export default function ChatInterface({ scope, canModerate = false }: ChatInterfaceProps) {
   const { data: session } = useSession();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [pendingAttachments, setPendingAttachments] = useState<Attachment[]>([]);
+  const [uploadingFile, setUploadingFile] = useState(false);
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -89,32 +105,79 @@ export default function ChatInterface({ scope, canModerate = false }: ChatInterf
     }
   };
 
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files?.length || pendingAttachments.length + files.length > MAX_FILES) return;
+
+    setUploadingFile(true);
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const res = await fetch('/api/app/chat/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setPendingAttachments((prev) => [
+            ...prev,
+            {
+              url: data.url,
+              type: data.type,
+              fileName: data.fileName,
+              fileSize: data.fileSize,
+              mimeType: data.mimeType,
+            },
+          ]);
+        } else {
+          const err = await res.json();
+          alert(err.error || 'Erreur upload');
+        }
+      }
+    } catch (err) {
+      alert('Erreur lors de l\'upload');
+    } finally {
+      setUploadingFile(false);
+      e.target.value = '';
+    }
+  };
+
+  const removePendingAttachment = (url: string) => {
+    setPendingAttachments((prev) => prev.filter((a) => a.url !== url));
+  };
+
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || sending) return;
+    if ((!newMessage.trim() && !pendingAttachments.length) || sending) return;
 
-    const messageText = newMessage.trim();
+    const messageText = newMessage.trim() || '';
+    const attachments = [...pendingAttachments];
     setNewMessage('');
+    setPendingAttachments([]);
     setSending(true);
 
     try {
       const response = await fetch('/api/app/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ texte: messageText }),
+        body: JSON.stringify({ texte: messageText, attachments }),
       });
 
       if (response.ok) {
-        // Recharger les messages après l'envoi
         await loadMessages();
       } else {
         const data = await response.json();
         alert(data.error || 'Erreur lors de l\'envoi');
-        setNewMessage(messageText); // Restaurer le message en cas d'erreur
+        setNewMessage(messageText);
+        setPendingAttachments(attachments);
       }
     } catch (error) {
       alert('Erreur lors de l\'envoi');
       setNewMessage(messageText);
+      setPendingAttachments(attachments);
     } finally {
       setSending(false);
     }
@@ -284,9 +347,44 @@ export default function ChatInterface({ scope, canModerate = false }: ChatInterf
                           <Trash2 className="h-4 w-4" />
                         </button>
                       )}
-                      <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                        {message.texte}
-                      </p>
+                      {message.texte && (
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                          {message.texte}
+                        </p>
+                      )}
+                      {message.attachments && message.attachments.length > 0 && (
+                        <div className="mt-2 space-y-2">
+                          {message.attachments.map((att) => (
+                            <div key={att.url} className="flex items-center gap-2">
+                              {att.type === 'IMAGE' ? (
+                                <a href={att.url} target="_blank" rel="noopener noreferrer" className="block">
+                                  <img
+                                    src={att.url}
+                                    alt={att.fileName}
+                                    className="max-w-[200px] max-h-[150px] rounded-lg object-cover border border-gray-200"
+                                  />
+                                </a>
+                              ) : att.type === 'VIDEO' ? (
+                                <video
+                                  src={att.url}
+                                  controls
+                                  className="max-w-[280px] max-h-[180px] rounded-lg border border-gray-200"
+                                />
+                              ) : (
+                                <a
+                                  href={att.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg text-sm text-gray-700 hover:bg-gray-200"
+                                >
+                                  <FileText className="h-4 w-4" />
+                                  {att.fileName}
+                                </a>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
 
                       <div className={`flex items-center gap-1 mt-2 ${isOwn ? 'justify-end' : 'justify-start'
                         }`}>
@@ -322,9 +420,60 @@ export default function ChatInterface({ scope, canModerate = false }: ChatInterf
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Pièces jointes en attente */}
+      {pendingAttachments.length > 0 && (
+        <div className="border-t border-gray-200 bg-gray-50 px-4 py-2 flex flex-wrap gap-2">
+          {pendingAttachments.map((a) => (
+            <div
+              key={a.url}
+              className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-lg border border-gray-200 text-sm"
+            >
+              {a.type === 'IMAGE' ? (
+                <Image className="h-4 w-4 text-blue-500" />
+              ) : a.type === 'VIDEO' ? (
+                <Video className="h-4 w-4 text-purple-500" />
+              ) : (
+                <FileText className="h-4 w-4 text-gray-500" />
+              )}
+              <span className="truncate max-w-[120px]">{a.fileName}</span>
+              <button
+                type="button"
+                onClick={() => removePendingAttachment(a.url)}
+                className="p-0.5 hover:bg-gray-200 rounded"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Zone de saisie */}
       <div className="border-t border-gray-200 bg-white p-4">
         <form onSubmit={handleSend} className="flex gap-3">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept={ACCEPTED_FILE_TYPES}
+            multiple
+            className="hidden"
+            onChange={handleFileSelect}
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="h-12 w-12 shrink-0"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploadingFile || pendingAttachments.length >= MAX_FILES}
+            title="Joindre un fichier (PDF, image, vidéo)"
+          >
+            {uploadingFile ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <Paperclip className="h-5 w-5" />
+            )}
+          </Button>
           <div className="flex-1 relative">
             <Input
               value={newMessage}
@@ -345,7 +494,7 @@ export default function ChatInterface({ scope, canModerate = false }: ChatInterf
           </div>
           <Button
             type="submit"
-            disabled={sending || !newMessage.trim()}
+            disabled={sending || (!newMessage.trim() && !pendingAttachments.length)}
             className="h-12 px-6 rounded-xl bg-gradient-to-r from-guinea-red to-red-600 hover:from-red-600 hover:to-red-700 shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {sending ? (

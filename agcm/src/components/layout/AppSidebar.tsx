@@ -175,6 +175,11 @@ export default function AppSidebar({ userRole, isBureau, posteNom, mobileOpen, o
   // Menu Bureau
   const bureauMenu: SidebarItem[] = [
     {
+      label: 'Salon privé bureau',
+      href: '/app/chat',
+      icon: MessageSquare,
+    },
+    {
       label: 'Mes activités',
       href: '/bureau/contents',
       icon: FileText,
@@ -196,9 +201,14 @@ export default function AppSidebar({ userRole, isBureau, posteNom, mobileOpen, o
       icon: Calendar,
     },
     {
-      label: 'Salon privé bureau',
-      href: '/app/chat',
-      icon: MessageSquare,
+      label: 'Historique des actions',
+      href: '/bureau/traces',
+      icon: History,
+    },
+    {
+      label: 'Paiements',
+      href: '/app/dashboard/paiements',
+      icon: Settings,
     },
   ];
 

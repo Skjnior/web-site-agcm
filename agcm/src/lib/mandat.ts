@@ -9,9 +9,8 @@ import { prisma } from './prisma';
  */
 export async function getMandatActif() {
   return await prisma.mandat.findFirst({
-    where: {
-      statut: 'ACTIF',
-    },
+    where: { statut: 'ACTIF' },
+    orderBy: { dateDebut: 'desc' },
   });
 }
 

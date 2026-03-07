@@ -2,8 +2,9 @@ import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { auth } from '@/app/api/auth/[...nextauth]/route';
 import { canAccessSalonBureau } from '@/lib/rbac';
+import { getMandatActif } from '@/lib/mandat';
 import ChatInterface from '@/components/app/ChatInterface';
-import { MessageCircle, Lock } from 'lucide-react';
+import { MessageCircle, Lock, Shield } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Chat Bureau - AGCM',
@@ -23,6 +24,8 @@ export default async function ChatPage() {
     redirect('/app/dashboard');
   }
 
+  const mandatActif = await getMandatActif();
+
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
@@ -33,9 +36,18 @@ export default async function ChatPage() {
             Salon privé bureau
           </h1>
         </div>
-        <p className="text-slate-400">
+        <p className="text-slate-400 mb-2">
           Espace de discussion réservé aux membres actifs du bureau exécutif.
         </p>
+        {mandatActif && (
+          <div className="flex items-center gap-2 text-sm text-purple-300/90">
+            <Shield className="h-4 w-4" />
+            <span>
+              Mandat actif : {new Date(mandatActif.dateDebut).getFullYear()} – {new Date(mandatActif.dateFin).getFullYear()}.
+              Les messages des anciens mandats ne sont pas accessibles.
+            </span>
+          </div>
+        )}
       </div>
 
       <ChatInterface

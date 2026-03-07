@@ -9,8 +9,19 @@ import { getMandatActif } from '@/lib/mandat';
 import { parsePagination, createPaginatedResponse } from '@/lib/pagination';
 import { z } from 'zod';
 
+const attachmentSchema = z.object({
+  url: z.string().min(1),
+  type: z.enum(['IMAGE', 'VIDEO', 'DOCUMENT']),
+  fileName: z.string(),
+  fileSize: z.number(),
+  mimeType: z.string(),
+});
+
 const chatMessageSchema = z.object({
-  texte: z.string().min(1).max(2000),
+  texte: z.string().max(2000).default(''),
+  attachments: z.array(attachmentSchema).optional().default([]),
+}).refine((d) => d.texte.trim().length > 0 || (d.attachments && d.attachments.length > 0), {
+  message: 'Le message ou au moins une pièce jointe est requis',
 });
 
 export async function GET(request: NextRequest) {
@@ -31,9 +42,18 @@ export async function GET(request: NextRequest) {
   try {
     const mandatActif = await getMandatActif();
 
+    // SÉCURITÉ : Un mandat actif est OBLIGATOIRE. Sans mandat, aucun message.
+    // Les messages des anciens mandats ne sont JAMAIS visibles (archivés par mandatId).
+    if (!mandatActif) {
+      return NextResponse.json(
+        { data: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0 } },
+        { status: 200 }
+      );
+    }
+
     const where = {
       deletedAt: null,
-      ...(mandatActif ? { mandatId: mandatActif.id } : {}),
+      mandatId: mandatActif.id, // Toujours filtrer par mandat actif uniquement
     };
 
     const [total, messages] = await Promise.all([
@@ -55,6 +75,7 @@ export async function GET(request: NextRequest) {
               },
             },
           },
+          attachments: true,
         },
         orderBy: { createdAt: 'desc' },
         skip: offset,
@@ -84,15 +105,36 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { texte } = chatMessageSchema.parse(body);
+    const { texte, attachments } = chatMessageSchema.parse(body);
 
     const mandatActif = await getMandatActif();
+
+    // SÉCURITÉ : Impossible de poster sans mandat actif (chaque mandat = salon isolé)
+    if (!mandatActif) {
+      return NextResponse.json(
+        { error: 'Aucun mandat actif. Le salon privé bureau n\'est pas disponible.' },
+        { status: 400 }
+      );
+    }
+
+    const texteToStore = texte.trim() || '(pièce jointe)';
 
     const message = await prisma.bureauMessage.create({
       data: {
         auteurUserId: session!.user.id,
-        texte,
-        mandatId: mandatActif?.id ?? null,
+        texte: texteToStore,
+        mandatId: mandatActif.id,
+        attachments: attachments?.length
+          ? {
+              create: attachments.map((a) => ({
+                url: a.url,
+                type: a.type,
+                fileName: a.fileName,
+                fileSize: a.fileSize,
+                mimeType: a.mimeType,
+              })),
+            }
+          : undefined,
       },
       include: {
         auteur: {
@@ -109,6 +151,7 @@ export async function POST(request: NextRequest) {
             },
           },
         },
+        attachments: true,
       },
     });
 

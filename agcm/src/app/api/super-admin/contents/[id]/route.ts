@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireSuperAdmin } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
 import { logAction } from '@/lib/audit';
+import { notifyContentAuthor } from '@/lib/notifications';
 import { z } from 'zod';
 
 const contentUpdateSchema = z.object({
@@ -110,6 +111,28 @@ export async function PATCH(
         imagePrincipale: data.imagePrincipale === '' ? null : data.imagePrincipale,
       },
     });
+
+    // Notifier l'auteur si approbation ou rejet
+    if (data.statutWorkflow && data.statutWorkflow !== contentBefore.statutWorkflow) {
+      if (data.statutWorkflow === 'PUBLIE' || data.statutWorkflow === 'APPROUVE') {
+        await notifyContentAuthor(
+          content.auteurPosteId,
+          content.mandatId,
+          'CONTENT_APPROVED',
+          content.titre,
+          content.id
+        );
+      } else if (data.statutWorkflow === 'REJETE') {
+        await notifyContentAuthor(
+          content.auteurPosteId,
+          content.mandatId,
+          'CONTENT_REJECTED',
+          content.titre,
+          content.id,
+          content.rejectionReason ?? undefined
+        );
+      }
+    }
 
     await logAction({
       userId: session!.user.id,

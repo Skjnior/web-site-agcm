@@ -68,6 +68,7 @@ async function main() {
   // Nettoyer toutes les données existantes
   console.log('🧹 Nettoyage des données existantes...');
   await prisma.auditLog.deleteMany();
+  await prisma.bureauMessageAttachment.deleteMany();
   await prisma.bureauMessage.deleteMany();
   await prisma.messageContact.deleteMany();
   await prisma.donationIntent.deleteMany();

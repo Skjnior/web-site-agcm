@@ -221,3 +221,17 @@ export async function canViewArchivedContent(user: User): Promise<boolean> {
 export async function canViewAllAuditLogs(user: User): Promise<boolean> {
   return isSuperAdmin(user);
 }
+
+/**
+ * Admin/SuperAdmin peut créer des votes
+ */
+export function canCreateVote(user: User): boolean {
+  return isAdmin(user);
+}
+
+/**
+ * Super Admin uniquement peut voir les détails des votes
+ */
+export function canViewDetailedVotes(user: User): boolean {
+  return isSuperAdmin(user);
+}

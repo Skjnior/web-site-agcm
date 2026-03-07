@@ -11,7 +11,8 @@ import {
     ShieldAlert,
     LogOut,
     FolderOpen,
-    GraduationCap
+    GraduationCap,
+    CheckSquare
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 
@@ -24,6 +25,7 @@ export default function AdminSidebar({ role }: SidebarProps) {
 
     const navigation = [
         { name: 'Tableau de bord', href: '/admin', icon: LayoutDashboard },
+        { name: 'Approbations', href: '/admin/approbations', icon: CheckSquare },
         { name: 'Actualités', href: '/admin/actualites', icon: FileText },
         { name: 'Événements', href: '/admin/evenements', icon: Calendar },
         { name: 'Membres', href: '/admin/membres', icon: Users },

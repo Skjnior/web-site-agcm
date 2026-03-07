@@ -33,9 +33,8 @@ describe('Mandat Functions', () => {
 
       expect(result).toEqual(mockMandat);
       expect(prisma.mandat.findFirst).toHaveBeenCalledWith({
-        where: {
-          statut: 'ACTIF',
-        },
+        where: { statut: 'ACTIF' },
+        orderBy: { dateDebut: 'desc' },
       });
     });
 

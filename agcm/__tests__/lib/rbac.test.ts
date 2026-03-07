@@ -220,40 +220,34 @@ describe('RBAC Functions', () => {
   });
 
   describe('canCreateVote', () => {
-    it('should return true for ADMIN', async () => {
+    it('should return true for ADMIN', () => {
       const adminUser = { ...mockUser, roleSysteme: 'ADMIN' as RoleSysteme };
-      const result = await canCreateVote(adminUser);
-      expect(result).toBe(true);
+      expect(canCreateVote(adminUser)).toBe(true);
     });
 
-    it('should return true for SUPER_ADMIN', async () => {
+    it('should return true for SUPER_ADMIN', () => {
       const superAdminUser = { ...mockUser, roleSysteme: 'SUPER_ADMIN' as RoleSysteme };
-      const result = await canCreateVote(superAdminUser);
-      expect(result).toBe(true);
+      expect(canCreateVote(superAdminUser)).toBe(true);
     });
 
-    it('should return false for MEMBER', async () => {
-      const result = await canCreateVote(mockUser);
-      expect(result).toBe(false);
+    it('should return false for MEMBER', () => {
+      expect(canCreateVote(mockUser)).toBe(false);
     });
   });
 
   describe('canViewDetailedVotes', () => {
-    it('should return true for SUPER_ADMIN', async () => {
+    it('should return true for SUPER_ADMIN', () => {
       const superAdminUser = { ...mockUser, roleSysteme: 'SUPER_ADMIN' as RoleSysteme };
-      const result = await canViewDetailedVotes(superAdminUser);
-      expect(result).toBe(true);
+      expect(canViewDetailedVotes(superAdminUser)).toBe(true);
     });
 
-    it('should return false for ADMIN', async () => {
+    it('should return false for ADMIN', () => {
       const adminUser = { ...mockUser, roleSysteme: 'ADMIN' as RoleSysteme };
-      const result = await canViewDetailedVotes(adminUser);
-      expect(result).toBe(false);
+      expect(canViewDetailedVotes(adminUser)).toBe(false);
     });
 
-    it('should return false for MEMBER', async () => {
-      const result = await canViewDetailedVotes(mockUser);
-      expect(result).toBe(false);
+    it('should return false for MEMBER', () => {
+      expect(canViewDetailedVotes(mockUser)).toBe(false);
     });
   });
 });
