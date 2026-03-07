@@ -70,5 +70,26 @@ export async function requireAdmin() {
   return await requireRole('ADMIN', 'SUPER_ADMIN');
 }
 
+/**
+ * Vérifie que l'utilisateur est membre actif du bureau (poste bureau dans mandat actif)
+ */
+export async function requireBureau() {
+  const { error, session } = await requireAuth();
+  if (error) return { error, session: null };
+
+  const { isBureauActif } = await import('@/lib/rbac');
+  const bureau = await isBureauActif(session!.user!.id!);
+  if (!bureau) {
+    return {
+      error: NextResponse.json(
+        { error: 'Accès refusé : réservé aux membres du bureau' },
+        { status: 403 }
+      ),
+      session: null,
+    };
+  }
+  return { error: null, session };
+}
+
 
 

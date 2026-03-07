@@ -38,6 +38,8 @@ interface ContentsListProps {
   totalPages: number;
   total: number;
   isSuperAdmin?: boolean;
+  /** Base path pour la pagination (ex: /bureau/contents/rejetes) */
+  basePath?: string;
 }
 
 export default function ContentsList({
@@ -46,6 +48,7 @@ export default function ContentsList({
   totalPages,
   total,
   isSuperAdmin = false,
+  basePath = '/bureau/contents',
 }: ContentsListProps) {
   const [submitting, setSubmitting] = useState<string | null>(null);
 
@@ -233,7 +236,7 @@ export default function ContentsList({
           </div>
           <div className="flex items-center gap-2">
             {currentPage > 1 && (
-              <Link href={`/bureau/contents?page=${currentPage - 1}`}>
+              <Link href={`${basePath}?page=${currentPage - 1}`}>
                 <Button variant="outline" size="sm">Précédent</Button>
               </Link>
             )}
@@ -252,7 +255,7 @@ export default function ContentsList({
                 }
                 
                 return (
-                  <Link key={pageNum} href={`/bureau/contents?page=${pageNum}`}>
+                  <Link key={pageNum} href={`${basePath}?page=${pageNum}`}>
                     <Button
                       variant={currentPage === pageNum ? 'default' : 'outline'}
                       size="sm"
@@ -265,7 +268,7 @@ export default function ContentsList({
               })}
             </div>
             {currentPage < totalPages && (
-              <Link href={`/bureau/contents?page=${currentPage + 1}`}>
+              <Link href={`${basePath}?page=${currentPage + 1}`}>
                 <Button variant="outline" size="sm">Suivant</Button>
               </Link>
             )}

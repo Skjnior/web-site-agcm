@@ -20,20 +20,20 @@ export default async function ChatPage() {
   const canAccessPrivate = await canAccessSalonBureau(session.user.id);
 
   if (!canAccessPrivate) {
-    redirect('/dashboard');
+    redirect('/app/dashboard');
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 text-gray-900">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="max-w-7xl mx-auto space-y-6">
+      <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
         <div className="flex items-center gap-3 mb-2">
-          <Lock className="h-6 w-6 text-purple-600" />
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <MessageCircle className="h-8 w-8 text-purple-600" />
+          <Lock className="h-6 w-6 text-purple-400" />
+          <h1 className="text-3xl font-bold text-slate-100 flex items-center gap-3">
+            <MessageCircle className="h-8 w-8 text-purple-400" />
             Salon privé bureau
           </h1>
         </div>
-        <p className="text-gray-600">
+        <p className="text-slate-400">
           Espace de discussion réservé aux membres actifs du bureau exécutif.
         </p>
       </div>

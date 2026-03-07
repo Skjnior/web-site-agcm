@@ -1,121 +1,218 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Menu, X, ArrowUp } from 'lucide-react';
+import { useSession, signOut } from 'next-auth/react';
+import { Menu, X, LogOut, User, ChevronDown } from 'lucide-react';
 import Logo from '../Logo';
 
+const navLinks = [
+  { id: '#axes', label: 'Nos axes' },
+  { id: '#about', label: 'À propos' },
+  { id: '#actualites', label: 'Actualités' },
+  { id: '#evenements', label: 'Événements' },
+  { id: '#dons', label: 'Faire un don' },
+  { id: '#contact', label: 'Contact' },
+];
+
 export default function Navbar() {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
-    const [showScrollTop, setShowScrollTop] = useState(false);
+  const { data: session, status } = useSession();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        const handleScroll = () => {
-            const y = window.scrollY;
-            setScrolled(y > 40);
-            setShowScrollTop(y > 300);
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    const scrollToTop = () => {
-        if (window.location.pathname === '/') {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
-            window.location.href = '/#top';
-        }
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
     };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-    const handleSmooth = (e: React.MouseEvent, id: string) => {
-        if (window.location.pathname !== '/') {
-            // Si on n'est pas sur la home, on laisse le comportement par défaut du lien (navigation vers /#id)
-            return;
-        }
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-        e.preventDefault();
-        const el = document.querySelector(id);
-        if (el) {
-            const navHeight = 80;
-            const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
-            const offsetPosition = elementPosition - navHeight;
+  const scrollToSection = (e: React.MouseEvent, id: string) => {
+    if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+      return;
+    }
+    e.preventDefault();
+    const el = document.querySelector(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    setIsMenuOpen(false);
+  };
 
-            window.scrollTo({
-                top: offsetPosition,
-                behavior: 'smooth'
-            });
-        }
-        setIsMenuOpen(false);
-    };
+  const scrollToTop = () => {
+    if (typeof window !== 'undefined' && window.location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    setIsMenuOpen(false);
+  };
 
-    const navLinks = [
-        { id: '#axes', label: 'Axes' },
-        { id: '#about', label: 'À propos' },
-        { id: '#actualites', label: 'Actualités' },
-        { id: '#evenements', label: 'Événements' },
-        { id: '#dons', label: 'Faire un don' },
-        { id: '#contact', label: 'Contact' },
-    ];
+  const handleLogout = () => {
+    signOut({ callbackUrl: '/' });
+    setIsMenuOpen(false);
+    setIsUserMenuOpen(false);
+  };
 
-    return (
-        <>
-            <button
-                onClick={scrollToTop}
-                className={`scroll-to-top fixed bottom-6 right-4 sm:bottom-8 sm:right-8 z-50 p-2.5 sm:p-3 rounded-full bg-red-600 shadow-lg transition-all duration-300 ${showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
-                aria-label="Retour en haut"
-            >
-                <ArrowUp className="text-white" size={20} />
-            </button>
+  const isLoggedIn = status === 'authenticated' && !!session?.user;
 
-            <nav className={`fixed w-full z-40 transition-all duration-300 ${scrolled ? 'backdrop-blur bg-agcm-800/90 shadow-lg border-b border-white/10' : 'bg-agcm-800/80'}`}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-16">
-                        <Link href="/#top" className="flex items-center gap-3" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); scrollToTop(); } }}>
-                            <Logo />
-                        </Link>
+  return (
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? 'bg-slate-900/98 backdrop-blur-xl shadow-xl shadow-black/30 border-b border-slate-800/50'
+          : 'bg-slate-900/90 backdrop-blur-lg'
+      }`}
+    >
+      {/* Barre tricolore guinéenne - plus visible */}
+      <div className="h-1 flex">
+        <div className="flex-1 bg-[#dc2626]" />
+        <div className="flex-1 bg-[#eab308]" />
+        <div className="flex-1 bg-[#16a34a]" />
+      </div>
 
-                        <div className="hidden md:flex items-center gap-5 text-sm font-semibold">
-                            {navLinks.map((link) => (
-                                <Link
-                                    key={link.id}
-                                    href={link.id.startsWith('#') ? `/${link.id}` : link.id}
-                                    onClick={(e) => handleSmooth(e, link.id)}
-                                    className="text-slate-200 hover:text-red-300 transition-colors"
-                                >
-                                    {link.label}
-                                </Link>
-                            ))}
-                            <Link href="/dashboard" className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-red-500/40 transition-all hover:-translate-y-0.5 active:translate-y-0">
-                                Espace membre
-                            </Link>
-                        </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 lg:h-[72px]">
+          {/* Logo */}
+          <Link
+            href="/"
+            onClick={(e) => {
+              if (typeof window !== 'undefined' && window.location.pathname === '/') {
+                e.preventDefault();
+                scrollToTop();
+              }
+            }}
+            className="flex items-center gap-2 shrink-0 group"
+          >
+            <Logo />
+          </Link>
 
-                        <button className="md:hidden text-white" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                            {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
-                        </button>
-                    </div>
-                </div>
+          {/* Desktop nav - liens centrés et espacés */}
+          <div className="hidden lg:flex items-center gap-0.5">
+            {navLinks.map((link) => (
+              <Link
+                key={link.id}
+                href={link.id}
+                onClick={(e) => scrollToSection(e, link.id)}
+                className="px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
 
-                {/* Mobile menu */}
-                {isMenuOpen && (
-                    <div className="md:hidden bg-agcm-800/95 border-t border-white/10 px-4 py-4 space-y-3">
-                        {navLinks.map((link) => (
-                            <Link
-                                key={link.id}
-                                href={link.id.startsWith('#') ? `/${link.id}` : link.id}
-                                className="block text-slate-200"
-                                onClick={(e) => handleSmooth(e, link.id)}
-                            >
-                                {link.label}
-                            </Link>
-                        ))}
-                        <Link href="/dashboard" className="block text-slate-200" onClick={() => setIsMenuOpen(false)}>
-                            Espace membre
-                        </Link>
-                    </div>
+          {/* CTA / User actions */}
+          <div className="flex items-center gap-2 sm:gap-3" ref={userMenuRef}>
+            {isLoggedIn ? (
+              <div className="hidden sm:block relative">
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-white/10 hover:bg-white/15 rounded-xl border border-white/10 transition-all duration-200"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500/20 to-green-600/20 border border-emerald-500/30">
+                    <User className="h-4 w-4 text-emerald-400" />
+                  </div>
+                  <span>Mon espace</span>
+                  <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-52 py-2 bg-slate-800/95 backdrop-blur-xl rounded-xl shadow-xl border border-slate-700/50 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-200 hover:text-white hover:bg-white/5 transition-colors"
+                    >
+                      <User className="h-4 w-4 text-slate-400" />
+                      Tableau de bord
+                    </Link>
+                    <div className="my-1 border-t border-slate-700/50" />
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Déconnexion
+                    </button>
+                  </div>
                 )}
-            </nav>
-        </>
-    );
+              </div>
+            ) : (
+              <Link
+                href="/connexion"
+                className="hidden sm:inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-600 rounded-lg shadow-lg shadow-red-500/25 transition-all hover:shadow-red-500/40 hover:scale-[1.02]"
+              >
+                Espace membre
+              </Link>
+            )}
+
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="lg:hidden p-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+              aria-label={isMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+            >
+              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      {isMenuOpen && (
+        <div className="lg:hidden border-t border-slate-700/50 bg-slate-900/98 backdrop-blur-xl animate-in slide-in-from-top-2 duration-200">
+          <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.id}
+                href={link.id}
+                onClick={(e) => scrollToSection(e, link.id)}
+                className="block px-4 py-3 text-slate-300 hover:text-white hover:bg-white/5 rounded-lg font-medium transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+            <div className="pt-3 mt-3 border-t border-slate-700/50 space-y-2">
+              {isLoggedIn ? (
+                <>
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-white font-medium bg-white/10 rounded-xl border border-white/10"
+                  >
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/20">
+                      <User className="h-4 w-4 text-emerald-400" />
+                    </div>
+                    Mon espace
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 w-full px-4 py-3 text-slate-300 hover:text-red-400 font-medium rounded-xl hover:bg-red-500/10 transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Déconnexion
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/connexion"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center justify-center px-4 py-3 text-white font-semibold bg-gradient-to-r from-red-600 to-red-500 rounded-lg"
+                >
+                  Espace membre
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </nav>
+  );
 }

@@ -40,8 +40,9 @@ export default async function AppLayout({
 
   // Déterminer le rôle et les infos
   const userRole = user.roleSysteme;
-  const affectation = user.member?.affectations[0];
-  const isBureau = affectation?.poste.estBureau === true;
+  const { getAffectationActive, isBureauActif } = await import('@/lib/rbac');
+  const affectation = await getAffectationActive(user.id);
+  const isBureau = await isBureauActif(user.id);
 
   const userInfo = {
     name: user.member

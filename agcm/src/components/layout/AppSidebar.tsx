@@ -10,6 +10,7 @@ import {
   Vote,
   FolderOpen,
   Users,
+  User,
   Shield,
   CheckCircle,
   Briefcase,
@@ -73,6 +74,11 @@ export default function AppSidebar({ userRole, isBureau, posteNom, mobileOpen, o
       return pathname === '/bureau';
     }
 
+    // Cas spécial pour /app/dashboard (ne pas tout highlighter)
+    if (hrefPath === '/app/dashboard') {
+      return pathname === '/app/dashboard';
+    }
+
     // Pour les chemins exacts
     if (pathname === hrefPath) return true;
 
@@ -88,17 +94,20 @@ export default function AppSidebar({ userRole, isBureau, posteNom, mobileOpen, o
     return '/app/dashboard';
   };
 
+  // Salon chat : bureau = privé, admin = privé, membre = pas d'accès
+  const chatItem: SidebarItem = {
+    label: isBureau || userRole !== 'MEMBER' ? 'Salon privé bureau' : 'Salon public',
+    href: '/app/chat',
+    icon: MessageSquare,
+  };
+
   const commonMenu: SidebarItem[] = [
     {
       label: 'Accueil',
       href: getDashboardHref(),
       icon: LayoutDashboard,
     },
-    {
-      label: 'Salon public',
-      href: '/app/chat',
-      icon: MessageSquare,
-    },
+    ...(isBureau || userRole !== 'MEMBER' ? [chatItem] : []),
     {
       label: 'Notifications',
       href: '/app/notifications',
@@ -196,18 +205,23 @@ export default function AppSidebar({ userRole, isBureau, posteNom, mobileOpen, o
   // Menu Membre simple
   const memberMenu: SidebarItem[] = [
     {
+      label: 'Mon profil',
+      href: '/app/dashboard/profil',
+      icon: User,
+    },
+    {
       label: 'Mes événements',
-      href: '/dashboard/mes-evenements',
+      href: '/app/dashboard/mes-evenements',
       icon: Calendar,
     },
     {
-      label: 'Mes formations',
-      href: '/dashboard/mes-formations',
+      label: 'Actualités & activités',
+      href: '/app/dashboard/mes-activites',
       icon: FileText,
     },
     {
       label: 'Paiements',
-      href: '/dashboard/paiements',
+      href: '/app/dashboard/paiements',
       icon: Settings,
     },
   ];

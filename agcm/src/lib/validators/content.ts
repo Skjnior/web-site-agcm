@@ -8,7 +8,10 @@ export const contentCreateSchema = z.object({
   titre: z.string().min(1, 'Le titre est requis').max(200, 'Le titre est trop long'),
   contenu: z.string().optional(),
   lienExterne: z.string().url('URL invalide').optional().or(z.literal('')),
-  imagePrincipale: z.string().url('URL invalide').optional().or(z.literal('')),
+  imagePrincipale: z.string()
+    .refine((val) => !val || val === '' || val.startsWith('http') || val.startsWith('/uploads/'), 'URL ou chemin local invalide')
+    .optional()
+    .or(z.literal('')),
   tags: z.array(z.string()).optional().default([]),
   visibiliteCible: z.enum(['PRIVE_BUREAU', 'PUBLIC_SITE']),
 });
