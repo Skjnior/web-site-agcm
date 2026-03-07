@@ -1,0 +1,398 @@
+À quoi sert le projet ?
+Site web pour l’Association Guinéenne des Auditeurs (AGA). Il permet de :
+Gérer les membres (adhésions, validations, profils)
+Publier et gérer des formations, événements et actualités
+Partager des ressources documentaires
+Gérer les inscriptions aux formations et événements
+Suivre les paiements et cotisations
+Communiquer avec les membres via email
+Cahier des charges — Site web AGA
+1. Contexte et objectifs
+1.1 Présentation
+Association Guinéenne des Auditeurs (AGA)
+Site web de gestion et de communication
+Plateforme pour membres, administrateurs et visiteurs
+1.2 Objectifs
+Gérer les membres (adhésions, validations, profils)
+Publier et gérer formations, événements, actualités
+Partager des ressources documentaires
+Gérer les inscriptions aux formations et événements
+Suivre les paiements et cotisations
+Communiquer avec les membres
+2. Architecture technique
+2.1 Stack
+Framework : Next.js 15 (App Router)
+Langage : TypeScript
+Base de données : PostgreSQL
+ORM : Prisma
+Authentification : NextAuth v5 (JWT)
+Styling : Tailwind CSS
+UI : Radix UI
+Email : Resend
+Rate limiting : Upstash Redis
+Tests : Jest
+2.2 Structure du projet
+agcm/├── src/│   ├── app/              # Pages et routes API│   ├── components/       # Composants React│   └── lib/             # Utilitaires et configurations├── prisma/              # Schéma et migrations DB├── public/              # Assets statiques└── __tests__/           # Tests unitaires
+3. Fonctionnalités
+3.1 Authentification et gestion des utilisateurs
+3.1.1 Système de rôles
+ROLE_MEMBER : Accès dashboard membre
+ROLE_ADMIN : Accès admin (sauf gestion admins)
+ROLE_SUPER_ADMIN : Accès complet
+3.1.2 Fonctionnalités
+Connexion/Déconnexion
+Inscription avec validation admin
+Protection des routes par middleware
+Gestion des sessions (JWT)
+Réinitialisation de mot de passe
+3.1.3 Utilisateurs de test
+MEMBRE : membre@aga.gn / password123
+ADMIN : admin@aga.gn / password123
+SUPER_ADMIN : superadmin@aga.gn / password123
+3.2 Gestion des membres
+3.2.1 Types de membres
+ETUDIANT
+PROFESSIONNEL
+HONORAIRE
+PARTENAIRE
+3.2.2 Statuts
+EN_ATTENTE : En attente de validation
+ACTIF : Membre validé et actif
+SUSPENDU : Membre suspendu temporairement
+RADIE : Membre radié définitivement
+3.2.3 Fonctionnalités admin
+Liste avec filtres (statut, type)
+Détails du membre
+Validation/Refus avec génération automatique du numéro membre (AGA-YYYY-XXX)
+Suspension/Réactivation
+Modification des informations
+Réinitialisation du mot de passe
+Gestion des permissions (ADMIN ne peut pas agir sur SUPER_ADMIN)
+3.2.4 Informations membres
+Numéro membre unique
+Prénom, nom, email, téléphone
+Adresse, ville, pays
+Profession, entreprise, secteur d'activité
+Type de membre
+Date d'adhésion, date d'expiration
+Statut de cotisation
+Biographie, photo
+3.3 Dashboard membre
+3.3.1 Pages
+Accueil : Vue d'ensemble
+Profil : Informations personnelles
+Mes formations : Formations inscrites
+Mes événements : Événements inscrits
+Paiements : Historique des paiements
+3.3.2 Fonctionnalités
+Navigation latérale
+Affichage des informations personnelles
+Liste des formations/événements inscrits
+Historique des paiements
+3.4 Gestion des formations
+3.4.1 Modèle de données
+Titre, slug, description
+Objectifs, programme
+Dates (début, fin, inscriptions)
+Heures (début, fin)
+Lieu
+Places (max, disponibles)
+Tarifs (membre, non-membre)
+Catégorie, niveau (DÉBUTANT, INTERMÉDIAIRE, AVANCÉ)
+Durée en jours
+Formateurs, prérequis
+Certificat (oui/non)
+Image, documents
+Statut (BROUILLON, PUBLIÉE, EN_COURS, TERMINÉE, ANNULEE)
+3.4.2 Fonctionnalités admin
+CRUD formations
+Publication/Dépublier
+Gestion des places disponibles
+3.4.3 Pages publiques
+Liste avec filtres, recherche, pagination
+Page détail avec informations complètes
+3.4.4 Inscriptions (Phase 2)
+Système d'inscription
+Gestion des places disponibles
+Liste d'attente
+Notifications email (confirmations, rappels)
+3.5 Gestion des événements
+3.5.1 Modèle de données
+Titre, slug, description
+Type (CONFÉRENCE, SÉMINAIRE, WEBINAIRE, ATELIER, ASSEMBLÉE_GÉNÉRALE, NETWORKING, AUTRE)
+Date, heures (début, fin)
+Lieu, lien visio
+Inscription requise (oui/non)
+Places max
+Programme, intervenants
+Image, documents
+Statut (PLANIFIÉ, EN_COURS, TERMINÉ, ANNULE)
+3.5.2 Fonctionnalités admin
+CRUD événements
+Publication/Dépublier
+3.5.3 Pages publiques
+Liste avec filtres, recherche, pagination
+Page détail
+3.5.4 Inscriptions (Phase 2)
+Inscriptions
+Calendrier exportable
+Notifications
+3.6 Gestion des actualités
+3.6.1 Modèle de données
+Titre, slug, résumé, contenu
+Catégorie (ÉVÉNEMENT, FORMATION, RÉGLEMENTATION, VIE_ASSOCIATIVE, PARTENARIAT, AUTRE)
+Tags
+Image
+Auteur
+Date de publication
+Meta (title, description) pour SEO
+Compteur de vues
+3.6.2 Fonctionnalités admin
+CRUD actualités
+Publication/Dépublier
+3.6.3 Pages publiques
+Liste avec filtres, recherche, pagination
+Page détail avec contenu complet
+3.7 Gestion des ressources
+3.7.1 Modèle de données
+Titre, description
+Type (DOCUMENT, VIDÉO, LIEN, AUDIO)
+Catégorie (NORMES_STANDARDS, GUIDES_MÉTHODOLOGIES, PUBLICATIONS_AGA, ÉTUDES_CAS, RAPPORTS_ANNUELS, RÉGLEMENTATION, OUTILS, AUTRE)
+Fichier (URL, nom, taille, type MIME)
+URL externe
+Image
+Membres uniquement (oui/non)
+Premium uniquement (oui/non)
+Auteur, date de publication
+Tags
+Compteurs (téléchargements, vues)
+3.7.2 Fonctionnalités admin
+CRUD ressources
+Upload de fichiers (local ou URL externe)
+Publication/Dépublier
+3.7.3 Fonctionnalités upload
+Upload depuis ordinateur (max 50 MB)
+URL externe (Drive, Dropbox, etc.)
+Génération de noms uniques
+Stockage local dans public/uploads/ressources/
+Validation avant soumission
+3.7.4 Fonctionnalités téléchargement
+Téléchargement pour membres actifs (si memberOnly)
+Vérification des permissions
+Incrémentation du compteur de téléchargements
+Fallback : recherche par fileName si fileUrl est vide
+3.7.5 Pages publiques
+Liste avec filtres, recherche, pagination
+Page détail avec bouton de téléchargement
+3.8 Système de paiements
+3.8.1 Modèle de données
+Type (COTISATION, FORMATION, ÉVÉNEMENT, AUTRE)
+Montant, devise (GNF par défaut)
+Statut (PENDING, COMPLETED, FAILED, REFUNDED)
+Méthode de paiement
+Référence externe
+Lien avec formation/événement
+Description
+Date de paiement
+3.8.2 Fonctionnalités actuelles
+Historique des paiements dans le dashboard membre
+Suivi des paiements par membre
+3.8.3 Fonctionnalités Phase 2
+Intégration Orange Money / MTN Mobile Money
+Paiement cotisations en ligne
+Paiement formations
+Génération reçus automatiques
+3.9 Système d'emails
+3.9.1 Configuration
+Service : Resend
+Templates email personnalisés
+3.9.2 Emails automatiques
+Validation de membre : Email de confirmation avec numéro membre
+Refus de membre : Email de notification de refus
+3.9.3 Emails Phase 2
+Confirmations d'inscription
+Rappels de formations/événements
+Notifications de paiement
+3.10 Pages publiques
+3.10.1 Page d'accueil
+Hero Section avec barre tricolore
+Section À propos
+Section Services/Activités
+Section Types de membres
+Footer
+3.10.2 Page À propos
+Hero
+Présentation
+Objectifs
+Histoire
+Partenaires
+Call to action
+3.10.3 Autres pages
+Formations : Liste et détails
+Événements : Liste et détails
+Actualités : Liste et détails
+Ressources : Liste et détails
+Contact : Formulaire de contact
+3.11 Interface admin
+3.11.1 Dashboard admin
+Statistiques générales
+Vue d'ensemble des membres, formations, événements
+3.11.2 Gestion des membres
+Liste avec filtres
+Détails et actions (validation, suspension, etc.)
+3.11.3 CRUD
+Formations
+Événements
+Actualités
+Ressources
+3.11.4 Fonctionnalités Phase 2
+Statistiques et graphiques
+Export CSV/PDF
+Génération attestations de participation
+4. Sécurité
+4.1 Authentification
+NextAuth v5 avec JWT
+Hashage des mots de passe (bcryptjs)
+Protection des routes par middleware
+Vérification des permissions dans les API routes
+4.2 Permissions
+Permissions granulaires par rôle
+ADMIN ne peut pas agir sur SUPER_ADMIN
+Vérification des permissions côté serveur
+4.3 Rate limiting
+Upstash Redis pour le rate limiting
+Protection contre les abus (auth, admin)
+4.4 Upload de fichiers
+Validation des types de fichiers
+Limite de taille (50 MB)
+Génération de noms uniques
+Stockage sécurisé
+5. Base de données
+5.1 Modèles principaux
+User : Utilisateurs et authentification
+Member : Informations membres
+Formation : Formations
+InscriptionFormation : Inscriptions aux formations
+Evenement : Événements
+InscriptionEvenement : Inscriptions aux événements
+Resource : Ressources documentaires
+News : Actualités
+Payment : Paiements
+Partner : Partenaires
+5.2 Relations
+User ↔ Member (1:1)
+Member ↔ InscriptionFormation (1:N)
+Member ↔ InscriptionEvenement (1:N)
+Member ↔ Payment (1:N)
+Formation ↔ InscriptionFormation (1:N)
+Evenement ↔ InscriptionEvenement (1:N)
+6. Tests
+6.1 Configuration
+Framework : Jest
+Environnement : Node.js
+18 tests unitaires créés
+6.2 Tests couverts
+Upload de fichiers
+API d'upload
+API de téléchargement
+API de création de ressources
+6.3 Résultats
+14 tests réussis (77.8%)
+4 tests à corriger (problèmes de mocks Jest, non bloquants)
+7. Déploiement
+7.1 Environnement
+Plateforme : Vercel
+Base de données : PostgreSQL (Vercel Postgres, Neon, Supabase)
+Stockage fichiers : Local (migration vers Vercel Blob prévue)
+7.2 Variables d'environnement requises
+DATABASE_URL : URL PostgreSQL
+NEXTAUTH_SECRET : Secret JWT
+NEXTAUTH_URL : URL de l'application
+UPSTASH_REDIS_REST_URL : URL Redis (rate limiting)
+UPSTASH_REDIS_REST_TOKEN : Token Redis
+RESEND_API_KEY : Clé API Resend
+EMAIL_FROM : Email d'envoi
+8. État actuel du projet
+8.1 Phase 1 — MVP (terminé)
+Authentification et gestion des utilisateurs
+Dashboard membre
+Interface admin (membres, CRUD)
+Pages publiques
+Upload/Téléchargement de fichiers
+Emails automatiques
+Tests unitaires
+8.2 Phase 2 — Fonctionnalités avancées (à faire)
+Module formations complet (inscriptions, places, liste d'attente)
+Module événements complet (inscriptions, calendrier)
+Bibliothèque de ressources avancée (Vercel Blob, catégorisation)
+Paiements en ligne (Orange Money, MTN)
+Dashboard admin avancé (statistiques, exports)
+8.3 Améliorations prévues
+Éditeur de texte riche (TinyMCE ou React Quill)
+Upload d'images pour formations/événements/actualités
+Pagination côté serveur
+Migration vers Vercel Blob pour les fichiers
+9. Documentation
+9.1 Fichiers de documentation
+README.md : Guide de démarrage
+ETAT_PROJET_ACTUEL.md : État détaillé du projet
+UTILISATEURS_TEST.md : Identifiants de test
+ENV_VARIABLES.md : Configuration des variables d'environnement
+GUIDE_TEST.md : Guide de test
+README_EMAILS.md : Configuration emails
+README_DEPLOIEMENT.md : Guide de déploiement
+README_RATE_LIMITING.md : Configuration rate limiting
+10. Statistiques du projet
+Pages créées : ~30+
+Composants React : 48 composants
+API Routes : 26 routes API
+Tests unitaires : 18 tests
+Taux de réussite des tests : 77.8% (14/18)
+11. Prochaines étapes recommandées
+Court terme (1-2 semaines)
+Corriger les tests unitaires (mocks Jest)
+Ajouter un éditeur de texte riche
+Améliorer l'upload d'images
+Ajouter la pagination côté serveur
+Moyen terme (Phase 2 - 4-6 semaines)
+Système d'inscription aux formations
+Gestion des places disponibles + liste d'attente
+Notifications email automatiques
+Migration vers Vercel Blob
+Calendrier exportable pour les événements
+Long terme (Phase 3-4)
+Intégration paiements (Orange Money, MTN)
+Génération automatique d'attestations
+Dashboard admin avec statistiques avancées
+Export CSV/PDF
+PWA et optimisations performance
+
+
+
+
+
+Maintenant voici ce que je veux :
+
+en plus de quelque fonctionnalitees qui sont ici je veux qu'on aille encore plus, je veux un espace pour chanque fonction ici  1.president, secretaire administratif,  secretaire chargé à la communication et à l’information, secretaire chargé à l’organisation, secretaire chargé aux affaires sociales et à l’intégration, secretaire chargé aux sports, à l’environnement et à la culture, tresorier, directeur de finances, secretaire chargé à la sécurité et prevoir la possibilite d'ajouter d'autre poste par le super admin
+donc chaque fonction doit avoir son dasbord c'est a dire son espace ou il peut gerer ses activitees et autres faire le CRUD et c... il peut exercer et que les autres membres du burau puissent voir ce qu'il a fait donc il faut un espace ou tout les membre du burau ont en commun c'est un sallon privee entre eux.
+mais aussi un espace ou les membre du bureau est les autres membre de l'association ont en commun qu'on va appeller sallon public, et voici comment ca va se passer.
+on a le president qui voit tout ce que les autres membres font.
+il ne peut que les voir pas de modification ni suspression
+donc quand un membre fait cree un truc, tout les membres du bureau executif sont informer dans leur espace tel a fait tel il peuvent voir et donner leur avis dessus avec un nombre d'etoille
+et le burau executif est temporaire donc si un membre change de poste les ancienes activitees que le membre a fait ne sont pas supprimer mais c'est marquer archiver seule le super admin peut les modifier et supprimer donc le nouveau membre qui viendra doit pouvoir peut voir les anciennes activitees de l'autres mais ne peux pas les modifiers ni les supprimer.
+donc quand un memmbre change le super admin de son cote doit pouvoir mettre se dernier actif ou pas et si inactif alors il doit donner la raison et tous les autres membre du bureau executif ou de l'association doivent voir ca, genre tel est n'est plus actif raison il est manitenant membre ou n'est plus de l'association oubien son mondat a expierer tu comprends ca 
+maintent si ce membre est inactif tout ce qui lui est lie doit etre archiver genre avec un truc qui montre que ce dernier n'exerce plus son metier, mais ce derniner peut avori un role membre tout court donc il peut voir ce que les autres membres qui ne pas du burau genre il n'est plus du burau priver mais il sera dans le bureau public comme tous
+
+donc en fonction du role de chancun que tu connais maintenant ils peuvent organiser des elections ou des votes tout en mettant toutes les informations du genre vote pour tel ou tel activite, et des buttons radio pour oui et non mais seule le super admin peut voir qui a vote oui ou non et ses informations sont garder en fonction du mandat je dis bien du mandat et surtout avec les dates etc... et celui qui a cree peut juste voir le nombre de oui et le nombre de non c'est tout comme satatistiques.
+
+
+il doit y avoir un espace chat preiver entre les membre du burau un autres entre tous les membres de l'associations genre comme reunnion
+
+donc entant que membre public voici ce que tu dois voir comme onglet
+
+Salon public qui te donne ce qui se passe dans l'association et dans quel secteur je veux dire par qui secretaire ou tec..
+ton profile etc... tu vas me dire ce qu'il faut labas aussi en completant car j'ai pas d'idees
+
+maintenat sur le site public toutes informations qui sont publiques genre les evennment organiser mais qui ont le statut affiche sur le site a true doivent etre visible par les visiteurs sur le site web avec une tres bonne interface et la date etc... donc si la date est passer le super admin peut mettre le statut a false ou pas donc les evennements doivent etre afficher en ordre, passer, en cours, future avec les images de l'evenemements une image pricipale et les images suivantes pour les detailles
+
+mais en faisant tout ca tu dois retirer tous ce qui auditeur car c'est pas les memes associations 

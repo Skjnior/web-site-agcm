@@ -1,0 +1,132 @@
+'use client';
+
+import { useState } from 'react';
+import { Button } from './button';
+import { Input } from './input';
+import { Label } from './label';
+import { X, Filter } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './select';
+
+export interface FilterOption {
+  label: string;
+  value: string;
+}
+
+export interface FilterConfig {
+  type: 'text' | 'select' | 'date' | 'boolean';
+  key: string;
+  label: string;
+  options?: FilterOption[];
+  placeholder?: string;
+}
+
+interface FiltersProps {
+  filters: FilterConfig[];
+  values: Record<string, any>;
+  onChange: (values: Record<string, any>) => void;
+  onReset: () => void;
+  className?: string;
+}
+
+export function Filters({ filters, values, onChange, onReset, className = '' }: FiltersProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const hasActiveFilters = Object.values(values).some(v => v !== '' && v !== null && v !== undefined);
+
+  const handleChange = (key: string, value: any) => {
+    onChange({ ...values, [key]: value });
+  };
+
+  return (
+    <div className={`space-y-4 ${className}`}>
+      <div className="flex items-center justify-between">
+        <Button
+          variant="outline"
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center gap-2"
+        >
+          <Filter className="h-4 w-4" />
+          Filtres
+          {hasActiveFilters && (
+            <span className="ml-1 rounded-full bg-primary text-primary-foreground px-2 py-0.5 text-xs">
+              {Object.values(values).filter(v => v !== '' && v !== null && v !== undefined).length}
+            </span>
+          )}
+        </Button>
+        {hasActiveFilters && (
+          <Button variant="ghost" size="sm" onClick={onReset}>
+            <X className="h-4 w-4 mr-1" />
+            Réinitialiser
+          </Button>
+        )}
+      </div>
+
+      {isOpen && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 border rounded-lg bg-white">
+          {filters.map((filter) => (
+            <div key={filter.key} className="space-y-2">
+              <Label htmlFor={filter.key}>{filter.label}</Label>
+              {filter.type === 'text' && (
+                <Input
+                  id={filter.key}
+                  placeholder={filter.placeholder || `Rechercher ${filter.label.toLowerCase()}...`}
+                  value={values[filter.key] || ''}
+                  onChange={(e) => handleChange(filter.key, e.target.value)}
+                />
+              )}
+              {filter.type === 'select' && (
+                <Select
+                  value={values[filter.key] || ''}
+                  onValueChange={(value) => handleChange(filter.key, value)}
+                >
+                  <SelectTrigger id={filter.key}>
+                    <SelectValue placeholder={filter.placeholder || `Sélectionner ${filter.label.toLowerCase()}...`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Tous</SelectItem>
+                    {filter.options?.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              {filter.type === 'date' && (
+                <Input
+                  id={filter.key}
+                  type="date"
+                  value={values[filter.key] || ''}
+                  onChange={(e) => handleChange(filter.key, e.target.value)}
+                />
+              )}
+              {filter.type === 'boolean' && (
+                <Select
+                  value={values[filter.key] === undefined ? '' : values[filter.key] ? 'true' : 'false'}
+                  onValueChange={(value) => handleChange(filter.key, value === '' ? undefined : value === 'true')}
+                >
+                  <SelectTrigger id={filter.key}>
+                    <SelectValue placeholder={filter.placeholder || `Sélectionner ${filter.label.toLowerCase()}...`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Tous</SelectItem>
+                    <SelectItem value="true">Oui</SelectItem>
+                    <SelectItem value="false">Non</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+

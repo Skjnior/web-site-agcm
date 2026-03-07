@@ -1,0 +1,531 @@
+.next/types/app/(app)/admin/approbations/page.ts(2,24): error TS2307: Cannot find module '../../../../../../src/app/(app)/admin/approbations/page.js' or its corresponding type declarations.
+.next/types/app/(app)/admin/approbations/page.ts(5,29): error TS2307: Cannot find module '../../../../../../src/app/(app)/admin/approbations/page.js' or its corresponding type declarations.
+.next/types/app/(app)/admin/contacts/page.ts(2,24): error TS2307: Cannot find module '../../../../../../src/app/(app)/admin/contacts/page.js' or its corresponding type declarations.
+.next/types/app/(app)/admin/contacts/page.ts(5,29): error TS2307: Cannot find module '../../../../../../src/app/(app)/admin/contacts/page.js' or its corresponding type declarations.
+.next/types/app/(app)/admin/demandes/adhesions/page.ts(2,24): error TS2307: Cannot find module '../../../../../../../src/app/(app)/admin/demandes/adhesions/page.js' or its corresponding type declarations.
+.next/types/app/(app)/admin/demandes/adhesions/page.ts(5,29): error TS2307: Cannot find module '../../../../../../../src/app/(app)/admin/demandes/adhesions/page.js' or its corresponding type declarations.
+.next/types/app/(app)/admin/demandes/page.ts(2,24): error TS2307: Cannot find module '../../../../../../src/app/(app)/admin/demandes/page.js' or its corresponding type declarations.
+.next/types/app/(app)/admin/demandes/page.ts(5,29): error TS2307: Cannot find module '../../../../../../src/app/(app)/admin/demandes/page.js' or its corresponding type declarations.
+.next/types/app/(app)/admin/membres/[id]/edit/page.ts(2,24): error TS2307: Cannot find module '../../../../../../../../src/app/(app)/admin/membres/[id]/edit/page.js' or its corresponding type declarations.
+.next/types/app/(app)/admin/membres/[id]/edit/page.ts(5,29): error TS2307: Cannot find module '../../../../../../../../src/app/(app)/admin/membres/[id]/edit/page.js' or its corresponding type declarations.
+.next/types/app/(app)/admin/membres/[id]/page.ts(2,24): error TS2307: Cannot find module '../../../../../../../src/app/(app)/admin/membres/[id]/page.js' or its corresponding type declarations.
+.next/types/app/(app)/admin/membres/[id]/page.ts(5,29): error TS2307: Cannot find module '../../../../../../../src/app/(app)/admin/membres/[id]/page.js' or its corresponding type declarations.
+.next/types/app/(app)/admin/membres/page.ts(2,24): error TS2307: Cannot find module '../../../../../../src/app/(app)/admin/membres/page.js' or its corresponding type declarations.
+.next/types/app/(app)/admin/membres/page.ts(5,29): error TS2307: Cannot find module '../../../../../../src/app/(app)/admin/membres/page.js' or its corresponding type declarations.
+.next/types/app/(app)/admin/page.ts(2,24): error TS2307: Cannot find module '../../../../../src/app/(app)/admin/page.js' or its corresponding type declarations.
+.next/types/app/(app)/admin/page.ts(5,29): error TS2307: Cannot find module '../../../../../src/app/(app)/admin/page.js' or its corresponding type declarations.
+.next/types/app/(app)/bureau/contents/page.ts(34,29): error TS2344: Type '{ searchParams: { status?: string | undefined; page?: string | undefined; }; }' does not satisfy the constraint 'PageProps'.
+  Types of property 'searchParams' are incompatible.
+    Type '{ status?: string | undefined; page?: string | undefined; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/(app)/bureau/contents/rejetes/page.ts(34,29): error TS2344: Type '{ searchParams: { page?: string | undefined; }; }' does not satisfy the constraint 'PageProps'.
+  Types of property 'searchParams' are incompatible.
+    Type '{ page?: string | undefined; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/admin/actualites/[id]/edit/page.ts(34,29): error TS2344: Type 'EditActualitePageProps' does not satisfy the constraint 'PageProps'.
+  Types of property 'params' are incompatible.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/admin/evenements/[id]/edit/page.ts(34,29): error TS2344: Type 'EditEvenementPageProps' does not satisfy the constraint 'PageProps'.
+  Types of property 'params' are incompatible.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/admin/formations/[id]/edit/page.ts(34,29): error TS2344: Type 'EditFormationPageProps' does not satisfy the constraint 'PageProps'.
+  Types of property 'params' are incompatible.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/admin/actualites/[id]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/admin/actualites/[id]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/admin/demandes/adhesions/[id]/route.ts(283,7): error TS2344: Type '{ __tag__: "PATCH"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/admin/demandes/dons/[id]/route.ts(283,7): error TS2344: Type '{ __tag__: "PATCH"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/admin/demandes/partenariats/[id]/route.ts(283,7): error TS2344: Type '{ __tag__: "PATCH"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/admin/evenements/[id]/approve-afficheSite/route.ts(283,7): error TS2344: Type '{ __tag__: "PATCH"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/admin/evenements/[id]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/admin/evenements/[id]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/admin/formations/[id]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/admin/formations/[id]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/admin/members/[id]/reactivate/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/admin/members/[id]/refuse/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/admin/members/[id]/suspend/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/admin/members/[id]/validate/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/admin/projets/[id]/approve-visibility/route.ts(283,7): error TS2344: Type '{ __tag__: "PATCH"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/admin/ressources/[id]/route.ts(205,7): error TS2344: Type '{ __tag__: "PUT"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/admin/ressources/[id]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/app/contents/[contentId]/comment/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { contentId: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ contentId: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/auth/[...nextauth]/route.ts(12,13): error TS2344: Type 'OmitWithTag<typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/auth/[...nextauth]/route"), "DELETE" | "GET" | "POST" | "PATCH" | "PUT" | "config" | "generateStaticParams" | ... 8 more ... | "OPTIONS", "">' does not satisfy the constraint '{ [x: string]: never; }'.
+  Property 'auth' is incompatible with index signature.
+    Type 'any' is not assignable to type 'never'.
+.next/types/app/api/bureau/contents/[contentId]/route.ts(283,7): error TS2344: Type '{ __tag__: "PATCH"; __param_position__: "second"; __param_type__: { params: { contentId: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ contentId: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/bureau/contents/[contentId]/submit/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { contentId: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ contentId: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/bureau/evenements/[id]/submit-site/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/bureau/projets/[id]/submit-site/route.ts(166,7): error TS2344: Type '{ __tag__: "POST"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/formations/[slug]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: Context; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ slug: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/news/[slug]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: Context; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ slug: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/public/projets/[slug]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { slug: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ slug: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/ressources/[id]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: Context; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/validator.ts(684,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/admin/actualites/[id]/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/admin/actualites/[id]">'.
+  Types of property 'PUT' are incompatible.
+    Type '(req: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; actualite: { id: string; createdAt: Date; ... 14 more ...; facebookPostId: string | null; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(765,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/admin/demandes/adhesions/[id]/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/admin/demandes/adhesions/[id]">'.
+  Types of property 'PATCH' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; message: string; demande: { id: string; email: string; ... 10 more ...; processedAt: Date | null; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(783,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/admin/demandes/dons/[id]/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/admin/demandes/dons/[id]">'.
+  Types of property 'PATCH' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; don: { id: string; email: string | null; ... 8 more ...; handledByPosteId: string | null; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(801,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/admin/demandes/partenariats/[id]/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/admin/demandes/partenariats/[id]">'.
+  Types of property 'PATCH' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; message: string; demande: { id: string; email: string; ... 9 more ...; typePartenariat: string | null; }; partner: { ...; } | null; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(819,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/admin/evenements/[id]/approve-afficheSite/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/admin/evenements/[id]/approve-afficheSite">'.
+  Types of property 'PATCH' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; message: string; event: { id: string; createdAt: Date; ... 10 more ...; createdByPosteId: string; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(828,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/admin/evenements/[id]/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/admin/evenements/[id]">'.
+  Types of property 'PUT' are incompatible.
+    Type '(req: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; evenement: any; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(855,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/admin/formations/[id]/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/admin/formations/[id]">'.
+  Types of property 'PUT' are incompatible.
+    Type '(req: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; formation: any; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(873,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/admin/members/[id]/reactivate/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/admin/members/[id]/reactivate">'.
+  Types of property 'POST' are incompatible.
+    Type '(req: Request, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; member: { id: string; createdAt: Date; updatedAt: Date; ... 9 more ...; dateAdhesion: Date; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(882,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/admin/members/[id]/refuse/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/admin/members/[id]/refuse">'.
+  Types of property 'POST' are incompatible.
+    Type '(req: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; member: { id: string; createdAt: Date; updatedAt: Date; ... 9 more ...; dateAdhesion: Date; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(891,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/admin/members/[id]/suspend/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/admin/members/[id]/suspend">'.
+  Types of property 'POST' are incompatible.
+    Type '(req: Request, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; member: { id: string; createdAt: Date; updatedAt: Date; ... 9 more ...; dateAdhesion: Date; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(900,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/admin/members/[id]/validate/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/admin/members/[id]/validate">'.
+  Types of property 'POST' are incompatible.
+    Type '(req: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; member: { id: string; createdAt: Date; updatedAt: Date; ... 9 more ...; dateAdhesion: Date; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(945,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/admin/projets/[id]/approve-visibility/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/admin/projets/[id]/approve-visibility">'.
+  Types of property 'PATCH' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; message: string; projet: { id: string; createdAt: Date; ... 9 more ...; responsablePosteId: string; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(963,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/admin/ressources/[id]/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/admin/ressources/[id]">'.
+  Types of property 'PUT' are incompatible.
+    Type '(req: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; ressource: any; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(1017,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/app/contents/[contentId]/comment/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/app/contents/[contentId]/comment">'.
+  Types of property 'POST' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { contentId: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; comment: { auteur: { id: string; email: string; }; } & { ...; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ contentId: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ contentId: string; }>; }' is not assignable to type '{ params: { contentId: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'contentId' is missing in type 'Promise<{ contentId: string; }>' but required in type '{ contentId: string; }'.
+.next/types/validator.ts(1071,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/bureau/contents/[contentId]/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/bureau/contents/[contentId]">'.
+  Types of property 'PATCH' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { contentId: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; content: { id: string; createdAt: Date; ... 14 more ...; facebookPostId: string | null; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ contentId: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ contentId: string; }>; }' is not assignable to type '{ params: { contentId: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'contentId' is missing in type 'Promise<{ contentId: string; }>' but required in type '{ contentId: string; }'.
+.next/types/validator.ts(1080,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/bureau/contents/[contentId]/submit/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/bureau/contents/[contentId]/submit">'.
+  Types of property 'POST' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { contentId: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; message: string; content: { id: string; ... 15 more ...; facebookPostId: string | null; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ contentId: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ contentId: string; }>; }' is not assignable to type '{ params: { contentId: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'contentId' is missing in type 'Promise<{ contentId: string; }>' but required in type '{ contentId: string; }'.
+.next/types/validator.ts(1098,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/bureau/evenements/[id]/submit-site/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/bureau/evenements/[id]/submit-site">'.
+  Types of property 'POST' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; message: string; event: { id: string; createdAt: Date; ... 10 more ...; createdByPosteId: string; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(1116,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/bureau/projets/[id]/submit-site/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/bureau/projets/[id]/submit-site">'.
+  Types of property 'POST' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ success: boolean; message: string; projet: { id: string; createdAt: Date; ... 9 more ...; responsablePosteId: string; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type '{ params: { id: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+.next/types/validator.ts(1188,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/formations/[slug]/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/formations/[slug]">'.
+  Types of property 'GET' are incompatible.
+    Type '(_req: NextRequest, { params }: Context) => Promise<NextResponse<{ success: boolean; error: string; }> | NextResponse<{ success: boolean; data: any; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ slug: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ slug: string; }>; }' is not assignable to type 'Context'.
+          Types of property 'params' are incompatible.
+            Property 'slug' is missing in type 'Promise<{ slug: string; }>' but required in type '{ slug: string; }'.
+.next/types/validator.ts(1215,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/news/[slug]/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/news/[slug]">'.
+  Types of property 'GET' are incompatible.
+    Type '(_req: NextRequest, { params }: Context) => Promise<NextResponse<{ success: boolean; error: string; }> | NextResponse<{ success: boolean; data: { id: string; createdAt: Date; ... 14 more ...; facebookPostId: string | null; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ slug: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ slug: string; }>; }' is not assignable to type 'Context'.
+          Types of property 'params' are incompatible.
+            Property 'slug' is missing in type 'Promise<{ slug: string; }>' but required in type '{ slug: string; }'.
+.next/types/validator.ts(1305,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/public/projets/[slug]/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/public/projets/[slug]">'.
+  Types of property 'GET' are incompatible.
+    Type '(request: NextRequest, { params }: { params: { slug: string; }; }) => Promise<NextResponse<{ error: string; }> | NextResponse<{ projet: { id: string; createdAt: Date; updatedAt: Date; ... 8 more ...; responsablePosteId: string; }; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ slug: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ slug: string; }>; }' is not assignable to type '{ params: { slug: string; }; }'.
+          Types of property 'params' are incompatible.
+            Property 'slug' is missing in type 'Promise<{ slug: string; }>' but required in type '{ slug: string; }'.
+.next/types/validator.ts(1341,31): error TS2344: Type 'typeof import("/home/junior/Documents/client_projects/agcm-project/agcm/src/app/api/ressources/[id]/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/ressources/[id]">'.
+  Types of property 'GET' are incompatible.
+    Type '(_req: NextRequest, { params }: Context) => Promise<NextResponse<{ success: boolean; error: string; }> | NextResponse<{ success: boolean; data: any; }>>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ id: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ id: string; }>; }' is not assignable to type 'Context'.
+          Types of property 'params' are incompatible.
+            Property 'id' is missing in type 'Promise<{ id: string; }>' but required in type '{ id: string; }'.
+__tests__/api/admin/approbations.test.ts(31,36): error TS2307: Cannot find module '@/lib/notifications' or its corresponding type declarations.
+__tests__/api/admin/approbations.test.ts(108,66): error TS2353: Object literal may only specify known properties, and 'contentId' does not exist in type 'Promise<{ contentId: string; }>'.
+__tests__/api/admin/approbations.test.ts(132,66): error TS2353: Object literal may only specify known properties, and 'contentId' does not exist in type 'Promise<{ contentId: string; }>'.
+__tests__/api/admin/approbations.test.ts(147,65): error TS2353: Object literal may only specify known properties, and 'contentId' does not exist in type 'Promise<{ contentId: string; }>'.
+__tests__/api/admin/approbations.test.ts(168,65): error TS2353: Object literal may only specify known properties, and 'contentId' does not exist in type 'Promise<{ contentId: string; }>'.
+__tests__/api/admin/ressources.test.ts(79,13): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+__tests__/api/admin/ressources.test.ts(89,19): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+__tests__/api/admin/ressources.test.ts(99,32): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+__tests__/api/admin/ressources.test.ts(120,13): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+__tests__/api/admin/ressources.test.ts(131,32): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+__tests__/api/admin/ressources.test.ts(145,19): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+__tests__/api/admin/ressources.test.ts(165,13): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+__tests__/api/admin/ressources.test.ts(172,32): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+__tests__/api/ressources/download.test.ts(58,20): error TS2304: Cannot find name 'NextRequest'.
+__tests__/api/ressources/download.test.ts(63,25): error TS2304: Cannot find name 'NextRequest'.
+__tests__/api/ressources/download.test.ts(76,13): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+__tests__/api/ressources/download.test.ts(85,13): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+__tests__/api/ressources/download.test.ts(122,19): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+__tests__/api/ressources/download.test.ts(133,13): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+__tests__/api/ressources/download.test.ts(142,13): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+__tests__/api/ressources/download.test.ts(168,13): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+__tests__/api/ressources/download.test.ts(194,13): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+__tests__/api/ressources/download.test.ts(224,13): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+__tests__/api/ressources/download.test.ts(245,13): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+__tests__/api/ressources/download.test.ts(254,13): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+__tests__/components/bureau/ContentPreview.test.tsx(18,50): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Matchers<void, HTMLElement | null>'.
+__tests__/components/bureau/ContentPreview.test.tsx(23,44): error TS2339: Property 'toBeInTheDocument' does not exist on type 'JestMatchers<HTMLElement>'.
+__tests__/components/bureau/ContentPreview.test.tsx(24,51): error TS2339: Property 'toBeInTheDocument' does not exist on type 'JestMatchers<HTMLElement>'.
+__tests__/components/bureau/ContentPreview.test.tsx(29,43): error TS2339: Property 'toBeInTheDocument' does not exist on type 'JestMatchers<HTMLElement>'.
+__tests__/components/bureau/ContentPreview.test.tsx(30,45): error TS2339: Property 'toBeInTheDocument' does not exist on type 'JestMatchers<HTMLElement>'.
+__tests__/components/bureau/ContentPreview.test.tsx(36,18): error TS2339: Property 'toBeInTheDocument' does not exist on type 'JestMatchers<HTMLElement>'.
+__tests__/components/bureau/ContentPreview.test.tsx(37,18): error TS2339: Property 'toHaveAttribute' does not exist on type 'JestMatchers<HTMLElement>'.
+__tests__/components/bureau/ContentPreview.test.tsx(43,19): error TS2339: Property 'toBeInTheDocument' does not exist on type 'JestMatchers<HTMLElement>'.
+__tests__/components/bureau/ContentPreview.test.tsx(44,19): error TS2339: Property 'toHaveAttribute' does not exist on type 'JestMatchers<HTMLElement>'.
+__tests__/components/bureau/ContentPreview.test.tsx(76,53): error TS2339: Property 'toBeInTheDocument' does not exist on type 'JestMatchers<HTMLElement>'.
+__tests__/components/bureau/ContentPreview.test.tsx(86,59): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Matchers<void, HTMLElement | null>'.
+__tests__/components/ui/Badge.test.tsx(8,44): error TS2339: Property 'toBeInTheDocument' does not exist on type 'JestMatchers<HTMLElement>'.
+__tests__/components/ui/Badge.test.tsx(14,19): error TS2339: Property 'toHaveClass' does not exist on type 'JestMatchers<ChildNode | null>'.
+__tests__/components/ui/Badge.test.tsx(20,19): error TS2339: Property 'toHaveClass' does not exist on type 'JestMatchers<ChildNode | null>'.
+__tests__/components/ui/Badge.test.tsx(25,35): error TS2339: Property 'toHaveClass' does not exist on type 'JestMatchers<ChildNode | null>'.
+__tests__/components/ui/Badge.test.tsx(28,35): error TS2339: Property 'toHaveClass' does not exist on type 'JestMatchers<ChildNode | null>'.
+__tests__/components/ui/Badge.test.tsx(31,35): error TS2339: Property 'toHaveClass' does not exist on type 'JestMatchers<ChildNode | null>'.
+__tests__/components/ui/Badge.test.tsx(34,35): error TS2339: Property 'toHaveClass' does not exist on type 'JestMatchers<ChildNode | null>'.
+__tests__/components/ui/Badge.test.tsx(40,19): error TS2339: Property 'toHaveClass' does not exist on type 'JestMatchers<ChildNode | null>'.
+__tests__/lib/rbac.test.ts(9,3): error TS2724: '"@/lib/rbac"' has no exported member named 'canCreateVote'. Did you mean 'canCreateEvent'?
+__tests__/lib/rbac.test.ts(10,3): error TS2305: Module '"@/lib/rbac"' has no exported member 'canViewDetailedVotes'.
+__tests__/lib/rbac.test.ts(66,27): error TS2345: Argument of type '{ roleSysteme: RoleSysteme; id: string; email: string; member: { id: string; affectations: never[]; }; }' is not assignable to parameter of type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }'.
+  Type '{ roleSysteme: RoleSysteme; id: string; email: string; member: { id: string; affectations: never[]; }; }' is missing the following properties from type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }': passwordHash, isActive, lastLogin, createdAt, updatedAt
+__tests__/lib/rbac.test.ts(70,27): error TS2345: Argument of type '{ id: string; email: string; roleSysteme: RoleSysteme; member: { id: string; affectations: never[]; }; }' is not assignable to parameter of type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }'.
+  Type '{ id: string; email: string; roleSysteme: RoleSysteme; member: { id: string; affectations: never[]; }; }' is missing the following properties from type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }': passwordHash, isActive, lastLogin, createdAt, updatedAt
+__tests__/lib/rbac.test.ts(72,27): error TS2345: Argument of type '{ roleSysteme: RoleSysteme; id: string; email: string; member: { id: string; affectations: never[]; }; }' is not assignable to parameter of type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }'.
+  Type '{ roleSysteme: RoleSysteme; id: string; email: string; member: { id: string; affectations: never[]; }; }' is missing the following properties from type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }': passwordHash, isActive, lastLogin, createdAt, updatedAt
+__tests__/lib/rbac.test.ts(79,22): error TS2345: Argument of type '{ roleSysteme: RoleSysteme; id: string; email: string; member: { id: string; affectations: never[]; }; }' is not assignable to parameter of type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }'.
+  Type '{ roleSysteme: RoleSysteme; id: string; email: string; member: { id: string; affectations: never[]; }; }' is missing the following properties from type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }': passwordHash, isActive, lastLogin, createdAt, updatedAt
+__tests__/lib/rbac.test.ts(84,22): error TS2345: Argument of type '{ roleSysteme: RoleSysteme; id: string; email: string; member: { id: string; affectations: never[]; }; }' is not assignable to parameter of type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }'.
+  Type '{ roleSysteme: RoleSysteme; id: string; email: string; member: { id: string; affectations: never[]; }; }' is missing the following properties from type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }': passwordHash, isActive, lastLogin, createdAt, updatedAt
+__tests__/lib/rbac.test.ts(88,22): error TS2345: Argument of type '{ id: string; email: string; roleSysteme: RoleSysteme; member: { id: string; affectations: never[]; }; }' is not assignable to parameter of type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }'.
+  Type '{ id: string; email: string; roleSysteme: RoleSysteme; member: { id: string; affectations: never[]; }; }' is missing the following properties from type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }': passwordHash, isActive, lastLogin, createdAt, updatedAt
+__tests__/lib/rbac.test.ts(139,39): error TS2345: Argument of type '{ roleSysteme: RoleSysteme; id: string; email: string; member: { id: string; affectations: never[]; }; }' is not assignable to parameter of type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }'.
+  Type '{ roleSysteme: RoleSysteme; id: string; email: string; member: { id: string; affectations: never[]; }; }' is missing the following properties from type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }': passwordHash, isActive, lastLogin, createdAt, updatedAt
+__tests__/lib/rbac.test.ts(168,39): error TS2345: Argument of type '{ roleSysteme: RoleSysteme; id: string; email: string; member: { id: string; affectations: never[]; }; }' is not assignable to parameter of type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }'.
+  Type '{ roleSysteme: RoleSysteme; id: string; email: string; member: { id: string; affectations: never[]; }; }' is missing the following properties from type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }': passwordHash, isActive, lastLogin, createdAt, updatedAt
+__tests__/lib/rbac.test.ts(173,39): error TS2345: Argument of type '{ id: string; email: string; roleSysteme: RoleSysteme; member: { id: string; affectations: never[]; }; }' is not assignable to parameter of type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }'.
+  Type '{ id: string; email: string; roleSysteme: RoleSysteme; member: { id: string; affectations: never[]; }; }' is missing the following properties from type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }': passwordHash, isActive, lastLogin, createdAt, updatedAt
+__tests__/workflows/content-approval.test.ts(15,36): error TS2307: Cannot find module '@/lib/notifications' or its corresponding type declarations.
+__tests__/workflows/content-approval.test.ts(87,9): error TS2322: Type '{ type: string; titre: string; contenu: string; visibiliteCible: string; auteurPosteId: string; mandatId: string; statutWorkflow: string; }' is not assignable to type '(Without<ContentCreateInput, ContentUncheckedCreateInput> & ContentUncheckedCreateInput) | (Without<...> & ContentCreateInput)'.
+  Type '{ type: string; titre: string; contenu: string; visibiliteCible: string; auteurPosteId: string; mandatId: string; statutWorkflow: string; }' is not assignable to type 'Without<ContentCreateInput, ContentUncheckedCreateInput> & ContentUncheckedCreateInput'.
+    Type '{ type: string; titre: string; contenu: string; visibiliteCible: string; auteurPosteId: string; mandatId: string; statutWorkflow: string; }' is not assignable to type 'ContentUncheckedCreateInput'.
+      Types of property 'type' are incompatible.
+        Type 'string' is not assignable to type 'ContentType'.
+__tests__/workflows/content-approval.test.ts(181,49): error TS2345: Argument of type '{ member: { affectations: { posteId: string; }[]; }; id: string; roleSysteme: string; }' is not assignable to parameter of type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }'.
+  Type '{ member: { affectations: { posteId: string; }[]; }; id: string; roleSysteme: string; }' is missing the following properties from type '{ id: string; email: string; passwordHash: string; roleSysteme: RoleSysteme; isActive: boolean; lastLogin: Date | null; createdAt: Date; updatedAt: Date; }': email, passwordHash, isActive, lastLogin, and 2 more.
+middleware.ts(6,10): error TS2305: Module '"next-auth/jwt"' has no exported member 'getToken'.
+prisma/seed-citations.ts(132,13): error TS2353: Object literal may only specify known properties, and 'citation' does not exist in type '(Without<PresidentCitationCreateInput, PresidentCitationUncheckedCreateInput> & PresidentCitationUncheckedCreateInput) | (Without<...> & PresidentCitationCreateInput)'.
+prisma/seed-citations.ts(152,13): error TS2353: Object literal may only specify known properties, and 'presidentId' does not exist in type 'PresidentCitationWhereInput'.
+prisma/seed-citations.ts(160,15): error TS2353: Object literal may only specify known properties, and 'citation' does not exist in type '(Without<PresidentCitationCreateInput, PresidentCitationUncheckedCreateInput> & PresidentCitationUncheckedCreateInput) | (Without<...> & PresidentCitationCreateInput)'.
+prisma/seed-citations.ts(176,16): error TS2353: Object literal may only specify known properties, and 'isPublished' does not exist in type 'PresidentCitationWhereInput'.
+src/app/(app)/bureau/contents/page.tsx(191,9): error TS2322: Type '({ mandat: { id: string; createdAt: Date; updatedAt: Date; titre: string; statut: StatutMandat; dateDebut: Date; dateFin: Date; pvDocumentUrl: string | null; }; auteurPoste: { ...; }; approvedBy: { ...; } | null; } & { ...; })[]' is not assignable to type 'Content[]'.
+  Type '{ mandat: { id: string; createdAt: Date; updatedAt: Date; titre: string; statut: StatutMandat; dateDebut: Date; dateFin: Date; pvDocumentUrl: string | null; }; auteurPoste: { ...; }; approvedBy: { ...; } | null; } & { ...; }' is not assignable to type 'Content'.
+    Types of property 'approvedBy' are incompatible.
+      Type '{ email: string; } | null' is not assignable to type '{ id: string; email: string; } | null | undefined'.
+        Property 'id' is missing in type '{ email: string; }' but required in type '{ id: string; email: string; }'.
+src/app/(app)/bureau/page.tsx(54,9): error TS2353: Object literal may only specify known properties, and 'createdByPosteId' does not exist in type 'ProjetWhereInput'.
+src/app/(app)/bureau/projets/page.tsx(48,7): error TS2353: Object literal may only specify known properties, and 'createdByMemberId' does not exist in type 'ProjetWhereInput'.
+src/app/(app)/super-admin/affectations/page.tsx(350,11): error TS2322: Type '"edit"' is not assignable to type '"outline"'.
+src/app/(app)/super-admin/affectations/page.tsx(370,11): error TS2322: Type '"edit"' is not assignable to type '"outline"'.
+src/app/(app)/super-admin/affectations/page.tsx(392,9): error TS2322: Type '"delete"' is not assignable to type '"outline"'.
+src/app/(app)/super-admin/audit-logs/page.tsx(329,9): error TS2322: Type '(log: AuditLog) => ({ label: string; onClick: () => void; variant: "view"; icon: JSX.Element; disabled?: undefined; } | { label: string; onClick: () => void; variant: "delete"; icon: JSX.Element; disabled: boolean; })[]' is not assignable to type '(item: AuditLog) => { label: string; onClick: () => void; variant?: "default" | "destructive" | "outline" | undefined; icon?: ReactNode; }[]'.
+  Type '({ label: string; onClick: () => void; variant: "view"; icon: Element; disabled?: undefined; } | { label: string; onClick: () => void; variant: "delete"; icon: Element; disabled: boolean; })[]' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "destructive" | "outline" | undefined; icon?: ReactNode; }[]'.
+    Type '{ label: string; onClick: () => void; variant: "view"; icon: Element; disabled?: undefined; } | { label: string; onClick: () => void; variant: "delete"; icon: Element; disabled: boolean; }' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "destructive" | "outline" | undefined; icon?: ReactNode; }'.
+      Type '{ label: string; onClick: () => void; variant: "view"; icon: JSX.Element; disabled?: undefined; }' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "destructive" | "outline" | undefined; icon?: ReactNode; }'.
+        Types of property 'variant' are incompatible.
+          Type '"view"' is not assignable to type '"default" | "destructive" | "outline" | undefined'.
+src/app/(app)/super-admin/mandats/page.tsx(323,9): error TS2322: Type '(mandat: Mandat) => ({ label: string; onClick: (() => void) | undefined; variant: "outline" | "edit"; icon: JSX.Element; disabled: boolean; className: string; title: string | undefined; } | { ...; } | { ...; })[]' is not assignable to type '(item: Mandat) => { label: string; onClick: () => void; variant?: "default" | "destructive" | "outline" | undefined; icon?: ReactNode; }[]'.
+  Type '({ label: string; onClick: (() => void) | undefined; variant: "outline" | "edit"; icon: Element; disabled: boolean; className: string; title: string | undefined; } | { label: string; ... 5 more ...; title?: undefined; } | { ...; })[]' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "destructive" | "outline" | undefined; icon?: ReactNode; }[]'.
+    Type '{ label: string; onClick: (() => void) | undefined; variant: "outline" | "edit"; icon: Element; disabled: boolean; className: string; title: string | undefined; } | { label: string; ... 5 more ...; title?: undefined; } | { ...; }' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "destructive" | "outline" | undefined; icon?: ReactNode; }'.
+      Type '{ label: string; onClick: (() => void) | undefined; variant: "outline" | "edit"; icon: JSX.Element; disabled: boolean; className: string; title: string | undefined; }' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "destructive" | "outline" | undefined; icon?: ReactNode; }'.
+        Types of property 'onClick' are incompatible.
+          Type '(() => void) | undefined' is not assignable to type '() => void'.
+            Type 'undefined' is not assignable to type '() => void'.
+src/app/(app)/super-admin/postes/nouveau/page.tsx(33,5): error TS2322: Type 'Resolver<{ nom: string; description?: string | undefined; estBureau?: boolean | undefined; estActif?: boolean | undefined; }, any, { nom: string; estBureau: boolean; estActif: boolean; description?: string | undefined; }>' is not assignable to type 'Resolver<{ nom: string; estBureau: boolean; estActif: boolean; description?: string | undefined; }, any, { nom: string; estBureau: boolean; estActif: boolean; description?: string | undefined; }>'.
+  Types of parameters 'options' and 'options' are incompatible.
+    Type 'ResolverOptions<{ nom: string; estBureau: boolean; estActif: boolean; description?: string | undefined; }>' is not assignable to type 'ResolverOptions<{ nom: string; description?: string | undefined; estBureau?: boolean | undefined; estActif?: boolean | undefined; }>'.
+      Type 'boolean | undefined' is not assignable to type 'boolean'.
+        Type 'undefined' is not assignable to type 'boolean'.
+src/app/(app)/super-admin/postes/nouveau/page.tsx(87,36): error TS2345: Argument of type '(data: PosteFormData) => Promise<void>' is not assignable to parameter of type 'SubmitHandler<TFieldValues>'.
+  Types of parameters 'data' and 'data' are incompatible.
+    Type 'TFieldValues' is not assignable to type '{ nom: string; estBureau: boolean; estActif: boolean; description?: string | undefined; }'.
+      Type 'FieldValues' is missing the following properties from type '{ nom: string; estBureau: boolean; estActif: boolean; description?: string | undefined; }': nom, estBureau, estActif
+src/app/(app)/super-admin/postes/page.tsx(298,9): error TS2322: Type '(poste: Poste) => ({ label: string; onClick: () => void; variant: "edit"; icon: JSX.Element; } | { label: string; onClick: () => void; variant: "view"; icon: JSX.Element; })[]' is not assignable to type '(item: Poste) => { label: string; onClick: () => void; variant?: "default" | "destructive" | "outline" | undefined; icon?: ReactNode; }[]'.
+  Type '({ label: string; onClick: () => void; variant: "edit"; icon: Element; } | { label: string; onClick: () => void; variant: "view"; icon: Element; })[]' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "destructive" | "outline" | undefined; icon?: ReactNode; }[]'.
+    Type '{ label: string; onClick: () => void; variant: "edit"; icon: Element; } | { label: string; onClick: () => void; variant: "view"; icon: Element; }' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "destructive" | "outline" | undefined; icon?: ReactNode; }'.
+      Type '{ label: string; onClick: () => void; variant: "edit"; icon: JSX.Element; }' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "destructive" | "outline" | undefined; icon?: ReactNode; }'.
+        Types of property 'variant' are incompatible.
+          Type '"edit"' is not assignable to type '"default" | "destructive" | "outline" | undefined'.
+src/app/(app)/super-admin/users/page.tsx(280,9): error TS2322: Type '"outline"' is not assignable to type '"edit"'.
+src/app/(app)/super-admin/users/page.tsx(287,9): error TS2322: Type '"outline"' is not assignable to type '"edit"'.
+src/app/(app)/super-admin/users/page.tsx(296,7): error TS2322: Type '"delete"' is not assignable to type '"edit"'.
+src/app/(app)/super-admin/users/page.tsx(401,9): error TS2322: Type '(user: User) => { label: string; onClick: () => void; variant: "edit"; icon: JSX.Element; }[]' is not assignable to type '(item: User) => { label: string; onClick: () => void; variant?: "default" | "destructive" | "outline" | undefined; icon?: ReactNode; }[]'.
+  Type '{ label: string; onClick: () => void; variant: "edit"; icon: Element; }[]' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "destructive" | "outline" | undefined; icon?: ReactNode; }[]'.
+    Type '{ label: string; onClick: () => void; variant: "edit"; icon: JSX.Element; }' is not assignable to type '{ label: string; onClick: () => void; variant?: "default" | "destructive" | "outline" | undefined; icon?: ReactNode; }'.
+      Types of property 'variant' are incompatible.
+        Type '"edit"' is not assignable to type '"default" | "destructive" | "outline" | undefined'.
+src/app/admin/approbations/ApprobationsPageClient.tsx(248,9): error TS2719: Type 'Content[]' is not assignable to type 'Content[]'. Two different types with this name exist, but they are unrelated.
+  Type 'Content' is missing the following properties from type 'Content': type, contenu, approvedBy, rejectionReason
+src/app/admin/evenements/[id]/edit/page.tsx(28,34): error TS2339: Property 'evenement' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/admin/evenements/page.tsx(36,12): error TS2339: Property 'evenement' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/admin/evenements/page.tsx(41,12): error TS2339: Property 'evenement' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/admin/evenements/page.tsx(87,36): error TS7006: Parameter 'evenement' implicitly has an 'any' type.
+src/app/admin/formations/[id]/edit/page.tsx(28,34): error TS2339: Property 'formation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/admin/formations/page.tsx(36,12): error TS2339: Property 'formation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/admin/formations/page.tsx(41,12): error TS2339: Property 'formation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/admin/formations/page.tsx(86,36): error TS7006: Parameter 'formation' implicitly has an 'any' type.
+src/app/admin/membres/MembresPageClient.tsx(175,70): error TS2339: Property 'enAttente' does not exist on type 'Stats'.
+src/app/admin/membres/page.tsx(86,84): error TS2339: Property 'role' does not exist on type '{ id: string; email: string; roleSysteme: RoleSysteme; }'.
+src/app/admin/membres/page.tsx(98,7): error TS2322: Type '{ canAct: boolean; user: { id: string; email: string; roleSysteme: RoleSysteme; }; id: string; createdAt: Date; updatedAt: Date; prenom: string; nom: string; telephone: string | null; ... 6 more ...; dateAdhesion: Date; }[]' is not assignable to type 'Member[]'.
+  Property 'memberType' is missing in type '{ canAct: boolean; user: { id: string; email: string; roleSysteme: $Enums.RoleSysteme; }; id: string; createdAt: Date; updatedAt: Date; prenom: string; nom: string; telephone: string | null; ... 6 more ...; dateAdhesion: Date; }' but required in type 'Member'.
+src/app/admin/ressources/[id]/edit/page.tsx(29,34): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/admin/ressources/page.tsx(24,35): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/admin/ressources/page.tsx(69,36): error TS7006: Parameter 'ressource' implicitly has an 'any' type.
+src/app/api/admin/approbations/[contentId]/history/route.ts(76,22): error TS2345: Argument of type '{ action: "APPROVE"; date: any; user: any; reason: null; }' is not assignable to parameter of type '{ action: $Enums.AuditAction; date: Date; user: { email: string; }; reason: any; beforeData: JsonValue; afterData: JsonValue; }'.
+  Type '{ action: "APPROVE"; date: any; user: any; reason: null; }' is missing the following properties from type '{ action: AuditAction; date: Date; user: { email: string; }; reason: any; beforeData: JsonValue; afterData: JsonValue; }': beforeData, afterData
+src/app/api/admin/contacts/[id]/route.ts(107,54): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/app/api/admin/demandes/adhesions/[id]/route.ts(69,54): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/app/api/admin/demandes/adhesions/route.ts(120,54): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/app/api/admin/demandes/dons/[id]/route.ts(63,54): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/app/api/admin/demandes/partenariats/[id]/route.ts(89,54): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/app/api/admin/evenements/[id]/route.ts(17,37): error TS2339: Property 'evenement' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/admin/evenements/[id]/route.ts(33,36): error TS2339: Property 'evenement' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/admin/evenements/[id]/route.ts(53,18): error TS2339: Property 'evenement' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/admin/evenements/route.ts(21,35): error TS2339: Property 'evenement' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/admin/evenements/route.ts(30,36): error TS2339: Property 'evenement' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/admin/formations/[id]/route.ts(18,37): error TS2339: Property 'formation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/admin/formations/[id]/route.ts(34,36): error TS2339: Property 'formation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/admin/formations/[id]/route.ts(54,18): error TS2339: Property 'formation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/admin/members/[id]/reactivate/route.ts(20,21): error TS2353: Object literal may only specify known properties, and 'role' does not exist in type 'UserSelect<DefaultArgs>'.
+src/app/api/admin/members/[id]/reactivate/route.ts(30,49): error TS2339: Property 'user' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; prenom: string; nom: string; telephone: string | null; ville: string | null; pays: string | null; userId: string; photoUrl: string | null; bio: string | null; statutMembre: StatutMembre; dateAdhesion: Date; }'.
+src/app/api/admin/members/[id]/reactivate/route.ts(39,15): error TS2353: Object literal may only specify known properties, and 'status' does not exist in type '(Without<MemberUpdateInput, MemberUncheckedUpdateInput> & MemberUncheckedUpdateInput) | (Without<...> & MemberUpdateInput)'.
+src/app/api/admin/members/[id]/refuse/route.ts(22,34): error TS2353: Object literal may only specify known properties, and 'role' does not exist in type 'UserSelect<DefaultArgs>'.
+src/app/api/admin/members/[id]/refuse/route.ts(32,49): error TS2339: Property 'user' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; prenom: string; nom: string; telephone: string | null; ville: string | null; pays: string | null; userId: string; photoUrl: string | null; bio: string | null; statutMembre: StatutMembre; dateAdhesion: Date; }'.
+src/app/api/admin/members/[id]/refuse/route.ts(44,15): error TS2353: Object literal may only specify known properties, and 'status' does not exist in type '(Without<MemberUpdateInput, MemberUncheckedUpdateInput> & MemberUncheckedUpdateInput) | (Without<...> & MemberUpdateInput)'.
+src/app/api/admin/members/[id]/refuse/route.ts(49,18): error TS2339: Property 'user' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; prenom: string; nom: string; telephone: string | null; ville: string | null; pays: string | null; userId: string; photoUrl: string | null; bio: string | null; statutMembre: StatutMembre; dateAdhesion: Date; }'.
+src/app/api/admin/members/[id]/suspend/route.ts(20,21): error TS2353: Object literal may only specify known properties, and 'role' does not exist in type 'UserSelect<DefaultArgs>'.
+src/app/api/admin/members/[id]/suspend/route.ts(30,49): error TS2339: Property 'user' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; prenom: string; nom: string; telephone: string | null; ville: string | null; pays: string | null; userId: string; photoUrl: string | null; bio: string | null; statutMembre: StatutMembre; dateAdhesion: Date; }'.
+src/app/api/admin/members/[id]/suspend/route.ts(39,15): error TS2353: Object literal may only specify known properties, and 'status' does not exist in type '(Without<MemberUpdateInput, MemberUncheckedUpdateInput> & MemberUncheckedUpdateInput) | (Without<...> & MemberUpdateInput)'.
+src/app/api/admin/members/[id]/validate/route.ts(22,34): error TS2353: Object literal may only specify known properties, and 'role' does not exist in type 'UserSelect<DefaultArgs>'.
+src/app/api/admin/members/[id]/validate/route.ts(32,49): error TS2339: Property 'user' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; prenom: string; nom: string; telephone: string | null; ville: string | null; pays: string | null; userId: string; photoUrl: string | null; bio: string | null; statutMembre: StatutMembre; dateAdhesion: Date; }'.
+src/app/api/admin/members/[id]/validate/route.ts(47,16): error TS2353: Object literal may only specify known properties, and 'numeroMembre' does not exist in type 'MemberWhereUniqueInput'.
+src/app/api/admin/members/[id]/validate/route.ts(58,9): error TS2353: Object literal may only specify known properties, and 'status' does not exist in type '(Without<MemberUpdateInput, MemberUncheckedUpdateInput> & MemberUncheckedUpdateInput) | (Without<...> & MemberUpdateInput)'.
+src/app/api/admin/members/[id]/validate/route.ts(66,18): error TS2339: Property 'user' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; prenom: string; nom: string; telephone: string | null; ville: string | null; pays: string | null; userId: string; photoUrl: string | null; bio: string | null; statutMembre: StatutMembre; dateAdhesion: Date; }'.
+src/app/api/admin/members/[id]/validate/route.ts(72,39): error TS2339: Property 'dateExpiration' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; prenom: string; nom: string; telephone: string | null; ville: string | null; pays: string | null; userId: string; photoUrl: string | null; bio: string | null; statutMembre: StatutMembre; dateAdhesion: Date; }'.
+src/app/api/admin/membres/[id]/route.ts(94,54): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/app/api/admin/ressources/[id]/route.ts(25,36): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/admin/ressources/[id]/route.ts(51,18): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/admin/ressources/route.ts(47,36): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/app/profil/route.ts(60,54): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/app/api/auth/[...nextauth]/route.ts(5,28): error TS2349: This expression is not callable.
+  Type 'typeof import("next-auth")' has no call signatures.
+src/app/api/bureau/evenements/route.ts(89,54): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/app/api/bureau/projets/route.ts(83,54): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/app/api/bureau/projets/route.ts(130,15): error TS2353: Object literal may only specify known properties, and 'subventions' does not exist in type 'ProjetCountOutputTypeSelect<DefaultArgs>'.
+src/app/api/evenements/[slug]/inscription/status/route.ts(35,36): error TS2339: Property 'evenement' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/evenements/[slug]/inscription/status/route.ts(43,38): error TS2339: Property 'inscriptionEvenement' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/evenements/[slug]/route.ts(14,36): error TS2339: Property 'evenement' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/evenements/route.ts(18,25): error TS2724: '"/home/junior/Documents/client_projects/agcm-project/agcm/node_modules/.prisma/client/index".Prisma' has no exported member named 'EvenementWhereInput'. Did you mean 'EventWhereInput'?
+src/app/api/evenements/route.ts(33,14): error TS2339: Property 'evenement' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/evenements/route.ts(34,14): error TS2339: Property 'evenement' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/formations/[slug]/inscription/route.ts(5,10): error TS2305: Module '"@prisma/client"' has no exported member 'InscriptionStatus'.
+src/app/api/formations/[slug]/inscription/route.ts(24,50): error TS2339: Property 'reset' does not exist on type 'RateLimitResult'.
+src/app/api/formations/[slug]/inscription/route.ts(34,50): error TS2339: Property 'reset' does not exist on type 'RateLimitResult'.
+src/app/api/formations/[slug]/inscription/route.ts(35,55): error TS2339: Property 'reset' does not exist on type 'RateLimitResult'.
+src/app/api/formations/[slug]/inscription/route.ts(52,13): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'UserSelect<DefaultArgs>'.
+src/app/api/formations/[slug]/inscription/route.ts(62,16): error TS2339: Property 'status' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; prenom: string; nom: string; telephone: string | null; ville: string | null; pays: string | null; userId: string; photoUrl: string | null; bio: string | null; statutMembre: StatutMembre; dateAdhesion: Date; }'.
+src/app/api/formations/[slug]/inscription/route.ts(67,36): error TS2339: Property 'formation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/formations/[slug]/inscription/route.ts(105,46): error TS2339: Property 'inscriptionFormation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/formations/[slug]/inscription/route.ts(116,22): error TS2339: Property 'inscriptionFormation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/formations/[slug]/inscription/route.ts(129,8): error TS7006: Parameter 'ins' implicitly has an 'any' type.
+src/app/api/formations/[slug]/inscription/route.ts(142,38): error TS2339: Property 'inscriptionFormation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/formations/[slug]/inscription/route.ts(151,58): error TS2339: Property 'inscriptionFormation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/formations/[slug]/inscription/route.ts(158,18): error TS2339: Property 'formation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/formations/[slug]/inscription/route.ts(166,16): error TS2339: Property 'user' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; prenom: string; nom: string; telephone: string | null; ville: string | null; pays: string | null; userId: string; photoUrl: string | null; bio: string | null; statutMembre: StatutMembre; dateAdhesion: Date; }'.
+src/app/api/formations/[slug]/inscription/route.ts(183,20): error TS2339: Property 'user' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; prenom: string; nom: string; telephone: string | null; ville: string | null; pays: string | null; userId: string; photoUrl: string | null; bio: string | null; statutMembre: StatutMembre; dateAdhesion: Date; }'.
+src/app/api/formations/[slug]/inscription/route.ts(233,36): error TS2339: Property 'formation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/formations/[slug]/inscription/route.ts(242,38): error TS2339: Property 'inscriptionFormation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/formations/[slug]/inscription/route.ts(259,18): error TS2339: Property 'inscriptionFormation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/formations/[slug]/inscription/route.ts(266,60): error TS2339: Property 'inscriptionFormation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/formations/[slug]/inscription/route.ts(273,20): error TS2339: Property 'formation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/formations/[slug]/inscription/route.ts(281,48): error TS2339: Property 'inscriptionFormation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/formations/[slug]/inscription/route.ts(304,22): error TS2339: Property 'inscriptionFormation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/formations/[slug]/inscription/status/route.ts(28,36): error TS2339: Property 'formation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/formations/[slug]/inscription/status/route.ts(36,38): error TS2339: Property 'inscriptionFormation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/formations/[slug]/route.ts(10,36): error TS2339: Property 'formation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/formations/route.ts(19,25): error TS2694: Namespace '"/home/junior/Documents/client_projects/agcm-project/agcm/node_modules/.prisma/client/index".Prisma' has no exported member 'FormationWhereInput'.
+src/app/api/formations/route.ts(35,14): error TS2339: Property 'formation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/formations/route.ts(36,14): error TS2339: Property 'formation' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/members/register/route.ts(47,13): error TS2353: Object literal may only specify known properties, and 'numeroMembre' does not exist in type '(Without<MemberCreateWithoutUserInput, MemberUncheckedCreateWithoutUserInput> & MemberUncheckedCreateWithoutUserInput) | (Without<...> & MemberCreateWithoutUserInput)'.
+src/app/api/members/register/route.ts(79,70): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/app/api/public/adhesion/route.ts(51,54): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/app/api/public/projets/[slug]/route.ts(41,9): error TS2353: Object literal may only specify known properties, and 'subventions' does not exist in type 'ProjetInclude<DefaultArgs>'.
+src/app/api/ressources/[id]/download/route.ts(10,35): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/ressources/[id]/download/route.ts(34,29): error TS2339: Property 'status' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; prenom: string; nom: string; telephone: string | null; ville: string | null; pays: string | null; userId: string; photoUrl: string | null; bio: string | null; statutMembre: StatutMembre; dateAdhesion: Date; }'.
+src/app/api/ressources/[id]/download/route.ts(46,18): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/ressources/[id]/route.ts(8,35): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/ressources/route.ts(18,25): error TS2694: Namespace '"/home/junior/Documents/client_projects/agcm-project/agcm/node_modules/.prisma/client/index".Prisma' has no exported member 'ResourceWhereInput'.
+src/app/api/ressources/route.ts(34,14): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/ressources/route.ts(35,14): error TS2339: Property 'resource' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/api/super-admin/affectations/route.ts(127,54): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/app/api/super-admin/mandats/[id]/route.ts(37,13): error TS2353: Object literal may only specify known properties, and 'votes' does not exist in type 'MandatCountOutputTypeSelect<DefaultArgs>'.
+src/app/api/super-admin/mandats/[id]/route.ts(172,54): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/app/api/super-admin/mandats/route.ts(196,54): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/app/api/super-admin/postes/route.ts(131,54): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/app/api/super-admin/users/[id]/route.ts(111,54): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/app/api/super-admin/users/[id]/suspend/route.ts(94,54): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/app/api/super-admin/users/route.ts(160,54): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/components/AGCMLanding.tsx(339,35): error TS2322: Type '{ maxVisible: number; }' is not assignable to type 'IntrinsicAttributes'.
+  Property 'maxVisible' does not exist on type 'IntrinsicAttributes'.
+src/components/admin/ContentHistory.tsx(82,31): error TS2352: Conversion of type 'Date' to type 'string' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/components/dashboard/StatusCard.tsx(48,72): error TS2345: Argument of type 'Date | null | undefined' is not assignable to parameter of type 'Date | null'.
+  Type 'undefined' is not assignable to type 'Date | null'.
+src/components/layout/Header.tsx(101,27): error TS2322: Type 'User | undefined' is not assignable to type '{ name?: string | null | undefined; email?: string | null | undefined; role?: string | undefined; }'.
+  Type 'undefined' is not assignable to type '{ name?: string | null | undefined; email?: string | null | undefined; role?: string | undefined; }'.
+src/components/layout/Header.tsx(160,9): error TS2322: Type 'import("/home/junior/Documents/client_projects/agcm-project/agcm/node_modules/@auth/core/types").Session | null' is not assignable to type 'import("next-auth").Session | null'.
+  Type 'import("/home/junior/Documents/client_projects/agcm-project/agcm/node_modules/@auth/core/types").Session' is not assignable to type 'import("next-auth").Session'.
+    Types of property 'user' are incompatible.
+      Type 'User | undefined' is not assignable to type '{ id: string; email: string; name: string; role: string; memberId: string | null; }'.
+        Type 'undefined' is not assignable to type '{ id: string; email: string; name: string; role: string; memberId: string | null; }'.
+src/components/ressources/RessourceCard.tsx(2,10): error TS2305: Module '"@prisma/client"' has no exported member 'ResourceType'.
+src/components/ressources/RessourceCard.tsx(2,24): error TS2305: Module '"@prisma/client"' has no exported member 'ResourceCategorie'.
+src/lib/auth.ts(2,15): error TS2305: Module '"next-auth"' has no exported member 'NextAuthConfig'.
+src/lib/auth.ts(80,17): error TS7031: Binding element 'token' implicitly has an 'any' type.
+src/lib/auth.ts(80,24): error TS7031: Binding element 'user' implicitly has an 'any' type.
+src/lib/auth.ts(89,21): error TS7031: Binding element 'session' implicitly has an 'any' type.
+src/lib/auth.ts(89,30): error TS7031: Binding element 'token' implicitly has an 'any' type.
+src/lib/member-number.ts(16,7): error TS2353: Object literal may only specify known properties, and 'numeroMembre' does not exist in type 'MemberWhereInput'.
+src/lib/member-number.ts(21,7): error TS2353: Object literal may only specify known properties, and 'numeroMembre' does not exist in type 'MemberOrderByWithRelationInput | MemberOrderByWithRelationInput[]'.
+src/lib/member-number.ts(28,38): error TS2339: Property 'numeroMembre' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; prenom: string; nom: string; telephone: string | null; ville: string | null; pays: string | null; userId: string; photoUrl: string | null; bio: string | null; statutMembre: StatutMembre; dateAdhesion: Date; }'.
+src/lib/member-number.ts(41,14): error TS2353: Object literal may only specify known properties, and 'numeroMembre' does not exist in type 'MemberWhereUniqueInput'.
+src/lib/role-utils.ts(13,5): error TS1117: An object literal cannot have multiple properties with the same name.
+src/lib/role-utils.ts(14,5): error TS1117: An object literal cannot have multiple properties with the same name.
+src/lib/role-utils.ts(29,5): error TS1117: An object literal cannot have multiple properties with the same name.
+src/lib/role-utils.ts(30,5): error TS1117: An object literal cannot have multiple properties with the same name.
+src/lib/sanitize.ts(16,34): error TS2345: Argument of type 'Window' is not assignable to parameter of type 'WindowLike'.
+  Type 'Window' is missing the following properties from type 'Pick<typeof globalThis, "DocumentFragment" | "HTMLTemplateElement" | "Node" | "Element" | "NodeFilter" | "NamedNodeMap" | "HTMLFormElement" | "DOMParser">': DocumentFragment, HTMLTemplateElement, Node, Element, and 4 more.
+src/lib/ui-utils.ts(47,5): error TS1117: An object literal cannot have multiple properties with the same name.
+src/lib/validators/event.ts(11,31): error TS2339: Property 'max' does not exist on type 'ZodOptional<ZodString>'.
