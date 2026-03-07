@@ -336,7 +336,7 @@ export default function AGCMLanding() {
           <div className="bg-white border border-agcm-400/40 rounded-3xl p-6 shadow-xl lg:col-span-2">
             <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 text-agcm-900"><Users size={18} /> Bureau exécutif</h3>
             <p className="text-agcm-800 text-sm mb-3">Une équipe engagée pour coordonner projets locaux et humanitaires.</p>
-            <BureauSectionCompact maxVisible={2} />
+            <BureauSectionCompact />
           </div>
         </div>
       </section>

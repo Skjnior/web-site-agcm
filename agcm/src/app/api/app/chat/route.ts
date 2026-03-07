@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, message }, { status: 201 });
   } catch (err: any) {
     if (err?.name === 'ZodError') {
-      return NextResponse.json({ error: 'Données invalides', details: err.errors }, { status: 400 });
+      return NextResponse.json({ error: 'Données invalides', details: err.issues }, { status: 400 });
     }
     console.error('Erreur chat POST:', err);
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });

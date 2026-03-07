@@ -34,7 +34,6 @@ export async function GET(
             contents: true,
             projets: true,
             events: true,
-            votes: true,
           },
         },
         affectations: {
@@ -169,7 +168,7 @@ export async function PATCH(
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Données invalides', details: error.errors },
+        { error: 'Données invalides', details: error.issues },
         { status: 400 }
       );
     }

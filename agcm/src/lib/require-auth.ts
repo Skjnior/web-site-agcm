@@ -1,7 +1,7 @@
 // src/lib/require-auth.ts
 // Helpers pour vérifier l'authentification dans les API routes
 
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/lib/auth';
 import { NextResponse } from 'next/server';
 import type { RoleSysteme } from '@prisma/client';
 

@@ -1,7 +1,18 @@
 // lib/email.ts
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend: Resend | null = null;
+
+function getResend(): Resend {
+  if (!resend) {
+    const key = process.env.RESEND_API_KEY;
+    if (!key) {
+      throw new Error('RESEND_API_KEY is required for sending emails');
+    }
+    resend = new Resend(key);
+  }
+  return resend;
+}
 
 type SendEmailOptions = {
   to: string;
@@ -16,7 +27,7 @@ export async function sendEmail({ to, subject, html }: SendEmailOptions) {
       return { success: false, error: 'Email service not configured' };
     }
 
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: process.env.EMAIL_FROM || 'AGCM <noreply@agcm.gn>',
       to,
       subject,

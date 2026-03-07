@@ -14,7 +14,7 @@ const statusLabels: Record<string, { label: string; color: string; bgColor: stri
   RADIE: { label: 'Radié', color: 'text-gray-700', bgColor: 'bg-gray-50' },
 };
 
-function formatDate(date: Date | null) {
+function formatDate(date: Date | null | undefined) {
   if (!date) return 'Non définie';
   return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' }).format(date);
 }

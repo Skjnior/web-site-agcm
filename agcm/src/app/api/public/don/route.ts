@@ -2,6 +2,7 @@
 // Formulaire d'intention de don (visiteur)
 
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { donationIntentSchema } from '@/lib/validators/demandes';
 
@@ -46,9 +47,9 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    if (error instanceof Error && error.name === 'ZodError') {
+    if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Données invalides', details: (error as any).errors },
+        { error: 'Données invalides', details: error.issues },
         { status: 400 }
       );
     }

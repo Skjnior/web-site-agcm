@@ -1,11 +1,11 @@
 // src/lib/auth.ts
-import type { NextAuthConfig } from 'next-auth';
+import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { prisma } from './prisma';
 import { authRateLimit } from './rate-limit';
 
-export const authConfig: NextAuthConfig = {
+export const authConfig = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -77,21 +77,25 @@ export const authConfig: NextAuthConfig = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async jwt({ token, user }: any) {
       if (user) {
-        token.id = user.id;
-        token.role = user.role;
-        token.roleSysteme = (user as any).roleSysteme || user.role; // Ajouter roleSysteme
-        token.memberId = user.memberId;
+        const u = user as { id?: string; role?: string; roleSysteme?: string; memberId?: string };
+        token.id = u.id;
+        token.role = u.role;
+        token.roleSysteme = u.roleSysteme || u.role;
+        token.memberId = u.memberId;
       }
       return token;
     },
-    async session({ session, token }) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async session({ session, token }: any) {
       if (session.user) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string;
-        session.user.roleSysteme = (token.roleSysteme || token.role) as string; // Ajouter roleSysteme
-        session.user.memberId = token.memberId as string | null;
+        const u = session.user as { id?: string; role?: string; roleSysteme?: string; memberId?: string | null };
+        u.id = token.id as string;
+        u.role = token.role as string;
+        u.roleSysteme = (token.roleSysteme || token.role) as string;
+        u.memberId = token.memberId as string | null;
       }
       return session;
     },
@@ -107,3 +111,8 @@ export const authConfig: NextAuthConfig = {
   secret: process.env.NEXTAUTH_SECRET,
   trustHost: true, // Important pour NextAuth v5
 };
+
+// @ts-expect-error NextAuth v5 default export type resolution
+const nextAuth = NextAuth(authConfig);
+export const auth = nextAuth.auth;
+export const handlers = nextAuth.handlers;

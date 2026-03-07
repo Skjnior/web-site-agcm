@@ -1,7 +1,7 @@
 // app/admin/actualites/[id]/edit/page.tsx
 import { Metadata } from 'next';
 import { redirect, notFound } from 'next/navigation';
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import ActualiteForm, { ActualiteFormData } from '@/components/admin/ActualiteForm';
 

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Calendar, Plus, Edit, Eye, Trash2, Search, Filter, X } from 'lucide-react';
-import { DataTable } from '@/components/admin/DataTable';
+import { DataTable } from '@/components/super-admin/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -216,8 +216,8 @@ export default function SuperAdminMandatsPage() {
     return [
       {
         label: canEdit ? 'Modifier' : 'Modifier (indisponible)',
-        onClick: canEdit ? () => router.push(`/admin/mandats/${mandat.id}/edit`) : undefined,
-        variant: canEdit ? ('edit' as const) : ('outline' as const),
+        onClick: canEdit ? () => router.push(`/admin/mandats/${mandat.id}/edit`) : () => {},
+        variant: (canEdit ? 'edit' : 'outline') as 'edit' | 'outline',
         icon: <Edit className="h-4 w-4 mr-2" />,
         disabled: !canEdit,
         className: canEdit ? '' : 'text-gray-400 cursor-not-allowed',

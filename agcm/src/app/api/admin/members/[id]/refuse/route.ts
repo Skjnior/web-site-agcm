@@ -1,13 +1,14 @@
 // app/api/admin/members/[id]/refuse/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { canActOnUser } from '@/lib/permissions';
 import { sendEmail } from '@/lib/email';
 import { getMemberRefusalEmailTemplate } from '@/lib/email-templates';
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user || !['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)) {
@@ -16,10 +17,10 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
     // Récupérer le membre et son rôle
     const member = await prisma.member.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: {
-          select: { email: true, role: true },
+          select: { email: true, roleSysteme: true },
         },
       },
     });
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
 
     // Vérifier les permissions
-    if (!canActOnUser(session.user.role, member.user.role)) {
+    if (!canActOnUser(session.user.role, member.user.roleSysteme)) {
       return NextResponse.json(
         { error: 'Vous n\'avez pas la permission d\'agir sur ce membre' },
         { status: 403 }
@@ -40,8 +41,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
     // Mettre à jour le membre
     const updatedMember = await prisma.member.update({
-      where: { id: params.id },
-      data: { status: 'RADIE' },
+      where: { id },
+      data: { statutMembre: 'RADIE' },
     });
 
     // Envoyer un email de refus au membre

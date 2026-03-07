@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FileText, Eye, Search as SearchIcon, X, Trash2 } from 'lucide-react';
-import { DataTable } from '@/components/admin/DataTable';
+import { DataTable } from '@/components/super-admin/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';

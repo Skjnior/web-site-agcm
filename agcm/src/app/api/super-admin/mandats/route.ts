@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
     const data = mandatCreateSchema.parse(body);
 
     // Si on crée un mandat ACTIF, désactiver les autres
-    let statut: 'ACTIF' | 'EXPIRE' | 'ARCHIVE' = 'ACTIF';
+    const statut: 'ACTIF' | 'EXPIRE' | 'ARCHIVE' = 'ACTIF';
     
     if (statut === 'ACTIF') {
       await prisma.mandat.updateMany({
@@ -193,7 +193,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Données invalides', details: error.errors },
+        { error: 'Données invalides', details: error.issues },
         { status: 400 }
       );
     }

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { UserCheck, Plus, Edit, Eye, X, Trash2, CheckCircle, Search as SearchIcon } from 'lucide-react';
-import { DataTable } from '@/components/admin/DataTable';
+import { DataTable } from '@/components/super-admin/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -330,14 +330,16 @@ export default function SuperAdminAffectationsPage() {
     },
   ];
 
-  const getActions = (affectation: Affectation) => {
+  type ActionItem = { label: string; onClick: () => void; variant?: 'default' | 'destructive' | 'outline' | 'edit' | 'add' | 'delete' | 'view'; icon?: React.ReactNode; disabled?: boolean };
+
+  const getActions = (affectation: Affectation): ActionItem[] => {
     const isPassee = affectation.dateFin && new Date(affectation.dateFin) < new Date();
     
-    const actions = [
+    const actions: ActionItem[] = [
       {
         label: 'Voir détails',
         onClick: () => router.push(`/admin/affectations/${affectation.id}`),
-        variant: 'outline' as const,
+        variant: 'outline',
         icon: <Eye className="h-4 w-4 mr-2" />,
       },
     ];
@@ -347,13 +349,13 @@ export default function SuperAdminAffectationsPage() {
         {
           label: 'Modifier',
           onClick: () => router.push(`/admin/affectations/${affectation.id}/edit`),
-          variant: 'edit' as const,
+          variant: 'edit',
           icon: <Edit className="h-4 w-4 mr-2" />,
         },
         {
           label: inactivating === affectation.id ? 'Inactivation...' : 'Inactiver',
           onClick: () => handleInactiver(affectation),
-          variant: 'outline' as const,
+          variant: 'outline',
           icon: inactivating === affectation.id ? (
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
           ) : (
@@ -367,13 +369,13 @@ export default function SuperAdminAffectationsPage() {
         {
           label: 'Modifier',
           onClick: () => router.push(`/admin/affectations/${affectation.id}/edit`),
-          variant: 'edit' as const,
+          variant: 'edit',
           icon: <Edit className="h-4 w-4 mr-2" />,
         },
         {
           label: activating === affectation.id ? 'Activation...' : 'Activer',
           onClick: () => handleActiver(affectation.id),
-          variant: 'default' as const,
+          variant: 'default',
           icon: activating === affectation.id ? (
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
           ) : (
@@ -389,7 +391,7 @@ export default function SuperAdminAffectationsPage() {
       actions.push({
         label: deleting === affectation.id ? 'Suppression...' : 'Supprimer',
         onClick: () => handleDelete(affectation),
-        variant: 'delete' as const,
+        variant: 'delete',
         icon: deleting === affectation.id ? (
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
         ) : (

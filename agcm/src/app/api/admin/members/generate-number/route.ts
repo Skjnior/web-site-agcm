@@ -1,6 +1,6 @@
 // app/api/admin/members/generate-number/route.ts
 import { NextResponse } from 'next/server';
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/lib/auth';
 import { generateMemberNumber } from '@/lib/member-number';
 
 export async function GET() {

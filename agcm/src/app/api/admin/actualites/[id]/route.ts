@@ -1,10 +1,11 @@
 // app/api/admin/actualites/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user || !['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)) {
@@ -15,7 +16,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
     // Log pour déboguer
     console.log('Updating actualite with data:', {
-      id: params.id,
+      id,
       titre: data.titre,
       imageUrl: data.imageUrl,
       slug: data.slug,
@@ -24,7 +25,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     // Slug check removed as Content uses ID
 
     const actualite = await prisma.content.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...data,
         imagePrincipale: data.imageUrl && data.imageUrl.trim() !== '' ? data.imageUrl : null,
@@ -42,8 +43,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user || !['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)) {
@@ -51,7 +53,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     }
 
     await prisma.content.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ success: true });

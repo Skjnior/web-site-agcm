@@ -13,12 +13,12 @@ const updateDemandeSchema = z.object({
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { error, session } = await requireAdmin();
   if (error) return error;
 
-  const { id } = params;
+  const { id } = await params;
 
   try {
     const body = await request.json();
@@ -86,7 +86,7 @@ export async function PATCH(
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Données invalides', details: error.errors },
+        { error: 'Données invalides', details: error.issues },
         { status: 400 }
       );
     }

@@ -1,7 +1,7 @@
 // app/admin/evenements/[id]/edit/page.tsx
 import { Metadata } from 'next';
 import { redirect, notFound } from 'next/navigation';
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import EvenementForm from '@/components/admin/EvenementForm';
 
@@ -11,10 +11,11 @@ export const metadata: Metadata = {
 };
 
 type EditEvenementPageProps = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export default async function EditEvenementPage({ params }: EditEvenementPageProps) {
+  const { id } = await params;
   const session = await auth();
 
   if (!session?.user) {
@@ -27,7 +28,7 @@ export default async function EditEvenementPage({ params }: EditEvenementPagePro
   }
 
   const evenement = await prisma.event.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
 
   if (!evenement) {
@@ -71,7 +72,7 @@ export default async function EditEvenementPage({ params }: EditEvenementPagePro
             </div>
           </div>
 
-          <EvenementForm evenementId={params.id} initialData={initialData} />
+          <EvenementForm evenementId={id} initialData={initialData} />
         </div>
       </main>
     </div>

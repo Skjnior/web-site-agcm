@@ -14,8 +14,8 @@ import Link from 'next/link';
 const posteSchema = z.object({
   nom: z.string().min(1, 'Le nom est requis'),
   description: z.string().optional(),
-  estBureau: z.boolean().default(true),
-  estActif: z.boolean().default(true),
+  estBureau: z.boolean(),
+  estActif: z.boolean(),
 });
 
 type PosteFormData = z.infer<typeof posteSchema>;

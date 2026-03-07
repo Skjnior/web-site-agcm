@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { getAffectationActive, isBureauActif } from '@/lib/rbac';
 import { getMandatActif } from '@/lib/mandat';
@@ -51,7 +51,7 @@ export default async function BureauDashboardPage() {
     }),
     prisma.projet.count({
       where: {
-        createdByPosteId: affectation.posteId,
+        responsablePosteId: affectation.posteId,
         mandatId: mandatActif.id,
       },
     }),

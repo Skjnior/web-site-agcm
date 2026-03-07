@@ -1,7 +1,7 @@
 // app/admin/evenements/nouveau/page.tsx
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/lib/auth';
 import EvenementForm from '@/components/admin/EvenementForm';
 
 export const metadata: Metadata = {

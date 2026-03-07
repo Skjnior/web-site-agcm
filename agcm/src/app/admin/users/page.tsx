@@ -6,7 +6,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Users, Plus, Edit, Trash2, Eye, Ban, CheckCircle, Search as SearchIcon, X } from 'lucide-react';
-import { DataTable } from '@/components/admin/DataTable';
+import { DataTable } from '@/components/super-admin/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -261,12 +261,14 @@ export default function SuperAdminUsersPage() {
     }
   };
 
-  const getActions = (user: User) => {
-    const actions = [
+  type ActionItem = { label: string; onClick: () => void; variant?: 'default' | 'destructive' | 'outline' | 'edit' | 'add' | 'delete' | 'view'; icon?: React.ReactNode };
+
+  const getActions = (user: User): ActionItem[] => {
+    const actions: ActionItem[] = [
       {
         label: 'Modifier',
         onClick: () => router.push(`/admin/users/${user.id}/edit`),
-        variant: 'edit' as const,
+        variant: 'edit',
         icon: <Edit className="h-4 w-4 mr-2" />,
       },
     ];
@@ -277,14 +279,14 @@ export default function SuperAdminUsersPage() {
       actions.push({
         label: processing === user.id ? 'Suspension...' : 'Suspendre',
         onClick: () => handleSuspend(user, true),
-        variant: 'outline' as const,
+        variant: 'outline',
         icon: processing === user.id ? <span className="animate-spin">⏳</span> : <Ban className="h-4 w-4 mr-2" />,
       });
     } else {
       actions.push({
         label: processing === user.id ? 'Réactivation...' : 'Réactiver',
         onClick: () => handleSuspend(user, false),
-        variant: 'outline' as const,
+        variant: 'outline',
         icon: processing === user.id ? <span className="animate-spin">⏳</span> : <CheckCircle className="h-4 w-4 mr-2" />,
       });
     }
@@ -293,7 +295,7 @@ export default function SuperAdminUsersPage() {
     actions.push({
       label: processing === user.id ? 'Suppression...' : 'Supprimer',
       onClick: () => handleDelete(user),
-      variant: 'delete' as const,
+      variant: 'delete',
       icon: processing === user.id ? <span className="animate-spin">⏳</span> : <Trash2 className="h-4 w-4 mr-2" />,
     });
 

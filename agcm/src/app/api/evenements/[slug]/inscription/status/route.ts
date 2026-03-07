@@ -1,6 +1,6 @@
 // app/api/evenements/[slug]/inscription/status/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(
@@ -32,7 +32,7 @@ export async function GET(
     }
 
     // Récupérer l'événement par slug
-    const evenement = await prisma.evenement.findUnique({
+    const evenement = await prisma.event.findUnique({
       where: { slug: decodedSlug },
     });
 
@@ -40,20 +40,10 @@ export async function GET(
       return NextResponse.json({ status: null, authenticated: true, hasMember: true });
     }
 
-    const inscription = await prisma.inscriptionEvenement.findUnique({
-      where: {
-        memberId_evenementId: {
-          memberId: member.id,
-          evenementId: evenement.id,
-        },
-      },
-      select: {
-        status: true,
-      },
-    });
-
+    // TODO: InscriptionEvenement model à ajouter au schéma pour gérer les inscriptions
+    // Pour l'instant, retourner status null (pas d'inscription enregistrée)
     return NextResponse.json({
-      status: inscription?.status || null,
+      status: null,
       authenticated: true,
       hasMember: true,
     });

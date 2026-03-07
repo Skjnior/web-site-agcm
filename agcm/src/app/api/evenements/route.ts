@@ -15,10 +15,9 @@ export async function GET(req: NextRequest) {
     const pageSize = Math.min(50, Math.max(1, parseInt(searchParams.get('pageSize') || '12', 10)));
     const skip = (page - 1) * pageSize;
 
-    const where: Prisma.EvenementWhereInput = {
-      ...(published !== undefined ? { published } : {}),
-      ...(type ? { type } : {}),
-      ...(status ? { status } : {}),
+    const where: Prisma.EventWhereInput = {
+      ...(published !== undefined ? { afficheSite: published } : {}),
+      ...(status ? { statut: status as 'A_VENIR' | 'EN_COURS' | 'PASSE' } : {}),
       ...(q
         ? {
             OR: [
@@ -30,10 +29,10 @@ export async function GET(req: NextRequest) {
     };
 
     const [total, items] = await Promise.all([
-      prisma.evenement.count({ where }),
-      prisma.evenement.findMany({
+      prisma.event.count({ where }),
+      prisma.event.findMany({
         where,
-        orderBy: { dateEvenement: 'asc' },
+        orderBy: { dateDebut: 'asc' },
         skip,
         take: pageSize,
         select: {
@@ -41,12 +40,11 @@ export async function GET(req: NextRequest) {
           titre: true,
           slug: true,
           description: true,
-          dateEvenement: true,
+          dateDebut: true,
+          dateFin: true,
           lieu: true,
-          type: true,
-          imageUrl: true,
-          published: true,
-          status: true,
+          statut: true,
+          afficheSite: true,
         },
       }),
     ]);

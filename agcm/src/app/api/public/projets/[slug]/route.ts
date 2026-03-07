@@ -6,10 +6,10 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
 
     const projet = await prisma.projet.findUnique({
       where: { slug },
@@ -36,19 +36,6 @@ export async function GET(
                 siteUrl: true,
               },
             },
-          },
-        },
-        subventions: {
-          where: {
-            statut: {
-              in: ['ACCORDEE', 'VERSEE'],
-            },
-          },
-          select: {
-            organisme: true,
-            type: true,
-            montant: true,
-            statut: true,
           },
         },
       },

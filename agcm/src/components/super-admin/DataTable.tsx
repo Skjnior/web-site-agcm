@@ -33,8 +33,11 @@ interface DataTableProps<T> {
   actions?: (item: T) => {
     label: string;
     onClick: () => void;
-    variant?: 'default' | 'destructive' | 'outline';
+    variant?: 'default' | 'destructive' | 'outline' | 'edit' | 'add' | 'delete' | 'view';
     icon?: ReactNode;
+    disabled?: boolean;
+    className?: string;
+    title?: string;
   }[];
   emptyMessage?: string;
   loading?: boolean;
@@ -122,7 +125,7 @@ export function DataTable<T extends { id: string }>({
   );
 }
 
-function ActionMenu<T>({ item, actions }: { item: T; actions: { label: string; onClick: () => void; variant?: 'default' | 'destructive' | 'outline'; icon?: ReactNode }[] }) {
+function ActionMenu<T>({ item, actions }: { item: T; actions: { label: string; onClick: () => void; variant?: 'default' | 'destructive' | 'outline' | 'edit' | 'add' | 'delete' | 'view'; icon?: ReactNode; disabled?: boolean }[] }) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 

@@ -2,6 +2,7 @@
 // Ajouter un commentaire sur un contenu (membres)
 
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { requireAuth } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
 import { commentCreateSchema } from '@/lib/validators/comment';
@@ -9,12 +10,12 @@ import { logAction } from '@/lib/audit';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { contentId: string } }
+  { params }: { params: Promise<{ contentId: string }> }
 ) {
   const { error, session } = await requireAuth();
   if (error) return error;
 
-  const { contentId } = params;
+  const { contentId } = await params;
 
   try {
     const body = await request.json();
@@ -70,9 +71,9 @@ export async function POST(
       { status: 201 }
     );
   } catch (error) {
-    if (error instanceof Error && error.name === 'ZodError') {
+    if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Données invalides', details: (error as any).errors },
+        { error: 'Données invalides', details: error.issues },
         { status: 400 }
       );
     }

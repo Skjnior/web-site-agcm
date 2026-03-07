@@ -11,14 +11,10 @@ export async function GET(
     const decodedSlug = decodeURIComponent(slug);
     console.log('GET /api/evenements/[slug] - Event slug:', decodedSlug);
     
-    const evenement = await prisma.evenement.findUnique({
+    const evenement = await prisma.event.findUnique({
       where: { slug: decodedSlug },
       include: {
-        inscriptions: {
-          where: {
-            status: 'CONFIRMEE',
-          },
-        },
+        medias: true,
       },
     });
 
@@ -29,9 +25,7 @@ export async function GET(
     
     console.log('Event found:', evenement.titre);
 
-    const placesDisponibles = evenement.placesMax
-      ? Math.max(0, evenement.placesMax - evenement.inscriptions.length)
-      : null;
+    const placesDisponibles = null;
 
     return NextResponse.json({
       ...evenement,

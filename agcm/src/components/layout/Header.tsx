@@ -98,7 +98,7 @@ export default function Header() {
               {status === 'loading' ? (
                 <div className="w-8 h-8 border-2 border-guinea-red border-t-transparent rounded-full animate-spin" />
               ) : session ? (
-                <UserMenu user={session.user} />
+                <UserMenu user={session.user!} />
               ) : (
                 <>
                   <Link href="/connexion">
@@ -157,7 +157,7 @@ export default function Header() {
         onClose={() => setIsMobileMenuOpen(false)}
         navLinks={navLinks}
         isActive={isActive}
-        session={session}
+        session={session as import('next-auth').Session | null}
         status={status}
       />
 

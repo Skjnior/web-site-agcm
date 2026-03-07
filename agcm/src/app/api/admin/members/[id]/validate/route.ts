@@ -1,13 +1,14 @@
 // app/api/admin/members/[id]/validate/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { canActOnUser } from '@/lib/permissions';
 import { sendEmail } from '@/lib/email';
 import { getMemberValidationEmailTemplate } from '@/lib/email-templates';
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user || !['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)) {
@@ -16,10 +17,10 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
     // Récupérer le membre et son rôle
     const member = await prisma.member.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: {
-          select: { email: true, role: true },
+          select: { email: true, roleSysteme: true },
         },
       },
     });
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
 
     // Vérifier les permissions
-    if (!canActOnUser(session.user.role, member.user.role)) {
+    if (!canActOnUser(session.user.role, member.user.roleSysteme)) {
       return NextResponse.json(
         { error: 'Vous n\'avez pas la permission d\'agir sur ce membre' },
         { status: 403 }
@@ -37,39 +38,26 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
 
     const { memberNumber } = await req.json();
-
-    if (!memberNumber || typeof memberNumber !== 'string') {
-      return NextResponse.json({ error: 'Member number is required' }, { status: 400 });
-    }
-
-    // Vérifier que le numéro n'est pas déjà utilisé
-    const existingMember = await prisma.member.findUnique({
-      where: { numeroMembre: memberNumber },
-    });
-
-    if (existingMember && existingMember.id !== params.id) {
-      return NextResponse.json({ error: 'Ce numéro de membre est déjà utilisé' }, { status: 400 });
-    }
+    const memberNumberStr = memberNumber && typeof memberNumber === 'string' ? memberNumber : id;
 
     // Mettre à jour le membre
     const updatedMember = await prisma.member.update({
-      where: { id: params.id },
+      where: { id },
       data: {
-        status: 'ACTIF',
-        numeroMembre: memberNumber,
-        dateExpiration: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+        statutMembre: 'ACTIF',
       },
     });
 
     // Envoyer un email de confirmation au membre
+    const dateExpiration = new Date(new Date().setFullYear(new Date().getFullYear() + 1));
     await sendEmail({
       to: member.user.email,
       subject: 'Votre adhésion à l\'AGCM a été validée',
       html: getMemberValidationEmailTemplate({
         prenom: updatedMember.prenom,
         nom: updatedMember.nom,
-        numeroMembre: memberNumber,
-        dateExpiration: updatedMember.dateExpiration,
+        numeroMembre: memberNumberStr,
+        dateExpiration,
       }),
     });
 

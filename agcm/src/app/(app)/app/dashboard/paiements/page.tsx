@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { isBureauActif } from '@/lib/rbac';
 import { CreditCard, Receipt, Info, MessageSquare } from 'lucide-react';
