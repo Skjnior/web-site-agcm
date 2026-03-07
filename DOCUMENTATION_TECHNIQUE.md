@@ -409,7 +409,27 @@ Configurer sur la plateforme (Vercel, etc.) :
 
 - Utiliser une base PostgreSQL managée (Neon, Supabase, etc.)
 - Exécuter `prisma migrate deploy` avant le premier déploiement
-- Optionnel : exécuter le seed pour les données initiales
+- **Après le premier déploiement** : exécuter le seed manuellement pour les données initiales
+
+### 8.4 Exécuter le seed après déploiement
+
+Le seed n'est **pas** exécuté automatiquement lors du build (il effacerait les données à chaque déploiement). Pour peupler la base après le premier déploiement :
+
+```bash
+cd agcm
+# Avec DATABASE_URL pointant vers la base de production
+npx prisma db seed
+# ou
+npm run seed
+```
+
+**Sur Vercel** : utiliser le CLI ou un script local avec `DATABASE_URL` de production :
+
+```bash
+DATABASE_URL="postgresql://..." npx prisma db seed
+```
+
+**Attention** : Le seed actuel efface toutes les données avant d'insérer. Ne l'exécuter qu'une seule fois sur une base vide.
 
 ---
 

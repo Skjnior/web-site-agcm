@@ -40,7 +40,7 @@ if (typeof global.Request === 'undefined') {
 
 // Mock environment variables
 process.env.NEXTAUTH_SECRET = 'test-secret';
-process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test';
+process.env.agcm_db_DATABASE_URL = 'postgresql://test:test@localhost:5432/test';
 process.env.NEXTAUTH_URL = 'http://localhost:3000';
 
 // Mock Next.js router

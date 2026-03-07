@@ -20,20 +20,7 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-  icons: {
-    icon: [
-      { url: '/Image/logo.png', type: 'image/png', sizes: 'any' },
-      { url: '/Image/logo.png', type: 'image/png', sizes: '32x32' },
-      { url: '/Image/logo.png', type: 'image/png', sizes: '16x16' },
-    ],
-    apple: [
-      { url: '/Image/logo.png', type: 'image/png', sizes: '180x180' },
-    ],
-    shortcut: [
-      { url: '/Image/logo.png', type: 'image/png' },
-    ],
-  },
-  // Favicon géré via les metadata ci-dessus
+  // Favicon : icon.png, favicon.ico et apple-icon.png dans app/ (convention Next.js)
 };
 
 export default function RootLayout({

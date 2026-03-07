@@ -83,6 +83,20 @@ npx prisma migrate dev
 npm run seed
 ```
 
+### Après déploiement (base vide)
+
+Pour peupler la base de production avec les données initiales :
+
+```bash
+cd agcm
+# Utiliser la DATABASE_URL de production (Vercel, .env.production, etc.)
+npx prisma db seed
+# ou
+npm run seed
+```
+
+**Important** : Le seed efface toutes les données avant d'insérer. Ne l'exécuter qu'une seule fois sur une base vide.
+
 ### Lancement
 
 ```bash
