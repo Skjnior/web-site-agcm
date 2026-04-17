@@ -12,7 +12,8 @@ import {
     LogOut,
     FolderOpen,
     GraduationCap,
-    CheckSquare
+    CheckSquare,
+    CircleUser,
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 
@@ -25,6 +26,7 @@ export default function AdminSidebar({ role }: SidebarProps) {
 
     const navigation = [
         { name: 'Tableau de bord', href: '/admin', icon: LayoutDashboard },
+        { name: 'Mon profil', href: '/admin/profil', icon: CircleUser },
         { name: 'Approbations', href: '/admin/approbations', icon: CheckSquare },
         { name: 'Actualités', href: '/admin/actualites', icon: FileText },
         { name: 'Événements', href: '/admin/evenements', icon: Calendar },

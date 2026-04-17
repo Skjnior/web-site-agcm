@@ -1,13 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Upload } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+
+const photoUrlField = z
+  .string()
+  .optional()
+  .refine(
+    (val) =>
+      !val ||
+      val === '' ||
+      /^https?:\/\//i.test(val) ||
+      (val.startsWith('/') && !val.includes('..')),
+    { message: 'URL absolue ou chemin commençant par /' },
+  );
 
 const profilSchema = z.object({
   prenom: z.string().min(1, 'Le prénom est requis'),
@@ -16,7 +30,7 @@ const profilSchema = z.object({
   ville: z.string().optional(),
   pays: z.string().optional(),
   bio: z.string().optional(),
-  photoUrl: z.string().url('URL invalide').optional().or(z.literal('')),
+  photoUrl: photoUrlField,
 });
 
 type ProfilFormData = z.infer<typeof profilSchema>;
@@ -43,16 +57,30 @@ interface Member {
 interface ProfilFormProps {
   member: Member;
   dark?: boolean;
+  /** Email du compte (lecture seule) — ex. espace admin */
+  userEmail?: string | null;
+  /** Upload fichier vers /api/admin/upload-image (ADMIN / SUPER_ADMIN) */
+  allowImageUpload?: boolean;
 }
 
-export default function ProfilForm({ member, dark = false }: ProfilFormProps) {
+export default function ProfilForm({
+  member,
+  dark = false,
+  userEmail,
+  allowImageUpload = false,
+}: ProfilFormProps) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<ProfilFormData>({
     resolver: zodResolver(profilSchema),
@@ -66,6 +94,31 @@ export default function ProfilForm({ member, dark = false }: ProfilFormProps) {
       photoUrl: member.photoUrl || '',
     },
   });
+
+  const photoUrlValue = watch('photoUrl');
+
+  const handlePhotoFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setUploadingPhoto(true);
+      setError(null);
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/api/admin/upload-image', {
+        method: 'POST',
+        body: fd,
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Échec upload');
+      setValue('photoUrl', json.imageUrl, { shouldValidate: true, shouldDirty: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur upload');
+    } finally {
+      setUploadingPhoto(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
   const onSubmit = async (data: ProfilFormData) => {
     try {
@@ -85,6 +138,7 @@ export default function ProfilForm({ member, dark = false }: ProfilFormProps) {
       }
 
       setSuccess(true);
+      router.refresh();
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Une erreur est survenue');
@@ -112,6 +166,40 @@ export default function ProfilForm({ member, dark = false }: ProfilFormProps) {
       {success && (
         <div className={dark ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-3 rounded-xl' : 'bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded'}>
           Profil mis à jour avec succès !
+        </div>
+      )}
+
+      {userEmail != null && userEmail !== '' && (
+        <section>
+          <h2 className={`text-lg font-semibold mb-4 ${dark ? 'text-slate-200' : 'text-gray-900'}`}>Compte</h2>
+          <div className={dark ? 'bg-slate-800/40 border border-slate-700/50 rounded-xl px-4 py-3' : 'bg-slate-50 border rounded-lg px-4 py-3'}>
+            <p className={`text-xs uppercase tracking-wide mb-1 ${dark ? 'text-slate-500' : 'text-slate-500'}`}>Adresse e-mail</p>
+            <p className={dark ? 'text-slate-200 font-medium' : 'text-slate-900 font-medium'}>{userEmail}</p>
+            <p className={`text-xs mt-2 ${dark ? 'text-slate-500' : 'text-slate-600'}`}>
+              Pour changer l’e-mail de connexion, contactez un super administrateur.
+            </p>
+          </div>
+        </section>
+      )}
+
+      {/* Aperçu photo */}
+      {(photoUrlValue || member.photoUrl) && (
+        <div className="flex items-center gap-4">
+          <div className="relative h-20 w-20 rounded-full overflow-hidden border-2 border-slate-600 shrink-0 bg-slate-800">
+            <Image
+              src={photoUrlValue || member.photoUrl || ''}
+              alt="Aperçu"
+              fill
+              className="object-cover"
+              unoptimized={
+                (photoUrlValue || member.photoUrl || '').startsWith('http') ||
+                (photoUrlValue || member.photoUrl || '').startsWith('/')
+              }
+            />
+          </div>
+          <p className={`text-sm ${dark ? 'text-slate-400' : 'text-slate-600'}`}>
+            Aperçu de la photo affichée sur le site (bureau, etc.)
+          </p>
         </div>
       )}
 
@@ -170,14 +258,52 @@ export default function ProfilForm({ member, dark = false }: ProfilFormProps) {
             />
           </div>
 
-          <div>
-            <Label htmlFor="photoUrl" className={labelClass}>URL Photo</Label>
-            <Input
-              id="photoUrl"
-              type="url"
-              {...register('photoUrl')}
-              className={`${errors.photoUrl ? 'border-red-500' : ''} ${inputClass}`}
-            />
+          <div className="md:col-span-2 space-y-3">
+            <Label className={labelClass}>Photo de profil</Label>
+            {allowImageUpload && (
+              <div className="flex flex-wrap items-center gap-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={handlePhotoFile}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={uploadingPhoto}
+                  className={
+                    dark
+                      ? 'border-slate-600 bg-slate-800/50 text-slate-200 hover:bg-slate-700'
+                      : ''
+                  }
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {uploadingPhoto ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <Upload className="h-4 w-4 mr-2" />
+                  )}
+                  {uploadingPhoto ? 'Envoi…' : 'Importer une image'}
+                </Button>
+                <span className={`text-xs ${dark ? 'text-slate-500' : 'text-slate-500'}`}>
+                  JPEG, PNG, WebP ou GIF — max 10 Mo
+                </span>
+              </div>
+            )}
+            <div>
+              <Label htmlFor="photoUrl" className={labelClass}>
+                URL de la photo {allowImageUpload && '(ou laisser celle importée ci-dessus)'}
+              </Label>
+              <Input
+                id="photoUrl"
+                type="text"
+                placeholder="https://… ou /uploads/images/…"
+                {...register('photoUrl')}
+                className={`${errors.photoUrl ? 'border-red-500' : ''} ${inputClass}`}
+              />
+            </div>
             {errors.photoUrl && (
               <p className="text-red-400 text-sm mt-1">{errors.photoUrl.message}</p>
             )}

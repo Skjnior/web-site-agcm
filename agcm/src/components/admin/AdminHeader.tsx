@@ -2,6 +2,7 @@
 
 import { Bell, Menu, Search, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 interface AdminHeaderProps {
@@ -64,35 +65,36 @@ export default function AdminHeader({ user }: AdminHeaderProps) {
                     {/* Separator */}
                     <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-slate-800" aria-hidden="true" />
 
-                    {/* Profile dropdown */}
-                    <div className="relative">
-                        <button className="-m-1.5 flex items-center p-1.5 group hover:bg-slate-800/50 rounded-lg transition-all pr-2 border border-transparent hover:border-slate-800">
-                            <span className="sr-only">Ouvrir le menu utilisateur</span>
-                            <div className="relative h-9 w-9 rounded-full bg-slate-800 overflow-hidden shadow-sm border border-slate-700 ring-2 ring-transparent group-hover:ring-blue-500/30 transition-all">
-                                {user.photoUrl ? (
-                                    <Image
-                                        className="h-full w-full object-cover"
-                                        src={user.photoUrl}
-                                        alt={user.name}
-                                        fill
-                                        unoptimized={user.photoUrl.startsWith('http')}
-                                    />
-                                ) : (
-                                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-700 text-white font-bold text-xs uppercase">
-                                        {user.name.substring(0, 2)}
-                                    </div>
-                                )}
-                            </div>
-                            <span className="hidden lg:flex lg:items-center">
-                                <span className="ml-3 text-sm font-semibold leading-6 text-slate-200 transition-colors group-hover:text-blue-400" aria-hidden="true">
-                                    {user.name}
-                                </span>
-                                <span className="ml-2 rounded-md bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-400 ring-1 ring-inset ring-blue-500/20">
-                                    {user.role}
-                                </span>
+                    {/* Profil — lien vers /admin/profil */}
+                    <Link
+                        href="/admin/profil"
+                        className="-m-1.5 flex items-center p-1.5 group hover:bg-slate-800/50 rounded-lg transition-all pr-2 border border-transparent hover:border-slate-800"
+                    >
+                        <span className="sr-only">Mon profil</span>
+                        <div className="relative h-9 w-9 rounded-full bg-slate-800 overflow-hidden shadow-sm border border-slate-700 ring-2 ring-transparent group-hover:ring-blue-500/30 transition-all">
+                            {user.photoUrl ? (
+                                <Image
+                                    className="h-full w-full object-cover"
+                                    src={user.photoUrl}
+                                    alt={user.name}
+                                    fill
+                                    unoptimized={user.photoUrl.startsWith('http') || user.photoUrl.startsWith('/')}
+                                />
+                            ) : (
+                                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-700 text-white font-bold text-xs uppercase">
+                                    {user.name.substring(0, 2)}
+                                </div>
+                            )}
+                        </div>
+                        <span className="hidden lg:flex lg:items-center">
+                            <span className="ml-3 text-sm font-semibold leading-6 text-slate-200 transition-colors group-hover:text-blue-400" aria-hidden="true">
+                                {user.name}
                             </span>
-                        </button>
-                    </div>
+                            <span className="ml-2 rounded-md bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-400 ring-1 ring-inset ring-blue-500/20">
+                                {user.role}
+                            </span>
+                        </span>
+                    </Link>
                 </div>
             </div>
         </header>

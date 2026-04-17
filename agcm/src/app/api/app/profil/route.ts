@@ -6,6 +6,19 @@ import { requireAuth } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
+/** Photo : URL absolue ou chemin public (/uploads/...) */
+const photoUrlSchema = z
+  .string()
+  .optional()
+  .refine(
+    (val) =>
+      val === undefined ||
+      val === '' ||
+      /^https?:\/\//i.test(val) ||
+      (val.startsWith('/') && !val.includes('..')),
+    { message: 'URL ou chemin de photo invalide' },
+  );
+
 const profilUpdateSchema = z.object({
   prenom: z.string().min(1),
   nom: z.string().min(1),
@@ -13,7 +26,7 @@ const profilUpdateSchema = z.object({
   ville: z.string().optional(),
   pays: z.string().optional(),
   bio: z.string().optional(),
-  photoUrl: z.string().url().optional().or(z.literal('')),
+  photoUrl: photoUrlSchema,
 });
 
 export async function PATCH(request: NextRequest) {
