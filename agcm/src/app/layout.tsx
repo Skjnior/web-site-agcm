@@ -1,9 +1,17 @@
 // src/app/layout.tsx
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
 import Navbar from "@/components/layout/Navbar";
 import ScrollToTop from "@/components/layout/ScrollToTop";
+
+/** Indispensable pour le responsive mobile (évite la mise à l’échelle « page bureau » sur téléphone). */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#0f2417",
+};
 
 export const metadata: Metadata = {
   title: "AGCM - Association des Guinéens de La Charente-Maritime",
@@ -29,8 +37,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" suppressHydrationWarning>
-      <body className="bg-gradient-to-b from-agcm-900 via-agcm-800 to-agcm-900 text-white overflow-x-hidden" suppressHydrationWarning>
+    <html lang="fr" className="overflow-x-hidden" suppressHydrationWarning>
+      <body className="bg-gradient-to-b from-agcm-900 via-agcm-800 to-agcm-900 text-white overflow-x-hidden antialiased" suppressHydrationWarning>
         <Providers>
           <Navbar />
           {children}

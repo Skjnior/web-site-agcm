@@ -81,6 +81,7 @@ export default function BureauSection() {
 
   if (loading) {
     return (
+      <div className="overflow-x-hidden">
       <div className="overflow-x-auto pb-4 -mx-4 px-4">
         <div className="flex gap-6 min-w-max">
           {[...Array(4)].map((_, i) => (
@@ -91,6 +92,7 @@ export default function BureauSection() {
             </div>
           ))}
         </div>
+      </div>
       </div>
     );
   }
@@ -109,14 +111,14 @@ export default function BureauSection() {
 
   return (
     <div
-      className="relative"
+      className="relative overflow-x-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* Scroll horizontal avec auto-scroll */}
+      {/* Scroll horizontal avec auto-scroll — overflow-x-hidden évite le débordement de page sur mobile */}
       <div
         ref={scrollContainerRef}
-        className="overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide"
+        className="overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide touch-pan-x"
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',

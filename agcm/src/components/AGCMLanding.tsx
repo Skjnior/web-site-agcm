@@ -207,7 +207,7 @@ export default function AGCMLanding() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-agcm-900 via-agcm-800 to-agcm-900">
+    <div className="min-h-screen w-full max-w-[100%] overflow-x-hidden bg-gradient-to-b from-agcm-900 via-agcm-800 to-agcm-900">
 
       {/* Hero */}
       <section id="top" className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
@@ -240,7 +240,7 @@ export default function AGCMLanding() {
             <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 via-yellow-500/15 to-red-600/20 rounded-3xl blur-3xl"></div>
             <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-white/10 border-2 border-white/20 backdrop-blur-xl rounded-3xl p-6 h-full flex flex-col justify-between shadow-2xl hover:shadow-red-500/20 transition-shadow duration-300">
               <div className="space-y-3 overflow-hidden scrollbar-hide flex-1 min-h-0">
-                <div className="group flex items-start gap-4 bg-gradient-to-r from-red-500/20 via-red-500/10 to-transparent border border-red-400/30 rounded-2xl p-4 hover:from-red-500/30 hover:border-red-400/50 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-red-500/20">
+                <div className="group flex items-start gap-4 bg-gradient-to-r from-red-500/20 via-red-500/10 to-transparent border border-red-400/30 rounded-2xl p-4 hover:from-red-500/30 hover:border-red-400/50 transition-all duration-300 md:hover:scale-[1.02] hover:shadow-lg hover:shadow-red-500/20">
                   <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/30 group-hover:scale-110 transition-transform duration-300">
                     <Heart className="text-white" size={20} />
                   </div>
@@ -249,7 +249,7 @@ export default function AGCMLanding() {
                     <p className="text-slate-200 text-xs leading-relaxed">Mentorat, aide administrative, accompagnement.</p>
                   </div>
                 </div>
-                <div className="group flex items-start gap-4 bg-gradient-to-r from-yellow-500/20 via-yellow-500/10 to-transparent border border-yellow-400/30 rounded-2xl p-4 hover:from-yellow-500/30 hover:border-yellow-400/50 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-yellow-500/20">
+                <div className="group flex items-start gap-4 bg-gradient-to-r from-yellow-500/20 via-yellow-500/10 to-transparent border border-yellow-400/30 rounded-2xl p-4 hover:from-yellow-500/30 hover:border-yellow-400/50 transition-all duration-300 md:hover:scale-[1.02] hover:shadow-lg hover:shadow-yellow-500/20">
                   <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/30 group-hover:scale-110 transition-transform duration-300">
                     <BookOpen className="text-white" size={20} />
                   </div>
@@ -258,7 +258,7 @@ export default function AGCMLanding() {
                     <p className="text-slate-200 text-xs leading-relaxed">Orientation, stages, ateliers pro.</p>
                   </div>
                 </div>
-                <div className="group flex items-start gap-4 bg-gradient-to-r from-agcm-500/20 via-agcm-500/10 to-transparent border border-agcm-400/30 rounded-2xl p-4 hover:from-agcm-500/30 hover:border-agcm-400/50 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-agcm-500/20">
+                <div className="group flex items-start gap-4 bg-gradient-to-r from-agcm-500/20 via-agcm-500/10 to-transparent border border-agcm-400/30 rounded-2xl p-4 hover:from-agcm-500/30 hover:border-agcm-400/50 transition-all duration-300 md:hover:scale-[1.02] hover:shadow-lg hover:shadow-agcm-500/20">
                   <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-agcm-500 to-agcm-600 rounded-xl flex items-center justify-center shadow-lg shadow-agcm-500/30 group-hover:scale-110 transition-transform duration-300">
                     <Globe2 className="text-white" size={20} />
                   </div>

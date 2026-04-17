@@ -38,6 +38,18 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  /** Empêche le scroll de la page derrière le menu mobile + évite le débordement horizontal */
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+      document.documentElement.style.overflow = '';
+    };
+  }, [isMenuOpen]);
+
   const scrollToSection = (e: React.MouseEvent, id: string) => {
     if (typeof window !== 'undefined' && window.location.pathname !== '/') {
       return;
@@ -65,9 +77,17 @@ export default function Navbar() {
 
   const isLoggedIn = status === 'authenticated' && !!session?.user;
 
+  /**
+   * Hauteur barre : bande tricolore (4px) + rangée (64px mobile / 72px lg).
+   * Le menu mobile doit être rendu EN DEHORS de <nav> : sinon `backdrop-blur` sur la nav
+   * crée un bloc d’ancrage et les `position:fixed` du menu ne couvrent plus l’écran (menu invisible).
+   */
+  const mobileMenuTop = '4.25rem'; /* 4px + 64px */
+
   return (
+    <>
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
         scrolled
           ? 'bg-slate-900/98 backdrop-blur-xl shadow-xl shadow-black/30 border-b border-slate-800/50'
           : 'bg-slate-900/90 backdrop-blur-lg'
@@ -164,24 +184,26 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+    </nav>
 
-      {/* Mobile menu */}
+      {/* Hors de <nav> pour que position:fixed soit relatif à la fenêtre (voir commentaire mobileMenuTop) */}
       {isMenuOpen && (
-        <div className="lg:hidden border-t border-slate-700/50 bg-slate-900/98 backdrop-blur-xl animate-in slide-in-from-top-2 duration-200">
-          <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.id}
-                href={link.id}
-                onClick={(e) => scrollToSection(e, link.id)}
-                className="block px-4 py-3 text-slate-300 hover:text-white hover:bg-white/5 rounded-lg font-medium transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <div className="pt-3 mt-3 border-t border-slate-700/50 space-y-2">
+        <>
+          <button
+            type="button"
+            aria-label="Fermer le menu"
+            className="lg:hidden fixed left-0 right-0 bottom-0 z-[90] bg-black/50 backdrop-blur-sm"
+            style={{ top: mobileMenuTop }}
+            onClick={() => setIsMenuOpen(false)}
+          />
+          <div
+            className="lg:hidden fixed left-0 right-0 bottom-0 z-[95] overflow-y-auto overscroll-contain border-t border-slate-700/50 bg-slate-900/98 backdrop-blur-xl shadow-2xl animate-in slide-in-from-top-2 duration-200"
+            style={{ top: mobileMenuTop }}
+            id="mobile-nav-panel"
+          >
+            <div className="max-w-7xl mx-auto px-4 py-4 space-y-1 pb-8 max-[380px]:pb-10">
               {isLoggedIn ? (
-                <>
+                <div className="mb-4 space-y-2 border-b border-slate-700/50 pb-4">
                   <Link
                     href="/dashboard"
                     onClick={() => setIsMenuOpen(false)}
@@ -193,26 +215,39 @@ export default function Navbar() {
                     Mon espace
                   </Link>
                   <button
+                    type="button"
                     onClick={handleLogout}
                     className="flex items-center gap-3 w-full px-4 py-3 text-slate-300 hover:text-red-400 font-medium rounded-xl hover:bg-red-500/10 transition-colors"
                   >
                     <LogOut className="h-4 w-4" />
                     Déconnexion
                   </button>
-                </>
+                </div>
               ) : (
-                <Link
-                  href="/connexion"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center justify-center px-4 py-3 text-white font-semibold bg-gradient-to-r from-red-600 to-red-500 rounded-lg"
-                >
-                  Espace membre
-                </Link>
+                <div className="mb-4 border-b border-slate-700/50 pb-4">
+                  <Link
+                    href="/connexion"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center justify-center px-4 py-3 text-white font-semibold bg-gradient-to-r from-red-600 to-red-500 rounded-lg"
+                  >
+                    Espace membre
+                  </Link>
+                </div>
               )}
+              {navLinks.map((link) => (
+                <Link
+                  key={link.id}
+                  href={link.id}
+                  onClick={(e) => scrollToSection(e, link.id)}
+                  className="block px-4 py-3 text-slate-300 hover:text-white hover:bg-white/5 rounded-lg font-medium transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
           </div>
-        </div>
+        </>
       )}
-    </nav>
+    </>
   );
 }

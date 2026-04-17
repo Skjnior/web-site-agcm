@@ -11,6 +11,19 @@
 html {
   scroll-behavior: smooth;
   background: #0f2417;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  position: relative;
 }
 
 /* Offset pour les sections avec ancres - évite que la navbar masque le contenu */

@@ -273,14 +273,14 @@ export default function EvenementsSection({ onProposerEvenement }: EvenementsSec
           </div>
         ) : (
           <div
-            className="relative"
+            className="relative overflow-x-hidden"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
           >
             {/* Scroll horizontal avec auto-scroll */}
             <div
               ref={scrollContainerRef}
-              className="overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide"
+              className="overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide touch-pan-x"
               style={{
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
