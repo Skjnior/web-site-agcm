@@ -102,9 +102,9 @@ export default function ApprobationModal({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div className="grid grid-cols-1 gap-4 text-sm text-gray-800 md:grid-cols-2 dark:text-slate-200">
             <div className="flex items-center gap-2">
-              <User className="h-4 w-4 text-gray-500" />
+              <User className="h-4 w-4 text-gray-500 dark:text-slate-400" />
               <span>
                 {auteur
                   ? `${auteur.prenom} ${auteur.nom} (${content.auteurPoste.nom})`
@@ -112,27 +112,27 @@ export default function ApprobationModal({
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-gray-500" />
+              <Calendar className="h-4 w-4 text-gray-500 dark:text-slate-400" />
               <span>{date.toLocaleDateString('fr-FR')}</span>
             </div>
             {content.approvedBy && (
               <div className="flex items-center gap-2">
-                <FileText className="h-4 w-4 text-gray-500" />
+                <FileText className="h-4 w-4 text-gray-500 dark:text-slate-400" />
                 <span>Approuvé par {content.approvedBy.email}</span>
               </div>
             )}
             {content.rejectionReason && (
-              <div className="md:col-span-2 p-3 bg-red-50 rounded-lg">
-                <p className="font-medium text-red-800">Motif du rejet :</p>
-                <p className="text-red-700">{content.rejectionReason}</p>
+              <div className="rounded-lg bg-red-50 p-3 dark:bg-red-950/40 dark:ring-1 dark:ring-red-500/30">
+                <p className="font-medium text-red-800 dark:text-red-300">Motif du rejet :</p>
+                <p className="text-red-700 dark:text-red-200">{content.rejectionReason}</p>
               </div>
             )}
           </div>
 
           {content.contenu && (
             <div className="border-t pt-4">
-              <h4 className="font-medium text-gray-700 mb-2">Contenu</h4>
-              <div className="prose prose-sm max-w-none text-gray-600 whitespace-pre-wrap">
+              <h4 className="mb-2 font-medium text-gray-800 dark:text-slate-200">Contenu</h4>
+              <div className="max-w-none whitespace-pre-wrap text-sm leading-relaxed text-gray-800 dark:text-slate-300">
                 {content.contenu}
               </div>
             </div>
