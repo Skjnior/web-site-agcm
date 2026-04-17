@@ -1,9 +1,9 @@
 # Dependencies
 node_modules/
 
-# Environment
-.env.local
-.env.*.local
+# Environment (fichiers nommés .env.local à la racine uniquement ; agcm/.env.local est versionné pour l’équipe)
+/.env.local
+/.env.*.local
 
 # IDE
 .idea/
