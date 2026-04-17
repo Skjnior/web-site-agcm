@@ -84,7 +84,7 @@ export default function NouveauPostePage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg shadow p-6 space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="admin-panel-form">
         <div className="space-y-4">
           <div>
             <Label htmlFor="nom">Nom *</Label>

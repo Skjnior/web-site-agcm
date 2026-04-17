@@ -75,13 +75,25 @@ section[id] {
   border-radius: 10px;
 }
 
+.dark .scrollbar-thin::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
 .scrollbar-thin::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 10px;
 }
 
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
 }
 
 .scrollbar-thumb-gray-300::-webkit-scrollbar-thumb {
@@ -90,6 +102,10 @@ section[id] {
 
 .scrollbar-track-gray-100::-webkit-scrollbar-track {
   background: #f3f4f6;
+}
+
+.dark .scrollbar-track-gray-100::-webkit-scrollbar-track {
+  background: #1e293b;
 }
 
 @layer base {
@@ -104,6 +120,35 @@ section[id] {
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer components {
+  /* Panneaux admin : pas de blanc pur en mode sombre */
+  .admin-panel {
+    @apply rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700/80 dark:bg-slate-900 dark:shadow-none;
+  }
+  .admin-panel-form {
+    @apply admin-panel space-y-6 p-6;
+  }
+  .admin-page {
+    @apply min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100;
+  }
+  /* Ajouter rounded-3xl | rounded-2xl etc. sur l’élément */
+  .admin-glass {
+    @apply border border-slate-200/50 bg-white/70 shadow-sm backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/75 dark:shadow-none;
   }
 }
 

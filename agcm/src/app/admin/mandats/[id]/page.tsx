@@ -213,7 +213,7 @@ export default function SuperAdminMandatDetailPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Carte Informations principales */}
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+        <div className="admin-panel p-6 shadow-md border border-gray-200">
           <div className="flex items-center mb-4">
             <Calendar className="h-6 w-6 text-blue-600 mr-3" />
             <h2 className="text-xl font-semibold text-gray-900">Informations</h2>
@@ -245,7 +245,7 @@ export default function SuperAdminMandatDetailPage() {
         </div>
 
         {/* Carte Statistiques */}
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+        <div className="admin-panel p-6 shadow-md border border-gray-200">
           <div className="flex items-center mb-4">
             <FileText className="h-6 w-6 text-green-600 mr-3" />
             <h2 className="text-xl font-semibold text-gray-900">Statistiques</h2>
@@ -291,7 +291,7 @@ export default function SuperAdminMandatDetailPage() {
         </div>
 
         {/* Carte Document PV */}
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+        <div className="admin-panel p-6 shadow-md border border-gray-200">
           <div className="flex items-center mb-4">
             <FileText className="h-6 w-6 text-purple-600 mr-3" />
             <h2 className="text-xl font-semibold text-gray-900">Document PV</h2>
@@ -311,7 +311,7 @@ export default function SuperAdminMandatDetailPage() {
         </div>
 
         {/* Carte Dates système */}
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+        <div className="admin-panel p-6 shadow-md border border-gray-200">
           <div className="flex items-center mb-4">
             <Calendar className="h-6 w-6 text-orange-600 mr-3" />
             <h2 className="text-xl font-semibold text-gray-900">Dates système</h2>
@@ -327,7 +327,7 @@ export default function SuperAdminMandatDetailPage() {
 
       {/* Section Bureau Exécutif */}
       {mandat.affectations && mandat.affectations.length > 0 && (
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+        <div className="admin-panel p-6 shadow-md border border-gray-200">
           <div className="flex items-center mb-6">
             <Users className="h-6 w-6 text-blue-600 mr-3" />
             <h2 className="text-2xl font-semibold text-gray-900">Bureau Exécutif</h2>
@@ -401,7 +401,7 @@ export default function SuperAdminMandatDetailPage() {
       )}
 
       {(!mandat.affectations || mandat.affectations.length === 0) && (
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+        <div className="admin-panel p-6 shadow-md border border-gray-200">
           <div className="flex items-center mb-4">
             <Users className="h-6 w-6 text-gray-400 mr-3" />
             <h2 className="text-2xl font-semibold text-gray-900">Bureau Exécutif</h2>

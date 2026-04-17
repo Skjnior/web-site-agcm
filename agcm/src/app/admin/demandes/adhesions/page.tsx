@@ -185,10 +185,10 @@ export default function AdminDemandesAdhesionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col pointer-events-auto">
+    <div className="admin-page flex flex-col pointer-events-auto">
       <main className="flex-1 p-4 md:p-8 w-full max-w-[1600px] mx-auto overflow-x-hidden">
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-3xl p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="admin-glass rounded-3xl p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">Demandes d'Adhésion</h1>
               <p className="text-slate-500 mt-1">
@@ -198,11 +198,11 @@ export default function AdminDemandesAdhesionsPage() {
           </div>
 
           {/* Filtres par statut */}
-          <div className="flex gap-2 border-b border-gray-200">
+          <div className="flex gap-2 border-b border-gray-200 dark:border-slate-700">
             <Link href="/admin/demandes/adhesions?statut=EN_ATTENTE">
               <Button
                 variant={statutFilter === 'EN_ATTENTE' ? 'default' : 'ghost'}
-                className="rounded-b-none text-gray-900"
+                className="rounded-b-none text-gray-900 dark:text-slate-100"
               >
                 <Clock className="h-4 w-4 mr-2" />
                 En attente
@@ -211,7 +211,7 @@ export default function AdminDemandesAdhesionsPage() {
             <Link href="/admin/demandes/adhesions?statut=APPROUVEE">
               <Button
                 variant={statutFilter === 'APPROUVEE' ? 'default' : 'ghost'}
-                className="rounded-b-none text-gray-900"
+                className="rounded-b-none text-gray-900 dark:text-slate-100"
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
                 Approuvées
@@ -220,7 +220,7 @@ export default function AdminDemandesAdhesionsPage() {
             <Link href="/admin/demandes/adhesions?statut=REFUSEE">
               <Button
                 variant={statutFilter === 'REFUSEE' ? 'default' : 'ghost'}
-                className="rounded-b-none text-gray-900"
+                className="rounded-b-none text-gray-900 dark:text-slate-100"
               >
                 <XCircle className="h-4 w-4 mr-2" />
                 Refusées
@@ -229,7 +229,7 @@ export default function AdminDemandesAdhesionsPage() {
           </div>
 
           {/* Filtres de recherche */}
-          <div className="bg-white rounded-lg border p-4 space-y-4">
+          <div className="admin-panel p-4 space-y-4">
             <div className="flex items-center gap-4 flex-wrap">
               <div className="flex-1 min-w-[200px]">
                 <div className="relative flex items-center gap-2">
@@ -266,10 +266,10 @@ export default function AdminDemandesAdhesionsPage() {
           </div>
 
           {/* Liste des demandes */}
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="admin-panel overflow-hidden shadow">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="bg-gray-50 dark:bg-slate-800/90">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Membre
@@ -291,7 +291,7 @@ export default function AdminDemandesAdhesionsPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-200 bg-white dark:divide-slate-700 dark:bg-slate-950">
                   {demandes.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
@@ -300,9 +300,9 @@ export default function AdminDemandesAdhesionsPage() {
                     </tr>
                   ) : (
                     demandes.map((demande) => (
-                      <tr key={demande.id} className="hover:bg-gray-50">
+                      <tr key={demande.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/60">
                         <td className="px-6 py-4">
-                          <div className="font-medium text-gray-900">
+                          <div className="font-medium text-gray-900 dark:text-slate-100">
                             {demande.prenom} {demande.nom}
                           </div>
                           {demande.message && (
@@ -312,14 +312,14 @@ export default function AdminDemandesAdhesionsPage() {
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">{demande.email}</div>
+                          <div className="text-sm text-gray-900 dark:text-slate-100">{demande.email}</div>
                           {demande.telephone && (
                             <div className="text-sm text-gray-500">{demande.telephone}</div>
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           {demande.ville && (
-                            <div className="text-sm text-gray-900">{demande.ville}</div>
+                            <div className="text-sm text-gray-900 dark:text-slate-100">{demande.ville}</div>
                           )}
                           {demande.pays && (
                             <div className="text-sm text-gray-500">{demande.pays}</div>
@@ -386,8 +386,8 @@ export default function AdminDemandesAdhesionsPage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
-                <div className="text-sm text-gray-700">
+              <div className="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-6 py-4 dark:border-slate-700 dark:bg-slate-900/80">
+                <div className="text-sm text-gray-700 dark:text-slate-300">
                   Affichage de {((page - 1) * 10) + 1} à {Math.min(page * 10, total)} sur {total}
                 </div>
                 <div className="flex items-center gap-2">
@@ -464,12 +464,12 @@ export default function AdminDemandesAdhesionsPage() {
             >
               <div className="fixed inset-0 bg-black/50" />
               <div
-                className="relative bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+                className="relative admin-panel shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-2xl font-bold text-gray-900">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100">
                       {selectedDemande.prenom} {selectedDemande.nom}
                     </h2>
                     <Button

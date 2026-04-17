@@ -90,7 +90,7 @@ export default function MembersTable({ members, currentUserRole, currentUserId, 
 
   if (members.length === 0) {
     return (
-      <div className="bg-white border rounded-xl p-12 text-center">
+      <div className="admin-panel rounded-xl p-12 text-center">
         <p className="text-gray-500">Aucun membre trouvé</p>
       </div>
     );
@@ -98,10 +98,10 @@ export default function MembersTable({ members, currentUserRole, currentUserId, 
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="admin-panel overflow-hidden shadow">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-slate-800/90">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Membre
@@ -123,13 +123,13 @@ export default function MembersTable({ members, currentUserRole, currentUserId, 
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 bg-white dark:divide-slate-700 dark:bg-slate-950">
               {members.map((member) => {
                 const canDelete = member.canAct !== false && member.user.id !== currentUserId;
                 const canEdit = member.canAct !== false;
 
                 return (
-                  <tr key={member.id} className="hover:bg-gray-50">
+                  <tr key={member.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/60">
                     <td className="px-6 py-4">
                       <div className="font-medium text-gray-900">
                         {member.prenom} {member.nom}

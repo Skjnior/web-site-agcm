@@ -80,11 +80,11 @@ export default function ApprobationModal({
     >
       <div className="fixed inset-0 bg-black/50" />
       <div
-        className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+        className="relative admin-panel shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between z-10">
-          <h2 className="text-2xl font-bold text-gray-900">Détails du contenu</h2>
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4 dark:border-slate-700 dark:bg-slate-900">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Détails du contenu</h2>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-4 w-4" />
           </Button>
@@ -92,7 +92,7 @@ export default function ApprobationModal({
 
         <div className="p-6 space-y-6">
           <div>
-            <h3 className="text-xl font-semibold text-gray-900">{content.titre}</h3>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-slate-100">{content.titre}</h3>
             <div className="flex flex-wrap gap-2 mt-2">
               <Badge variant={getStatusBadge(content.statutWorkflow)}>
                 {content.statutWorkflow}

@@ -34,10 +34,10 @@ export default async function AdminDemandesPage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col pointer-events-auto">
+    <div className="admin-page flex flex-col pointer-events-auto">
       <main className="flex-1 p-4 md:p-8 w-full max-w-[1600px] mx-auto overflow-x-hidden">
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-3xl p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="admin-glass rounded-3xl p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">Gestion des demandes</h1>
               <p className="text-slate-500 mt-1">Traiter les demandes d'adhésion, partenariat et intentions de dons</p>
@@ -46,7 +46,7 @@ export default async function AdminDemandesPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Link href="/admin/demandes/adhesions" className="group">
-              <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border border-slate-200/50 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 h-full">
+              <div className="admin-glass relative h-full overflow-hidden rounded-3xl p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
                 <div className="flex items-start justify-between relative z-10 mb-4">
                   <div className="p-4 rounded-2xl bg-blue-50 border border-blue-100 shadow-sm transition-transform duration-300 group-hover:rotate-6">
                     <Users className="h-8 w-8 text-blue-600" />
@@ -68,7 +68,7 @@ export default async function AdminDemandesPage() {
             </Link>
 
             <Link href="/admin/demandes/partenariats" className="group">
-              <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border border-slate-200/50 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 h-full">
+              <div className="admin-glass relative h-full overflow-hidden rounded-3xl p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
                 <div className="flex items-start justify-between relative z-10 mb-4">
                   <div className="p-4 rounded-2xl bg-green-50 border border-green-100 shadow-sm transition-transform duration-300 group-hover:rotate-6">
                     <Building2 className="h-8 w-8 text-green-600" />
@@ -90,7 +90,7 @@ export default async function AdminDemandesPage() {
             </Link>
 
             <Link href="/admin/demandes/dons" className="group">
-              <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl p-6 border border-slate-200/50 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 h-full">
+              <div className="admin-glass relative h-full overflow-hidden rounded-3xl p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
                 <div className="flex items-start justify-between relative z-10 mb-4">
                   <div className="p-4 rounded-2xl bg-purple-50 border border-purple-100 shadow-sm transition-transform duration-300 group-hover:rotate-6">
                     <HandHeart className="h-8 w-8 text-purple-600" />

@@ -214,7 +214,7 @@ export default function SuperAdminPostesPage() {
         </Link>
       </div>
 
-      <div className="bg-white rounded-lg border p-4 space-y-4">
+      <div className="admin-panel p-4 space-y-4">
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex-1 min-w-[200px]">
             <div className="relative flex items-center gap-2">

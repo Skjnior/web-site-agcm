@@ -103,7 +103,7 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-3xl p-8 shadow-sm space-y-8">
+      <div className="admin-glass rounded-3xl p-8 shadow-sm space-y-8">
         <h2 className="text-xl font-semibold text-slate-900 border-b border-slate-200/50 pb-4">Informations générales</h2>
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-2">
@@ -116,7 +116,7 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
               required
               value={formData.titre}
               onChange={handleTitleChange}
-              className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-900"
+              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
               placeholder="Ex: Assemblée Générale Ordinaire 2024"
             />
           </div>
@@ -130,7 +130,7 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
               required
               value={formData.slug}
               onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
-              className="w-full px-4 py-3 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-600 font-mono text-sm"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 font-mono text-sm text-slate-600 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/40 dark:text-slate-300"
               placeholder="ex-assemblee-generale"
             />
           </div>
@@ -143,7 +143,7 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
               required
               value={formData.categorie}
               onChange={(e) => setFormData((prev) => ({ ...prev, categorie: e.target.value }))}
-              className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-900"
+              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
             >
               <option value="ACTUALITE">Actualité standard</option>
               <option value="EVENEMENT">Événement</option>
@@ -164,7 +164,7 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
               required
               value={formData.auteur}
               onChange={(e) => setFormData((prev) => ({ ...prev, auteur: e.target.value }))}
-              className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-900"
+              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
               placeholder="Nom de l'auteur ou du pôle"
             />
           </div>
@@ -178,12 +178,12 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
               rows={3}
               value={formData.resume}
               onChange={(e) => setFormData((prev) => ({ ...prev, resume: e.target.value }))}
-              className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-900 resize-none"
+              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100 resize-none"
               placeholder="Un bref résumé qui apparaîtra dans les listes d'actualités..."
             />
           </div>
-          <div className="md:col-span-2 space-y-2 overflow-hidden rounded-2xl border border-slate-200 bg-white">
-            <div className="px-4 py-3 bg-slate-50 border-b border-slate-200">
+          <div className="md:col-span-2 space-y-2 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-900">
+            <div className="border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-600 dark:bg-slate-800/50">
               <label htmlFor="content" className="block text-sm font-medium text-slate-700">
                 Contenu détaillé <span className="text-red-500">*</span>
               </label>
@@ -198,7 +198,7 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
             <label className="block text-sm font-medium text-slate-700">
               Image principale
             </label>
-            <div className="p-4 bg-slate-50/50 border border-slate-200 border-dashed rounded-2xl">
+            <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 p-4 dark:border-slate-600 dark:bg-slate-800/30">
               <ImageUpload
                 value={formData.imageUrl}
                 onChange={(url) => setFormData((prev) => ({ ...prev, imageUrl: url }))}
@@ -215,7 +215,7 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
               id="tags"
               value={formData.tags}
               onChange={(e) => setFormData((prev) => ({ ...prev, tags: e.target.value }))}
-              className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-900"
+              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
               placeholder="agcm, réunion, 2024"
             />
             <p className="text-xs text-slate-500">Séparez les mots-clés par des virgules</p>
@@ -229,7 +229,7 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
               id="datePublication"
               value={formData.datePublication}
               onChange={(e) => setFormData((prev) => ({ ...prev, datePublication: e.target.value }))}
-              className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-900"
+              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
             />
           </div>
 
@@ -273,7 +273,7 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
         <button
           type="button"
           onClick={() => router.back()}
-          className="px-8 py-3 bg-white text-slate-700 font-medium border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all"
+          className="rounded-xl border border-slate-200 bg-white px-8 py-3 font-medium text-slate-700 transition-all hover:bg-slate-50 hover:text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
         >
           Annuler
         </button>

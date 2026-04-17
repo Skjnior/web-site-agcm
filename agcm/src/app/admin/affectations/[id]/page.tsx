@@ -309,7 +309,7 @@ export default function AffectationDetailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Informations du membre */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="admin-panel p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-blue-100 rounded-lg">
               <User className="h-5 w-5 text-blue-600" />
@@ -358,7 +358,7 @@ export default function AffectationDetailPage() {
         </div>
 
         {/* Informations du poste */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="admin-panel p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-purple-100 rounded-lg">
               <Briefcase className="h-5 w-5 text-purple-600" />
@@ -394,7 +394,7 @@ export default function AffectationDetailPage() {
         </div>
 
         {/* Informations du mandat */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="admin-panel p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-green-100 rounded-lg">
               <Calendar className="h-5 w-5 text-green-600" />
@@ -425,7 +425,7 @@ export default function AffectationDetailPage() {
         </div>
 
         {/* Informations de l'affectation */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="admin-panel p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-orange-100 rounded-lg">
               <UserCheck className="h-5 w-5 text-orange-600" />

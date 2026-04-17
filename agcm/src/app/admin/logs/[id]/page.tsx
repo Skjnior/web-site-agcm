@@ -112,7 +112,7 @@ export default function AuditLogDetailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Informations générales */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="admin-panel p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-blue-100 rounded-lg">
               <Activity className="h-5 w-5 text-blue-600" />
@@ -148,7 +148,7 @@ export default function AuditLogDetailPage() {
         </div>
 
         {/* Informations utilisateur */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="admin-panel p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-purple-100 rounded-lg">
               <User className="h-5 w-5 text-purple-600" />
@@ -185,7 +185,7 @@ export default function AuditLogDetailPage() {
 
         {/* Données avant (si disponibles) */}
         {log.beforeData && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="admin-panel p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 bg-yellow-100 rounded-lg">
                 <FileText className="h-5 w-5 text-yellow-600" />
@@ -202,7 +202,7 @@ export default function AuditLogDetailPage() {
 
         {/* Données après (si disponibles) */}
         {log.afterData && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="admin-panel p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 bg-green-100 rounded-lg">
                 <FileText className="h-5 w-5 text-green-600" />

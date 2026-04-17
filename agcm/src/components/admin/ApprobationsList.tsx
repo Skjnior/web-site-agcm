@@ -167,7 +167,7 @@ export default function ApprobationsList({
 
   if (contents.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow p-12 text-center">
+      <div className="admin-panel p-12 text-center">
         <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
         <p className="text-gray-600">Aucun contenu à valider</p>
       </div>
@@ -176,10 +176,10 @@ export default function ApprobationsList({
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="admin-panel overflow-hidden shadow">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-slate-800/90">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Contenu
@@ -201,11 +201,11 @@ export default function ApprobationsList({
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 bg-white dark:divide-slate-700 dark:bg-slate-950">
               {contents.map((content) => {
                 const auteur = content.auteurPoste.affectations[0]?.member;
                 return (
-                  <tr key={content.id} className="hover:bg-gray-50">
+                  <tr key={content.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/60">
                     <td className="px-6 py-4">
                       <div className="font-medium text-gray-900">{content.titre}</div>
                       {content.contenu && (
@@ -347,7 +347,7 @@ export default function ApprobationsList({
 
         {/* Pagination améliorée */}
         {totalPages > 1 && (
-          <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
+          <div className="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-6 py-4 dark:border-slate-700 dark:bg-slate-900/80">
             <div className="text-sm text-gray-700">
               Affichage de {((currentPage - 1) * 10) + 1} à {Math.min(currentPage * 10, total)} sur {total}
             </div>

@@ -139,7 +139,7 @@ export default function RessourceForm({ ressourceId, initialData }: RessourceFor
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="bg-white border rounded-xl p-6 space-y-6">
+      <div className="admin-panel space-y-6 rounded-xl p-6">
         <h2 className="text-lg font-semibold text-gray-900">Informations générales</h2>
         <div className="grid md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
@@ -340,7 +340,7 @@ export default function RessourceForm({ ressourceId, initialData }: RessourceFor
         </div>
       </div>
 
-      <div className="bg-white border rounded-xl p-6 space-y-6">
+      <div className="admin-panel space-y-6 rounded-xl p-6">
         <h2 className="text-lg font-semibold text-gray-900">Accès</h2>
         <div className="space-y-4">
           <div className="flex items-center gap-2">

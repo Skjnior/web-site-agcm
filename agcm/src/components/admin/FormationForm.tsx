@@ -121,7 +121,7 @@ export default function FormationForm({ formationId, initialData }: FormationFor
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="bg-white border rounded-xl p-6 space-y-6">
+      <div className="admin-panel space-y-6 rounded-xl p-6">
         <h2 className="text-lg font-semibold text-gray-900">Informations générales</h2>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
@@ -183,7 +183,7 @@ export default function FormationForm({ formationId, initialData }: FormationFor
         </div>
       </div>
 
-      <div className="bg-white border rounded-xl p-6 space-y-6">
+      <div className="admin-panel space-y-6 rounded-xl p-6">
         <h2 className="text-lg font-semibold text-gray-900">Dates et horaires</h2>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
@@ -267,7 +267,7 @@ export default function FormationForm({ formationId, initialData }: FormationFor
         </div>
       </div>
 
-      <div className="bg-white border rounded-xl p-6 space-y-6">
+      <div className="admin-panel space-y-6 rounded-xl p-6">
         <h2 className="text-lg font-semibold text-gray-900">Lieu et capacité</h2>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
@@ -303,7 +303,7 @@ export default function FormationForm({ formationId, initialData }: FormationFor
         </div>
       </div>
 
-      <div className="bg-white border rounded-xl p-6 space-y-6">
+      <div className="admin-panel space-y-6 rounded-xl p-6">
         <h2 className="text-lg font-semibold text-gray-900">Tarifs</h2>
         <div className="grid md:grid-cols-3 gap-4">
           <div>
@@ -361,7 +361,7 @@ export default function FormationForm({ formationId, initialData }: FormationFor
         </div>
       </div>
 
-      <div className="bg-white border rounded-xl p-6 space-y-6">
+      <div className="admin-panel space-y-6 rounded-xl p-6">
         <h2 className="text-lg font-semibold text-gray-900">Informations complémentaires</h2>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
@@ -445,7 +445,7 @@ export default function FormationForm({ formationId, initialData }: FormationFor
         </div>
       </div>
 
-      <div className="bg-white border rounded-xl p-6 space-y-6">
+      <div className="admin-panel space-y-6 rounded-xl p-6">
         <h2 className="text-lg font-semibold text-gray-900">Publication</h2>
         <div className="space-y-4">
           <div className="flex items-center gap-2">

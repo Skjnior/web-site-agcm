@@ -84,7 +84,7 @@ export default function NouvelUtilisateurPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg shadow p-6 space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="admin-panel-form">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <Label htmlFor="email">Email *</Label>

@@ -261,7 +261,7 @@ export default function SuperAdminMandatsPage() {
       </div>
 
       {/* Filtres de recherche */}
-      <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
+      <div className="admin-panel shadow p-4 border border-gray-200">
         <div className="flex items-center gap-2 mb-4">
           <Filter className="h-5 w-5 text-gray-700" />
           <h3 className="text-lg font-semibold text-gray-900">Filtres de recherche</h3>

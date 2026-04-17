@@ -173,7 +173,7 @@ export default function SuperAdminContentsClient({
       </div>
 
       {/* Filtres de recherche */}
-      <div className="bg-white rounded-lg border p-4 space-y-4">
+      <div className="admin-panel p-4 space-y-4">
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex-1 min-w-[200px]">
             <div className="relative flex items-center gap-2">
@@ -210,7 +210,7 @@ export default function SuperAdminContentsClient({
       </div>
 
       {/* Filtres par statut */}
-      <div className="bg-white rounded-lg border overflow-hidden">
+      <div className="admin-panel border overflow-hidden">
         <div className="flex gap-2 border-b border-gray-200 p-2 overflow-x-auto">
           <Link href="/super-admin/contents?status=ALL">
             <Button
@@ -273,7 +273,7 @@ export default function SuperAdminContentsClient({
 
       {/* Liste des contenus */}
       {loading ? (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
+        <div className="admin-panel p-12 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
           <p className="mt-4 text-gray-600">Chargement...</p>
         </div>
@@ -289,7 +289,7 @@ export default function SuperAdminContentsClient({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between bg-white rounded-lg border px-6 py-4">
+        <div className="flex items-center justify-between admin-panel border px-6 py-4">
           <div className="text-sm text-gray-700">
             Affichage de <span className="font-medium">{(page - 1) * 20 + 1}</span> à{' '}
             <span className="font-medium">{Math.min(page * 20, total)}</span> sur{' '}

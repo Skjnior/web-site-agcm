@@ -139,10 +139,10 @@ export default function AdminDemandesPartenariatsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col pointer-events-auto">
+    <div className="admin-page flex flex-col pointer-events-auto">
       <main className="flex-1 p-4 md:p-8 w-full max-w-[1600px] mx-auto overflow-x-hidden">
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-3xl p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="admin-glass rounded-3xl p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">Demandes de Partenariat</h1>
               <p className="text-slate-500 mt-1">Gérer les demandes de partenariat</p>
@@ -154,12 +154,12 @@ export default function AdminDemandesPartenariatsPage() {
             values={filterValues}
             onChange={updateFilters}
             onReset={resetFilters}
-            className="bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-2xl p-4 shadow-sm mb-6"
+            className="admin-glass rounded-2xl p-4 shadow-sm mb-6"
           />
 
           {data && (
             <>
-              <div className="bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-3xl shadow-sm overflow-hidden">
+              <div className="admin-glass rounded-3xl shadow-sm overflow-hidden">
                 <div className="divide-y divide-slate-200/50">
                   {data.data.length === 0 ? (
                     <div className="px-6 py-12 text-center text-slate-500">
@@ -186,7 +186,7 @@ export default function AdminDemandesPartenariatsPage() {
                               <p><span className="font-medium text-slate-700">Email :</span> {demande.email}</p>
                               {demande.telephone && <p><span className="font-medium text-slate-700">Téléphone :</span> {demande.telephone}</p>}
                               {demande.typePartenariat && <p><span className="font-medium text-slate-700">Type :</span> {demande.typePartenariat}</p>}
-                              {demande.message && <p className="mt-3 text-slate-500 italic max-w-2xl bg-slate-50/50 p-3 rounded-xl border border-slate-100">"{demande.message}"</p>}
+                              {demande.message && <p className="mt-3 text-slate-500 italic max-w-2xl rounded-xl border border-slate-100 bg-slate-50/50 p-3 dark:border-slate-700/50 dark:bg-slate-800/40">"{demande.message}"</p>}
                               <p className="text-slate-400 mt-2 text-xs font-medium">
                                 {new Date(demande.createdAt).toLocaleDateString('fr-FR', {
                                   day: 'numeric', month: 'long', year: 'numeric'
@@ -238,7 +238,7 @@ export default function AdminDemandesPartenariatsPage() {
                   hasNext={data.pagination.hasNext}
                   hasPrev={data.pagination.hasPrev}
                   onPageChange={setPage}
-                  className="mt-6 bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-2xl p-2 shadow-sm"
+                  className="mt-6 admin-glass rounded-2xl p-2 shadow-sm"
                 />
               )}
             </>

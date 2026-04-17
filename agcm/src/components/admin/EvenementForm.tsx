@@ -104,8 +104,8 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-3xl p-8 shadow-sm space-y-8">
-        <h2 className="text-xl font-semibold text-slate-900 border-b border-slate-200/50 pb-4">Informations générales</h2>
+      <div className="admin-glass rounded-3xl p-8 shadow-sm space-y-8">
+        <h2 className="text-xl font-semibold text-slate-900 border-b border-slate-200/50 pb-4 dark:border-slate-700 dark:text-slate-100">Informations générales</h2>
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label htmlFor="titre" className="block text-sm font-medium text-slate-700">
@@ -117,7 +117,7 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
               required
               value={formData.titre}
               onChange={handleTitleChange}
-              className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-900"
+              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
               placeholder="Ex: Assemblée Générale Ordinaire 2024"
             />
           </div>
@@ -131,12 +131,12 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
               required
               value={formData.slug}
               onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
-              className="w-full px-4 py-3 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-600 font-mono text-sm"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 font-mono text-sm text-slate-600 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/40 dark:text-slate-300"
               placeholder="ex-assemblee-generale"
             />
           </div>
-          <div className="md:col-span-2 space-y-2 overflow-hidden rounded-2xl border border-slate-200 bg-white">
-            <div className="px-4 py-3 bg-slate-50 border-b border-slate-200">
+          <div className="md:col-span-2 space-y-2 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-900">
+            <div className="border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-600 dark:bg-slate-800/50">
               <label htmlFor="description" className="block text-sm font-medium text-slate-700">
                 Description <span className="text-red-500">*</span>
               </label>
@@ -156,7 +156,7 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
               required
               value={formData.type}
               onChange={(e) => setFormData((prev) => ({ ...prev, type: e.target.value }))}
-              className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-900"
+              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
             >
               <option value="CONFERENCE">Conférence</option>
               <option value="SEMINAIRE">Séminaire</option>
@@ -170,8 +170,8 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
         </div>
       </div>
 
-      <div className="bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-3xl p-8 shadow-sm space-y-8">
-        <h2 className="text-xl font-semibold text-slate-900 border-b border-slate-200/50 pb-4">Date et lieu</h2>
+      <div className="admin-glass rounded-3xl p-8 shadow-sm space-y-8">
+        <h2 className="text-xl font-semibold text-slate-900 border-b border-slate-200/50 pb-4 dark:border-slate-700 dark:text-slate-100">Date et lieu</h2>
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label htmlFor="dateEvenement" className="block text-sm font-medium text-slate-700">
@@ -183,7 +183,7 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
               required
               value={formData.dateEvenement}
               onChange={(e) => setFormData((prev) => ({ ...prev, dateEvenement: e.target.value }))}
-              className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-900"
+              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
             />
           </div>
           <div className="space-y-2">
@@ -196,7 +196,7 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
               required
               value={formData.lieu}
               onChange={(e) => setFormData((prev) => ({ ...prev, lieu: e.target.value }))}
-              className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-900"
+              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
               placeholder="Adresse ou plateforme"
             />
           </div>
@@ -210,7 +210,7 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
               required
               value={formData.heureDebut}
               onChange={(e) => setFormData((prev) => ({ ...prev, heureDebut: e.target.value }))}
-              className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-900"
+              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
             />
           </div>
           <div className="space-y-2">
@@ -223,7 +223,7 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
               required
               value={formData.heureFin}
               onChange={(e) => setFormData((prev) => ({ ...prev, heureFin: e.target.value }))}
-              className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-900"
+              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
             />
           </div>
           <div className="md:col-span-2 space-y-2">
@@ -235,15 +235,15 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
               id="lienVisio"
               value={formData.lienVisio}
               onChange={(e) => setFormData((prev) => ({ ...prev, lienVisio: e.target.value }))}
-              className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-900"
+              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
               placeholder="Lien Zoom, Teams, Meet..."
             />
           </div>
         </div>
       </div>
 
-      <div className="bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-3xl p-8 shadow-sm space-y-8">
-        <h2 className="text-xl font-semibold text-slate-900 border-b border-slate-200/50 pb-4">Inscriptions</h2>
+      <div className="admin-glass rounded-3xl p-8 shadow-sm space-y-8">
+        <h2 className="text-xl font-semibold text-slate-900 border-b border-slate-200/50 pb-4 dark:border-slate-700 dark:text-slate-100">Inscriptions</h2>
         <div className="grid md:grid-cols-2 gap-6">
           <div className="md:col-span-2 pt-2">
             <label className="flex items-start gap-3 cursor-pointer group">
@@ -283,7 +283,7 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
                       placesMax: e.target.value ? parseInt(e.target.value) : undefined,
                     }))
                   }
-                  className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-900"
+                  className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
                   placeholder="Ex: 50"
                 />
               </div>
@@ -296,7 +296,7 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
                   id="dateInscriptionFin"
                   value={formData.dateInscriptionFin || ''}
                   onChange={(e) => setFormData((prev) => ({ ...prev, dateInscriptionFin: e.target.value }))}
-                  className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-900"
+                  className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
                 />
               </div>
             </>
@@ -304,11 +304,11 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
         </div>
       </div>
 
-      <div className="bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-3xl p-8 shadow-sm space-y-8">
-        <h2 className="text-xl font-semibold text-slate-900 border-b border-slate-200/50 pb-4">Programme & Média</h2>
+      <div className="admin-glass rounded-3xl p-8 shadow-sm space-y-8">
+        <h2 className="text-xl font-semibold text-slate-900 border-b border-slate-200/50 pb-4 dark:border-slate-700 dark:text-slate-100">Programme & Média</h2>
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="md:col-span-2 space-y-2 overflow-hidden rounded-2xl border border-slate-200 bg-white">
-            <div className="px-4 py-3 bg-slate-50 border-b border-slate-200">
+          <div className="md:col-span-2 space-y-2 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-900">
+            <div className="border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-600 dark:bg-slate-800/50">
               <label htmlFor="programme" className="block text-sm font-medium text-slate-700">
                 Programme détaillé
               </label>
@@ -328,7 +328,7 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
               rows={3}
               value={formData.intervenants}
               onChange={(e) => setFormData((prev) => ({ ...prev, intervenants: e.target.value }))}
-              className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-900 resize-y"
+              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100 resize-y"
               placeholder="Ex: Dr. Jean Dupont, Pr. Marie Curi"
             />
           </div>
@@ -336,7 +336,7 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
             <label className="block text-sm font-medium text-slate-700">
               Affiche / Image de l'événement
             </label>
-            <div className="p-4 bg-slate-50/50 border border-slate-200 border-dashed rounded-2xl">
+            <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 p-4 dark:border-slate-600 dark:bg-slate-800/30">
               <ImageUpload
                 value={formData.imageUrl}
                 onChange={(url) => setFormData((prev) => ({ ...prev, imageUrl: url }))}
@@ -347,8 +347,8 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
         </div>
       </div>
 
-      <div className="bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-3xl p-8 shadow-sm space-y-8">
-        <h2 className="text-xl font-semibold text-slate-900 border-b border-slate-200/50 pb-4">Publication</h2>
+      <div className="admin-glass rounded-3xl p-8 shadow-sm space-y-8">
+        <h2 className="text-xl font-semibold text-slate-900 border-b border-slate-200/50 pb-4 dark:border-slate-700 dark:text-slate-100">Publication</h2>
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label htmlFor="status" className="block text-sm font-medium text-slate-700">
@@ -359,7 +359,7 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
               required
               value={formData.status}
               onChange={(e) => setFormData((prev) => ({ ...prev, status: e.target.value }))}
-              className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-slate-900"
+              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
             >
               <option value="PLANIFIE">Planifié (À venir)</option>
               <option value="EN_COURS">En cours</option>
@@ -407,7 +407,7 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
         <button
           type="button"
           onClick={() => router.back()}
-          className="px-8 py-3 bg-white text-slate-700 font-medium border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all"
+          className="rounded-xl border border-slate-200 bg-white px-8 py-3 font-medium text-slate-700 transition-all hover:bg-slate-50 hover:text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
         >
           Annuler
         </button>

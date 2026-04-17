@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -56,6 +57,7 @@ interface Member {
 
 interface ProfilFormProps {
   member: Member;
+  /** Si défini, force l’apparence (ex. espace membre toujours sombre). Sinon suit le thème (Clair / Sombre / Système). */
   dark?: boolean;
   /** Email du compte (lecture seule) — ex. espace admin */
   userEmail?: string | null;
@@ -65,11 +67,16 @@ interface ProfilFormProps {
 
 export default function ProfilForm({
   member,
-  dark = false,
+  dark,
   userEmail,
   allowImageUpload = false,
 }: ProfilFormProps) {
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const isDark =
+    dark ?? (mounted ? resolvedTheme === 'dark' : false);
   const [loading, setLoading] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -147,35 +154,35 @@ export default function ProfilForm({
     }
   };
 
-  const formClass = dark
+  const formClass = isDark
     ? 'bg-slate-800/30 border border-slate-700/50 rounded-xl p-6 space-y-6'
-    : 'bg-white rounded-lg shadow p-6 space-y-6';
-  const labelClass = dark ? 'text-slate-300' : 'text-gray-900';
-  const inputClass = dark
+    : 'bg-white rounded-lg shadow p-6 space-y-6 dark:bg-slate-900 dark:shadow-none';
+  const labelClass = isDark ? 'text-slate-300' : 'text-gray-900 dark:text-slate-200';
+  const inputClass = isDark
     ? 'bg-slate-800/50 border-slate-700 text-slate-100 placeholder:text-slate-500'
-    : '';
+    : 'dark:bg-slate-800/50 dark:border-slate-600 dark:text-slate-100';
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={formClass}>
       {error && (
-        <div className={dark ? 'bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl' : 'bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded'}>
+        <div className={isDark ? 'bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl' : 'bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded dark:bg-red-950/40 dark:border-red-500/30 dark:text-red-300'}>
           {error}
         </div>
       )}
 
       {success && (
-        <div className={dark ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-3 rounded-xl' : 'bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded'}>
+        <div className={isDark ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-3 rounded-xl' : 'bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded dark:bg-emerald-950/30 dark:border-emerald-500/25 dark:text-emerald-300'}>
           Profil mis à jour avec succès !
         </div>
       )}
 
       {userEmail != null && userEmail !== '' && (
         <section>
-          <h2 className={`text-lg font-semibold mb-4 ${dark ? 'text-slate-200' : 'text-gray-900'}`}>Compte</h2>
-          <div className={dark ? 'bg-slate-800/40 border border-slate-700/50 rounded-xl px-4 py-3' : 'bg-slate-50 border rounded-lg px-4 py-3'}>
-            <p className={`text-xs uppercase tracking-wide mb-1 ${dark ? 'text-slate-500' : 'text-slate-500'}`}>Adresse e-mail</p>
-            <p className={dark ? 'text-slate-200 font-medium' : 'text-slate-900 font-medium'}>{userEmail}</p>
-            <p className={`text-xs mt-2 ${dark ? 'text-slate-500' : 'text-slate-600'}`}>
+          <h2 className={`mb-4 text-lg font-semibold ${isDark ? 'text-slate-200' : 'text-gray-900 dark:text-slate-100'}`}>Compte</h2>
+          <div className={isDark ? 'rounded-xl border border-slate-700/50 bg-slate-800/40 px-4 py-3' : 'rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/40'}>
+            <p className={`mb-1 text-xs uppercase tracking-wide ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>Adresse e-mail</p>
+            <p className={isDark ? 'font-medium text-slate-200' : 'font-medium text-slate-900 dark:text-slate-100'}>{userEmail}</p>
+            <p className={`mt-2 text-xs ${isDark ? 'text-slate-500' : 'text-slate-600 dark:text-slate-400'}`}>
               Pour changer l’e-mail de connexion, contactez un super administrateur.
             </p>
           </div>
@@ -197,7 +204,7 @@ export default function ProfilForm({
               }
             />
           </div>
-          <p className={`text-sm ${dark ? 'text-slate-400' : 'text-slate-600'}`}>
+          <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600 dark:text-slate-400'}`}>
             Aperçu de la photo affichée sur le site (bureau, etc.)
           </p>
         </div>
@@ -205,7 +212,7 @@ export default function ProfilForm({
 
       {/* Informations personnelles */}
       <section>
-        <h2 className={`text-lg font-semibold mb-4 ${dark ? 'text-slate-200' : 'text-gray-900'}`}>Informations personnelles</h2>
+        <h2 className={`mb-4 text-lg font-semibold ${isDark ? 'text-slate-200' : 'text-gray-900 dark:text-slate-100'}`}>Informations personnelles</h2>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="prenom" className={labelClass}>Prénom *</Label>
@@ -274,9 +281,9 @@ export default function ProfilForm({
                   variant="outline"
                   disabled={uploadingPhoto}
                   className={
-                    dark
+                    isDark
                       ? 'border-slate-600 bg-slate-800/50 text-slate-200 hover:bg-slate-700'
-                      : ''
+                      : 'dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-200'
                   }
                   onClick={() => fileInputRef.current?.click()}
                 >
@@ -287,7 +294,7 @@ export default function ProfilForm({
                   )}
                   {uploadingPhoto ? 'Envoi…' : 'Importer une image'}
                 </Button>
-                <span className={`text-xs ${dark ? 'text-slate-500' : 'text-slate-500'}`}>
+                <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
                   JPEG, PNG, WebP ou GIF — max 10 Mo
                 </span>
               </div>
@@ -316,7 +323,7 @@ export default function ProfilForm({
             id="bio"
             {...register('bio')}
             rows={4}
-            className={`w-full rounded-xl border px-3 py-2 text-sm ${dark ? 'bg-slate-800/50 border-slate-700 text-slate-100' : 'border-input bg-background'}`}
+            className={`w-full rounded-xl border px-3 py-2 text-sm ${isDark ? 'border-slate-700 bg-slate-800/50 text-slate-100' : 'border-input bg-background dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100'}`}
           />
         </div>
       </section>
@@ -324,23 +331,23 @@ export default function ProfilForm({
       {/* Poste actuel */}
       {member.affectations.length > 0 && (
         <section>
-          <h2 className={`text-lg font-semibold mb-4 ${dark ? 'text-slate-200' : 'text-gray-900'}`}>Poste actuel</h2>
-          <div className={dark ? 'bg-slate-800/50 border border-slate-700 rounded-xl p-4' : 'bg-gray-50 rounded-lg p-4'}>
-            <p className={dark ? 'text-slate-200' : 'text-gray-900'}>
+          <h2 className={`mb-4 text-lg font-semibold ${isDark ? 'text-slate-200' : 'text-gray-900 dark:text-slate-100'}`}>Poste actuel</h2>
+          <div className={isDark ? 'rounded-xl border border-slate-700 bg-slate-800/50 p-4' : 'rounded-lg bg-gray-50 p-4 dark:bg-slate-800/50 dark:text-slate-100'}>
+            <p className={isDark ? 'text-slate-200' : 'text-gray-900 dark:text-slate-100'}>
               <strong>{member.affectations[0].poste.nom}</strong>
             </p>
-            <p className={`text-sm mt-1 ${dark ? 'text-slate-400' : 'text-gray-600'}`}>
+            <p className={`mt-1 text-sm ${isDark ? 'text-slate-400' : 'text-gray-600 dark:text-slate-400'}`}>
               {member.affectations[0].mandat.titre}
             </p>
           </div>
         </section>
       )}
 
-      <div className={`flex items-center justify-end gap-4 pt-4 ${dark ? 'border-t border-slate-700' : 'border-t'}`}>
+      <div className={`flex items-center justify-end gap-4 pt-4 ${isDark ? 'border-t border-slate-700' : 'border-t border-slate-200 dark:border-slate-700'}`}>
         <Button
           type="submit"
           disabled={loading}
-          className={dark ? 'bg-blue-600 hover:bg-blue-700 text-white' : ''}
+          className={isDark ? 'bg-blue-600 text-white hover:bg-blue-700' : 'dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700'}
         >
           {loading ? (
             <>

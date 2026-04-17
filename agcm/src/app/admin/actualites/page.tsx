@@ -71,7 +71,7 @@ export default async function ActualitesAdminPage({ searchParams }: Props) {
       </div>
 
       {actualites.length === 0 ? (
-        <div className="bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-3xl p-16 text-center shadow-sm">
+        <div className="admin-glass rounded-3xl p-16 text-center shadow-sm">
           <FileText className="h-16 w-16 text-slate-300 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-slate-900 mb-2">Aucune actualité trouvée</h3>
           <p className="text-slate-500 mb-6">Commencez par créer votre première actualité pour informer vos membres.</p>
@@ -82,10 +82,10 @@ export default async function ActualitesAdminPage({ searchParams }: Props) {
           </Link>
         </div>
       ) : (
-        <div className="bg-white/70 backdrop-blur-xl rounded-3xl border border-slate-200/50 shadow-sm overflow-hidden">
+        <div className="admin-glass overflow-hidden rounded-3xl shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-slate-50 border-b border-slate-200/50">
+              <thead className="border-b border-slate-200/50 bg-slate-50 dark:border-slate-700/50 dark:bg-slate-800/40">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Titre</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Auteur</th>
@@ -94,9 +94,9 @@ export default async function ActualitesAdminPage({ searchParams }: Props) {
                   <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {actualites.map((actualite) => (
-                  <tr key={actualite.id} className="hover:bg-slate-50/80 transition-colors group">
+                  <tr key={actualite.id} className="transition-colors group hover:bg-slate-50/80 dark:hover:bg-slate-800/60">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         {actualite.imagePrincipale ? (
@@ -153,7 +153,7 @@ export default async function ActualitesAdminPage({ searchParams }: Props) {
           </div>
 
           {totalPages > 1 && (
-            <div className="border-t border-slate-200/50 px-6 py-4 flex items-center justify-between bg-slate-50/50">
+            <div className="flex items-center justify-between border-t border-slate-200/50 bg-slate-50/50 px-6 py-4 dark:border-slate-700/50 dark:bg-slate-900/40">
               <div className="text-sm text-slate-500 font-medium">
                 Page {page} sur {totalPages} <span className="text-slate-400">({total} résultats)</span>
               </div>

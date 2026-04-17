@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminHeader from '@/components/admin/AdminHeader';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminLayout({
     children,
 }: {
@@ -39,12 +41,12 @@ export default async function AdminLayout({
     };
 
     return (
-        <div className="flex h-screen w-full bg-slate-950 overflow-hidden text-slate-100 font-sans selection:bg-blue-500/30">
-            {/* Background decoration for premium dark feel */}
+        <div className="flex h-screen w-full overflow-hidden bg-slate-100 font-sans text-slate-900 selection:bg-blue-500/30 dark:bg-slate-950 dark:text-slate-100">
+            {/* Fond décoratif — lisible en clair comme en sombre */}
             <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-                <div className="absolute top-[10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-blue-900/20 blur-[120px]" />
-                <div className="absolute bottom-[-10%] right-[-5%] w-[30vw] h-[30vw] rounded-full bg-purple-900/20 blur-[100px]" />
-                <div className="absolute top-[40%] left-[60%] w-[20vw] h-[20vw] rounded-full bg-emerald-900/10 blur-[80px]" />
+                <div className="absolute top-[10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-blue-400/10 blur-[120px] dark:bg-blue-900/20" />
+                <div className="absolute bottom-[-10%] right-[-5%] w-[30vw] h-[30vw] rounded-full bg-purple-400/10 blur-[100px] dark:bg-purple-900/20" />
+                <div className="absolute top-[40%] left-[60%] w-[20vw] h-[20vw] rounded-full bg-emerald-400/5 blur-[80px] dark:bg-emerald-900/10" />
             </div>
 
             <AdminSidebar role={user.roleSysteme} />

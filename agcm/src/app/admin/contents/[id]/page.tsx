@@ -109,7 +109,7 @@ export default async function ContentDetailPage({ params }: ContentDetailPagePro
         </Link>
       </div>
 
-      <div className="bg-white border rounded-xl p-6 space-y-6">
+      <div className="admin-panel space-y-6 rounded-xl p-6">
         {/* En-tête */}
         <div className="border-b pb-4">
           <div className="flex items-start justify-between">

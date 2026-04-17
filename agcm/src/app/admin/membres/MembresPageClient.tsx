@@ -166,7 +166,7 @@ export default function MembresPageClient({
 
       {/* Statistiques rapides */}
       <div className="grid grid-cols-4 gap-4">
-        <div className="bg-white border rounded-lg p-4">
+        <div className="admin-panel p-4">
           <div className="text-sm text-gray-600">Total</div>
           <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
         </div>
@@ -185,7 +185,7 @@ export default function MembresPageClient({
       </div>
 
       {/* Filtres de recherche */}
-      <div className="bg-white rounded-lg border p-4 space-y-4">
+      <div className="admin-panel p-4 space-y-4">
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex-1 min-w-[200px]">
             <div className="relative flex items-center gap-2">
@@ -259,7 +259,7 @@ export default function MembresPageClient({
 
       {/* Tableau */}
       {loading ? (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
+        <div className="admin-panel p-12 text-center">
           <p className="text-gray-600">Chargement...</p>
         </div>
       ) : (
@@ -273,7 +273,7 @@ export default function MembresPageClient({
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="bg-white rounded-lg shadow px-6 py-4 flex items-center justify-between border-t border-gray-200">
+            <div className="admin-panel px-6 py-4 shadow flex items-center justify-between border-t border-gray-200">
               <div className="text-sm text-gray-700">
                 Affichage de {((page - 1) * 20) + 1} à {Math.min(page * 20, total)} sur {total}
               </div>
