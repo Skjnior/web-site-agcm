@@ -35,7 +35,7 @@ export const authConfig = {
             include: { member: true }
           });
 
-          if (!user || !user.isActive) {
+          if (!user || !user.isActive || user.deletedAt) {
             return null;
           }
 

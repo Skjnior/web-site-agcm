@@ -128,14 +128,14 @@ export default function SuperAdminPostesPage() {
       key: 'nom',
       label: 'Nom',
       render: (poste: Poste) => (
-        <div className="font-medium text-gray-900">{poste.nom}</div>
+        <div className="font-medium text-slate-900 dark:text-slate-100">{poste.nom}</div>
       ),
     },
     {
       key: 'description',
       label: 'Description',
       render: (poste: Poste) => (
-        <div className="text-gray-900 max-w-md truncate">
+        <div className="max-w-md truncate text-slate-900 dark:text-slate-100">
           {poste.description || '-'}
         </div>
       ),
@@ -169,7 +169,7 @@ export default function SuperAdminPostesPage() {
       key: 'stats',
       label: 'Utilisation',
       render: (poste: Poste) => (
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-slate-500 dark:text-slate-400">
           {poste._count ? (
             <>
               {poste._count.affectations} affectation{poste._count.affectations > 1 ? 's' : ''}
@@ -198,27 +198,29 @@ export default function SuperAdminPostesPage() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 text-gray-900">
-      <div className="flex items-center justify-between">
+    <div className="admin-page mx-auto max-w-7xl space-y-8 px-4 pb-12 text-slate-900 animate-in fade-in duration-500 dark:text-slate-100">
+      <div className="admin-glass flex flex-col gap-4 rounded-3xl p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Gestion des postes</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-3xl font-bold text-transparent dark:from-slate-100 dark:to-slate-400">
+            Gestion des postes
+          </h1>
+          <p className="mt-1 text-slate-600 dark:text-slate-400">
             {data?.pagination.total || 0} poste{data?.pagination.total !== 1 ? 's' : ''}
           </p>
         </div>
-        <Link href="/admin/postes/nouveau">
+        <Link href="/admin/postes/nouveau" className="shrink-0">
           <Button variant="add">
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="mr-2 h-4 w-4" />
             Nouveau poste
           </Button>
         </Link>
       </div>
 
       <div className="admin-panel p-4 space-y-4">
-        <div className="flex items-center gap-4 flex-wrap">
-          <div className="flex-1 min-w-[200px]">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="min-w-[200px] flex-1">
             <div className="relative flex items-center gap-2">
-              <Search className="absolute left-3 h-4 w-4 text-gray-400 pointer-events-none" />
+              <Search className="pointer-events-none absolute left-3 h-4 w-4 text-slate-400 dark:text-slate-500" />
               <Input
                 placeholder="Rechercher par nom ou description..."
                 value={search}
@@ -235,49 +237,54 @@ export default function SuperAdminPostesPage() {
                 variant="outline"
                 size="sm"
                 onClick={handleSearch}
-                className="shrink-0"
+                className="shrink-0 border-slate-300 dark:border-slate-600 dark:hover:bg-slate-800"
               >
                 <Search className="h-4 w-4" />
               </Button>
             </div>
           </div>
-          <Select 
-            value={estBureau || 'all'} 
+          <Select
+            value={estBureau || 'all'}
             onValueChange={(value) => {
               const newValue = value === 'all' ? '' : value;
               setEstBureau(newValue);
               handleFilterChange('estBureau', newValue);
             }}
           >
-            <SelectTrigger className="w-[180px] text-gray-900">
+            <SelectTrigger className="w-[180px] border-slate-200 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100">
               <SelectValue placeholder="Type de poste" />
             </SelectTrigger>
-            <SelectContent className="z-50">
-              <SelectItem value="all" className="text-gray-900">Tous les types</SelectItem>
-              <SelectItem value="true" className="text-gray-900">Bureau exécutif</SelectItem>
-              <SelectItem value="false" className="text-gray-900">Autre</SelectItem>
+            <SelectContent className="z-50 border-slate-700 bg-white dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+              <SelectItem value="all">Tous les types</SelectItem>
+              <SelectItem value="true">Bureau exécutif</SelectItem>
+              <SelectItem value="false">Autre</SelectItem>
             </SelectContent>
           </Select>
-          <Select 
-            value={estActif || 'all'} 
+          <Select
+            value={estActif || 'all'}
             onValueChange={(value) => {
               const newValue = value === 'all' ? '' : value;
               setEstActif(newValue);
               handleFilterChange('estActif', newValue);
             }}
           >
-            <SelectTrigger className="w-[180px] text-gray-900">
+            <SelectTrigger className="w-[180px] border-slate-200 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100">
               <SelectValue placeholder="Statut" />
             </SelectTrigger>
-            <SelectContent className="z-50">
-              <SelectItem value="all" className="text-gray-900">Tous les statuts</SelectItem>
-              <SelectItem value="true" className="text-gray-900">Actif</SelectItem>
-              <SelectItem value="false" className="text-gray-900">Inactif</SelectItem>
+            <SelectContent className="z-50 border-slate-700 bg-white dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+              <SelectItem value="all">Tous les statuts</SelectItem>
+              <SelectItem value="true">Actif</SelectItem>
+              <SelectItem value="false">Inactif</SelectItem>
             </SelectContent>
           </Select>
           {(searchParams.get('search') || searchParams.get('estBureau') || searchParams.get('estActif')) && (
-            <Button variant="outline" onClick={handleResetFilters} size="sm">
-              <X className="h-4 w-4 mr-2" />
+            <Button
+              variant="outline"
+              onClick={handleResetFilters}
+              size="sm"
+              className="border-slate-300 dark:border-slate-600 dark:hover:bg-slate-800"
+            >
+              <X className="mr-2 h-4 w-4" />
               Réinitialiser
             </Button>
           )}

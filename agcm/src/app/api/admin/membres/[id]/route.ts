@@ -7,14 +7,21 @@ import { prisma } from '@/lib/prisma';
 import { logAction } from '@/lib/audit';
 import { canActOnUser } from '@/lib/permissions';
 import { z } from 'zod';
+import type { Prisma } from '@prisma/client';
 
 const updateMemberSchema = z.object({
   prenom: z.string().min(1).optional(),
   nom: z.string().min(1).optional(),
+  genre: z.enum(['FEMME', 'HOMME', 'AUTRE', 'NE_PAS_DIRE']).nullable().optional(),
+  /** Format YYYY-MM-DD ou ISO */
+  dateNaissance: z.string().nullable().optional(),
+  profession: z.string().nullable().optional(),
+  adresse: z.string().nullable().optional(),
   telephone: z.string().nullable().optional(),
   ville: z.string().nullable().optional(),
   pays: z.string().nullable().optional(),
   bio: z.string().nullable().optional(),
+  photoUrl: z.string().nullable().optional(),
   statutMembre: z.enum(['ACTIF', 'SUSPENDU', 'RADIE']).optional(),
 });
 
@@ -59,7 +66,21 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const data = updateMemberSchema.parse(body);
+    const parsed = updateMemberSchema.parse(body);
+
+    const data: Prisma.MemberUpdateInput = { ...parsed };
+    if (parsed.dateNaissance !== undefined) {
+      if (parsed.dateNaissance === null || parsed.dateNaissance === '') {
+        data.dateNaissance = null;
+      } else {
+        const d = new Date(parsed.dateNaissance);
+        data.dateNaissance = Number.isNaN(d.getTime()) ? null : d;
+      }
+    }
+    if (parsed.photoUrl !== undefined) {
+      data.photoUrl =
+        parsed.photoUrl === null || parsed.photoUrl === '' ? null : parsed.photoUrl;
+    }
 
     const member = await prisma.member.update({
       where: { id },

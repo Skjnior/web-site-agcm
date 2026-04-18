@@ -43,12 +43,13 @@ export default function AdminDemandesPartenariatsPage() {
       type: 'text',
       key: 'search',
       label: 'Recherche',
-      placeholder: 'Rechercher par organisation...',
+      placeholder: 'Organisation, email, contact, message…',
     },
     {
       type: 'select',
       key: 'statut',
       label: 'Statut',
+      selectDefault: 'EN_ATTENTE',
       options: [
         { label: 'En attente', value: 'EN_ATTENTE' },
         { label: 'Approuvée', value: 'APPROUVEE' },
@@ -132,7 +133,7 @@ export default function AdminDemandesPartenariatsPage() {
 
   if (loading && !data) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="admin-page flex min-h-[50vh] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -142,10 +143,12 @@ export default function AdminDemandesPartenariatsPage() {
     <div className="admin-page flex flex-col pointer-events-auto">
       <main className="flex-1 p-4 md:p-8 w-full max-w-[1600px] mx-auto overflow-x-hidden">
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="admin-glass rounded-3xl p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="admin-glass flex flex-col justify-between gap-4 rounded-3xl p-8 shadow-sm md:flex-row md:items-center">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">Demandes de Partenariat</h1>
-              <p className="text-slate-500 mt-1">Gérer les demandes de partenariat</p>
+              <h1 className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-3xl font-bold text-transparent dark:from-slate-100 dark:to-slate-400">
+                Demandes de Partenariat
+              </h1>
+              <p className="mt-1 text-slate-500 dark:text-slate-400">Gérer les demandes de partenariat</p>
             </div>
           </div>
 
@@ -159,35 +162,64 @@ export default function AdminDemandesPartenariatsPage() {
 
           {data && (
             <>
-              <div className="admin-glass rounded-3xl shadow-sm overflow-hidden">
-                <div className="divide-y divide-slate-200/50">
+              <div className="admin-glass overflow-hidden rounded-3xl shadow-sm">
+                <div className="divide-y divide-slate-200/50 dark:divide-slate-700/80">
                   {data.data.length === 0 ? (
-                    <div className="px-6 py-12 text-center text-slate-500">
+                    <div className="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
                       Aucune demande trouvée
                     </div>
                   ) : (
                     data.data.map((demande) => (
-                      <div key={demande.id} className="p-6 hover:bg-primary-50/50 transition-colors group">
+                      <div
+                        key={demande.id}
+                        className="group p-6 transition-colors hover:bg-primary-50/50 dark:hover:bg-slate-800/50"
+                      >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h3 className="text-lg font-semibold text-slate-900 group-hover:text-primary-700 transition-colors">
+                            <div className="mb-2 flex flex-wrap items-center gap-3">
+                              <h3 className="text-lg font-semibold text-slate-900 transition-colors group-hover:text-primary-700 dark:text-slate-100 dark:group-hover:text-primary-400">
                                 {demande.organisation}
                               </h3>
-                              <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${demande.statut === 'APPROUVEE' ? 'bg-green-100/50 text-green-700 border-green-200' :
-                                demande.statut === 'REFUSEE' ? 'bg-red-100/50 text-red-700 border-red-200' :
-                                  'bg-yellow-100/50 text-yellow-700 border-yellow-200'
-                                }`}>
+                              <span
+                                className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
+                                  demande.statut === 'APPROUVEE'
+                                    ? 'border-green-200 bg-green-100/50 text-green-800 dark:border-green-800/50 dark:bg-green-950/40 dark:text-green-300'
+                                    : demande.statut === 'REFUSEE'
+                                      ? 'border-red-200 bg-red-100/50 text-red-800 dark:border-red-800/50 dark:bg-red-950/40 dark:text-red-300'
+                                      : 'border-amber-200 bg-amber-100/50 text-amber-900 dark:border-amber-800/50 dark:bg-amber-950/40 dark:text-amber-200'
+                                }`}
+                              >
                                 {demande.statut}
                               </span>
                             </div>
-                            <div className="text-sm text-slate-600 space-y-1">
-                              {demande.contactNom && <p><span className="font-medium text-slate-700">Contact :</span> {demande.contactNom}</p>}
-                              <p><span className="font-medium text-slate-700">Email :</span> {demande.email}</p>
-                              {demande.telephone && <p><span className="font-medium text-slate-700">Téléphone :</span> {demande.telephone}</p>}
-                              {demande.typePartenariat && <p><span className="font-medium text-slate-700">Type :</span> {demande.typePartenariat}</p>}
-                              {demande.message && <p className="mt-3 text-slate-500 italic max-w-2xl rounded-xl border border-slate-100 bg-slate-50/50 p-3 dark:border-slate-700/50 dark:bg-slate-800/40">"{demande.message}"</p>}
-                              <p className="text-slate-400 mt-2 text-xs font-medium">
+                            <div className="space-y-1 text-sm text-slate-600 dark:text-slate-400">
+                              {demande.contactNom && (
+                                <p>
+                                  <span className="font-medium text-slate-700 dark:text-slate-300">Contact :</span>{' '}
+                                  {demande.contactNom}
+                                </p>
+                              )}
+                              <p>
+                                <span className="font-medium text-slate-700 dark:text-slate-300">Email :</span> {demande.email}
+                              </p>
+                              {demande.telephone && (
+                                <p>
+                                  <span className="font-medium text-slate-700 dark:text-slate-300">Téléphone :</span>{' '}
+                                  {demande.telephone}
+                                </p>
+                              )}
+                              {demande.typePartenariat && (
+                                <p>
+                                  <span className="font-medium text-slate-700 dark:text-slate-300">Type :</span>{' '}
+                                  {demande.typePartenariat}
+                                </p>
+                              )}
+                              {demande.message && (
+                                <p className="mt-3 max-w-2xl rounded-xl border border-slate-100 bg-slate-50/50 p-3 italic text-slate-500 dark:border-slate-700/50 dark:bg-slate-800/40 dark:text-slate-400">
+                                  &quot;{demande.message}&quot;
+                                </p>
+                              )}
+                              <p className="mt-2 text-xs font-medium text-slate-400 dark:text-slate-500">
                                 {new Date(demande.createdAt).toLocaleDateString('fr-FR', {
                                   day: 'numeric', month: 'long', year: 'numeric'
                                 })}
@@ -195,13 +227,13 @@ export default function AdminDemandesPartenariatsPage() {
                             </div>
                           </div>
                           {demande.statut === 'EN_ATTENTE' && (
-                            <div className="flex items-center gap-2 ml-4">
+                            <div className="ml-4 flex shrink-0 items-center gap-2">
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleApprove(demande.id)}
                                 disabled={processing === demande.id}
-                                className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                                className="text-green-600 hover:bg-green-50 hover:text-green-700 dark:text-green-400 dark:hover:bg-green-950/40 dark:hover:text-green-300"
                               >
                                 {processing === demande.id ? (
                                   <Loader2 className="h-4 w-4 mr-1 animate-spin" />
@@ -215,7 +247,7 @@ export default function AdminDemandesPartenariatsPage() {
                                 size="sm"
                                 onClick={() => handleReject(demande.id)}
                                 disabled={processing === demande.id}
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                className="text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/40 dark:hover:text-red-300"
                               >
                                 <X className="h-4 w-4 mr-1" />
                                 Refuser
@@ -238,7 +270,7 @@ export default function AdminDemandesPartenariatsPage() {
                   hasNext={data.pagination.hasNext}
                   hasPrev={data.pagination.hasPrev}
                   onPageChange={setPage}
-                  className="mt-6 admin-glass rounded-2xl p-2 shadow-sm"
+                  className="admin-glass mt-6 rounded-2xl p-4 shadow-sm"
                 />
               )}
             </>

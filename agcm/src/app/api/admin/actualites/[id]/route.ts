@@ -47,9 +47,15 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   try {
     const { id } = await params;
     const session = await auth();
+    const userRole =
+      (session?.user as { roleSysteme?: string; role?: string })?.roleSysteme ||
+      session?.user?.role;
 
-    if (!session?.user || !['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user || userRole !== 'SUPER_ADMIN') {
+      return NextResponse.json(
+        { error: 'Seul le super administrateur peut supprimer une actualité' },
+        { status: 403 }
+      );
     }
 
     await prisma.content.delete({

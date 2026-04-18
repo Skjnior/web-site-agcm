@@ -22,8 +22,8 @@ export function getStatusBadgeClasses(status: string, isActive?: boolean): strin
   // Si isActive est fourni, utiliser cette valeur
   if (isActive !== undefined) {
     return isActive
-      ? 'bg-green-100 text-green-800 border-green-200'
-      : 'bg-red-100 text-red-800 border-red-200';
+      ? 'bg-green-100 text-green-800 border-green-200 dark:bg-green-950/40 dark:text-green-300 dark:border-green-800/50'
+      : 'bg-red-100 text-red-800 border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-800/50';
   }
 
   // Sinon, utiliser le statut
@@ -52,15 +52,24 @@ export function getStatusBadgeClasses(status: string, isActive?: boolean): strin
  */
 export function getRoleBadgeClasses(role: string): string {
   const roleMap: Record<string, string> = {
-    SUPER_ADMIN: 'bg-purple-100 text-purple-800 border-purple-200',
-    ADMIN: 'bg-blue-100 text-blue-800 border-blue-200',
-    MEMBER: 'bg-gray-100 text-gray-800 border-gray-200',
-    ROLE_SUPER_ADMIN: 'bg-purple-100 text-purple-800 border-purple-200',
-    ROLE_ADMIN: 'bg-blue-100 text-blue-800 border-blue-200',
-    ROLE_MEMBER: 'bg-gray-100 text-gray-800 border-gray-200',
+    SUPER_ADMIN:
+      'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-950/40 dark:text-purple-200 dark:border-purple-800/50',
+    ADMIN:
+      'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/50',
+    MEMBER:
+      'bg-gray-100 text-gray-800 border-gray-200 dark:bg-slate-800/60 dark:text-slate-200 dark:border-slate-600',
+    ROLE_SUPER_ADMIN:
+      'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-950/40 dark:text-purple-200 dark:border-purple-800/50',
+    ROLE_ADMIN:
+      'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/50',
+    ROLE_MEMBER:
+      'bg-gray-100 text-gray-800 border-gray-200 dark:bg-slate-800/60 dark:text-slate-200 dark:border-slate-600',
   };
 
-  return roleMap[role] || 'bg-gray-100 text-gray-800 border-gray-200';
+  return (
+    roleMap[role] ||
+    'bg-gray-100 text-gray-800 border-gray-200 dark:bg-slate-800/60 dark:text-slate-200 dark:border-slate-600'
+  );
 }
 
 /**
@@ -68,19 +77,32 @@ export function getRoleBadgeClasses(role: string): string {
  */
 export function getActionBadgeClasses(action: string): string {
   const actionMap: Record<string, string> = {
-    CREATE: 'bg-green-100 text-green-800 border-green-200',
-    UPDATE: 'bg-blue-100 text-blue-800 border-blue-200',
-    DELETE: 'bg-red-100 text-red-800 border-red-200',
-    ASSIGN: 'bg-purple-100 text-purple-800 border-purple-200',
-    INACTIVATE: 'bg-orange-100 text-orange-800 border-orange-200',
-    ACTIVATE: 'bg-green-100 text-green-800 border-green-200',
-    APPROVE: 'bg-green-100 text-green-800 border-green-200',
-    REJECT: 'bg-red-100 text-red-800 border-red-200',
-    SUBMIT: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    ARCHIVE: 'bg-gray-100 text-gray-800 border-gray-200',
+    CREATE:
+      'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-950/45 dark:text-emerald-300 dark:border-emerald-800/50',
+    UPDATE:
+      'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-950/45 dark:text-blue-300 dark:border-blue-800/50',
+    DELETE:
+      'bg-red-100 text-red-800 border-red-200 dark:bg-red-950/45 dark:text-red-300 dark:border-red-800/50',
+    ASSIGN:
+      'bg-violet-100 text-violet-800 border-violet-200 dark:bg-violet-950/45 dark:text-violet-300 dark:border-violet-800/50',
+    INACTIVATE:
+      'bg-amber-100 text-amber-900 border-amber-200 dark:bg-amber-950/40 dark:text-amber-200 dark:border-amber-800/50',
+    ACTIVATE:
+      'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-950/45 dark:text-emerald-300 dark:border-emerald-800/50',
+    APPROVE:
+      'bg-green-100 text-green-800 border-green-200 dark:bg-green-950/45 dark:text-green-300 dark:border-green-800/50',
+    REJECT:
+      'bg-red-100 text-red-800 border-red-200 dark:bg-red-950/45 dark:text-red-300 dark:border-red-800/50',
+    SUBMIT:
+      'bg-yellow-100 text-yellow-900 border-yellow-200 dark:bg-yellow-950/40 dark:text-yellow-200 dark:border-yellow-800/50',
+    ARCHIVE:
+      'bg-slate-100 text-slate-800 border-slate-200 dark:bg-slate-800/60 dark:text-slate-200 dark:border-slate-600',
   };
 
-  return actionMap[action] || 'bg-gray-100 text-gray-800 border-gray-200';
+  return (
+    actionMap[action] ||
+    'bg-slate-100 text-slate-800 border-slate-200 dark:bg-slate-800/60 dark:text-slate-200 dark:border-slate-600'
+  );
 }
 
 /**

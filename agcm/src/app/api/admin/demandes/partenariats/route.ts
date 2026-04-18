@@ -2,6 +2,7 @@
 // Gestion des demandes de partenariat (Admin)
 
 import { NextRequest, NextResponse } from 'next/server';
+import type { Prisma } from '@prisma/client';
 import { requireAdmin } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
 import { parsePagination, createPaginatedResponse } from '@/lib/pagination';
@@ -16,13 +17,35 @@ export async function GET(request: NextRequest) {
   if (error) return error;
 
   const searchParams = request.nextUrl.searchParams;
-  const statut = searchParams.get('statut') || 'EN_ATTENTE';
+  const search = (searchParams.get('search') || '').trim();
+  const rawStatut = searchParams.get('statut');
+  /** Absent → EN_ATTENTE (comportement historique). ALL → tous les statuts. */
   const { page, limit, offset } = parsePagination(request);
 
   try {
-    const where = {
-      statut: statut as any,
-    };
+    const where: Prisma.DemandePartenariatWhereInput = {};
+
+    if (rawStatut === 'ALL') {
+      // pas de filtre statut
+    } else if (
+      rawStatut &&
+      ['EN_ATTENTE', 'APPROUVEE', 'REFUSEE'].includes(rawStatut)
+    ) {
+      where.statut = rawStatut as 'EN_ATTENTE' | 'APPROUVEE' | 'REFUSEE';
+    } else {
+      where.statut = 'EN_ATTENTE';
+    }
+
+    if (search) {
+      where.OR = [
+        { organisation: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+        { contactNom: { contains: search, mode: 'insensitive' } },
+        { telephone: { contains: search, mode: 'insensitive' } },
+        { typePartenariat: { contains: search, mode: 'insensitive' } },
+        { message: { contains: search, mode: 'insensitive' } },
+      ];
+    }
 
     const [total, demandes] = await Promise.all([
       prisma.demandePartenariat.count({ where }),

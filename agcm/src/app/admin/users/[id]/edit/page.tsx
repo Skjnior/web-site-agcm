@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowLeft, Save } from 'lucide-react';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 const userUpdateSchema = z.object({
   email: z.string().email('Email invalide').optional(),
@@ -91,70 +92,87 @@ export default function EditUserPage() {
 
   if (loadingUser) {
     return (
-      <div className="max-w-3xl mx-auto space-y-6 text-gray-900">
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-guinea-red mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement...</p>
+      <div className="admin-page mx-auto max-w-3xl space-y-6">
+        <div className="admin-glass rounded-2xl py-12 text-center">
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
+          <p className="mt-4 text-gray-600 dark:text-slate-400">Chargement...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 text-gray-900">
-      <div className="flex items-center gap-4">
-        <Link href="/admin/users">
-          <Button variant="outline" size="sm">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Retour
-          </Button>
-        </Link>
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Modifier l'utilisateur</h1>
-          <p className="text-gray-600 mt-1">Modifier les informations du compte</p>
+    <div className="admin-page mx-auto max-w-3xl space-y-8 animate-in fade-in duration-500">
+      <div className="admin-glass flex flex-col gap-4 rounded-3xl p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+          <Link href="/admin/users">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-fit border-slate-300 dark:border-slate-600 dark:hover:bg-slate-800"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Retour
+            </Button>
+          </Link>
+          <div>
+            <h1 className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-3xl font-bold text-transparent dark:from-slate-100 dark:to-slate-400">
+              Modifier l&apos;utilisateur
+            </h1>
+            <p className="mt-1 text-slate-600 dark:text-slate-400">Modifier les informations du compte</p>
+          </div>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800">{error}</p>
+        <div
+          role="alert"
+          className="rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-950/40"
+        >
+          <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
         </div>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="admin-panel-form">
         <div className="space-y-4">
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-slate-700 dark:text-slate-300">
+              Email
+            </Label>
             <Input
               id="email"
               type="email"
               {...register('email')}
-              className={errors.email ? 'border-red-500' : ''}
+              className={cn(errors.email && 'border-red-500 dark:border-red-500')}
             />
             {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
             )}
           </div>
 
           <div>
-            <Label htmlFor="password">Nouveau mot de passe (laisser vide pour ne pas changer)</Label>
+            <Label htmlFor="password" className="text-slate-700 dark:text-slate-300">
+              Nouveau mot de passe (laisser vide pour ne pas changer)
+            </Label>
             <Input
               id="password"
               type="password"
               {...register('password')}
-              className={errors.password ? 'border-red-500' : ''}
+              className={cn(errors.password && 'border-red-500 dark:border-red-500')}
             />
             {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.password.message}</p>
             )}
           </div>
 
           <div>
-            <Label htmlFor="roleSysteme">Rôle système</Label>
+            <Label htmlFor="roleSysteme" className="text-slate-700 dark:text-slate-300">
+              Rôle système
+            </Label>
             <select
               id="roleSysteme"
               {...register('roleSysteme')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-guinea-red"
+              className="mt-1.5 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:ring-primary/30"
             >
               <option value="MEMBER">Membre</option>
               <option value="ADMIN">Admin</option>
@@ -167,20 +185,26 @@ export default function EditUserPage() {
               type="checkbox"
               id="isActive"
               {...register('isActive')}
-              className="w-4 h-4 text-guinea-red border-gray-300 rounded focus:ring-guinea-red"
+              className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-2 focus:ring-primary/30 dark:border-slate-600 dark:bg-slate-800 dark:focus:ring-primary/40"
             />
-            <Label htmlFor="isActive" className="cursor-pointer">
+            <Label htmlFor="isActive" className="cursor-pointer text-slate-700 dark:text-slate-300">
               Compte actif
             </Label>
           </div>
         </div>
 
-        <div className="flex justify-end gap-4">
+        <div className="flex flex-wrap justify-end gap-3 border-t border-slate-200 pt-6 dark:border-slate-700">
           <Link href="/admin/users">
-            <Button type="button" variant="outline">Annuler</Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="border-slate-300 dark:border-slate-600 dark:hover:bg-slate-800"
+            >
+              Annuler
+            </Button>
           </Link>
           <Button type="submit" disabled={loading}>
-            <Save className="h-4 w-4 mr-2" />
+            <Save className="mr-2 h-4 w-4" />
             {loading ? 'Enregistrement...' : 'Enregistrer'}
           </Button>
         </div>

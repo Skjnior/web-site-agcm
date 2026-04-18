@@ -53,10 +53,15 @@ export async function PUT(req: NextRequest, props: { params: Promise<{ id: strin
 export async function DELETE(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.roleSysteme || session?.user?.role;
+    const userRole =
+      (session?.user as { roleSysteme?: string; role?: string })?.roleSysteme ||
+      session?.user?.role;
 
-    if (!session?.user || !['ADMIN', 'SUPER_ADMIN'].includes(userRole as string)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user || userRole !== 'SUPER_ADMIN') {
+      return NextResponse.json(
+        { error: 'Seul le super administrateur peut supprimer un événement' },
+        { status: 403 }
+      );
     }
 
     const resolvedParams = await props.params;

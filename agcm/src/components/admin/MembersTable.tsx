@@ -23,6 +23,8 @@ type Member = {
   statutMembre: string;
   dateAdhesion: Date | null;
   canAct?: boolean;
+  isBureauActuel?: boolean;
+  postesBureau?: string | null;
   user: {
     id: string;
     email: string;
@@ -91,7 +93,7 @@ export default function MembersTable({ members, currentUserRole, currentUserId, 
   if (members.length === 0) {
     return (
       <div className="admin-panel rounded-xl p-12 text-center">
-        <p className="text-gray-500">Aucun membre trouvé</p>
+        <p className="text-gray-500 dark:text-slate-400">Aucun membre trouvé</p>
       </div>
     );
   }
@@ -103,22 +105,25 @@ export default function MembersTable({ members, currentUserRole, currentUserId, 
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-slate-800/90">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-slate-400">
                   Membre
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-slate-400">
                   Contact
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-slate-400">
                   Localisation
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-slate-400">
                   Statut
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-slate-400">
+                  Bureau
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-slate-400">
                   Date d'adhésion
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-slate-400">
                   Actions
                 </th>
               </tr>
@@ -131,22 +136,22 @@ export default function MembersTable({ members, currentUserRole, currentUserId, 
                 return (
                   <tr key={member.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/60">
                     <td className="px-6 py-4">
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-gray-900 dark:text-slate-100">
                         {member.prenom} {member.nom}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{member.user.email}</div>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      <div className="text-sm text-gray-900 dark:text-slate-100">{member.user.email}</div>
                       {member.telephone && (
-                        <div className="text-sm text-gray-500">{member.telephone}</div>
+                        <div className="text-sm text-gray-500 dark:text-slate-400">{member.telephone}</div>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="whitespace-nowrap px-6 py-4">
                       {member.ville && (
-                        <div className="text-sm text-gray-900">{member.ville}</div>
+                        <div className="text-sm text-gray-900 dark:text-slate-100">{member.ville}</div>
                       )}
                       {member.pays && (
-                        <div className="text-sm text-gray-500">{member.pays}</div>
+                        <div className="text-sm text-gray-500 dark:text-slate-400">{member.pays}</div>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -160,7 +165,23 @@ export default function MembersTable({ members, currentUserRole, currentUserId, 
                         {getStatutLabel(member.statutMembre)}
                       </Badge>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="max-w-[14rem] px-6 py-4 text-sm">
+                      {member.isBureauActuel ? (
+                        <div className="space-y-0.5">
+                          <Badge variant="approuve" className="font-normal">
+                            Bureau
+                          </Badge>
+                          {member.postesBureau ? (
+                            <p className="text-xs text-gray-500 dark:text-slate-400" title={member.postesBureau}>
+                              {member.postesBureau}
+                            </p>
+                          ) : null}
+                        </div>
+                      ) : (
+                        <span className="text-gray-400 dark:text-slate-500">—</span>
+                      )}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-slate-400">
                       {formatDate(member.dateAdhesion)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

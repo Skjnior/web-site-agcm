@@ -8,13 +8,42 @@ import { logAction } from '@/lib/audit';
 import { parsePagination, createPaginatedResponse } from '@/lib/pagination';
 import { z } from 'zod';
 
-const affectationSchema = z.object({
-  mandatId: z.string(),
-  posteId: z.string(),
-  memberId: z.string(),
-  dateDebut: z.string().transform((str) => new Date(str)),
-  dateFin: z.string().transform((str) => new Date(str)).optional(),
-});
+const affectationSchema = z
+  .object({
+    mandatId: z.string().min(1),
+    posteId: z.string().min(1),
+    memberId: z.string().min(1),
+    dateDebut: z.string().min(1),
+    /** Optionnel : chaîne vide / null = pas de date de fin (évite Invalid Date côté Prisma) */
+    dateFin: z.string().optional().nullable(),
+  })
+  .transform((data) => {
+    const dateDebut = new Date(data.dateDebut);
+    if (Number.isNaN(dateDebut.getTime())) {
+      throw new z.ZodError([
+        { code: 'custom', message: 'Date de début invalide', path: ['dateDebut'] },
+      ]);
+    }
+    const rawFin = data.dateFin;
+    const trimmed = rawFin == null ? '' : String(rawFin).trim();
+    let dateFin: Date | undefined;
+    if (trimmed !== '') {
+      const d = new Date(trimmed);
+      if (Number.isNaN(d.getTime())) {
+        throw new z.ZodError([
+          { code: 'custom', message: 'Date de fin invalide', path: ['dateFin'] },
+        ]);
+      }
+      dateFin = d;
+    }
+    return {
+      mandatId: data.mandatId,
+      posteId: data.posteId,
+      memberId: data.memberId,
+      dateDebut,
+      dateFin,
+    };
+  });
 
 export async function GET(request: NextRequest) {
   const { error } = await requireSuperAdmin();
@@ -103,7 +132,7 @@ export async function POST(request: NextRequest) {
         posteId: data.posteId,
         memberId: data.memberId,
         dateDebut: data.dateDebut,
-        dateFin: data.dateFin,
+        dateFin: data.dateFin ?? null,
         statut: 'ACTIF',
       },
     });

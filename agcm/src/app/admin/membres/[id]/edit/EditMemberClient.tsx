@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ImageUpload } from '@/components/ui/image-upload';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import SuccessModal from '@/components/ui/SuccessModal';
 import ErrorModal from '@/components/ui/ErrorModal';
@@ -19,10 +20,15 @@ import ErrorModal from '@/components/ui/ErrorModal';
 const memberUpdateSchema = z.object({
   prenom: z.string().min(1, 'Le prénom est requis'),
   nom: z.string().min(1, 'Le nom est requis'),
+  genre: z.union([z.literal(''), z.enum(['FEMME', 'HOMME', 'AUTRE', 'NE_PAS_DIRE'])]).optional(),
+  dateNaissance: z.string().optional(),
+  profession: z.string().nullable().optional(),
+  adresse: z.string().nullable().optional(),
   telephone: z.string().nullable().optional(),
   ville: z.string().nullable().optional(),
   pays: z.string().nullable().optional(),
   bio: z.string().nullable().optional(),
+  photoUrl: z.string().nullable().optional(),
   statutMembre: z.enum(['ACTIF', 'SUSPENDU', 'RADIE']),
 });
 
@@ -33,10 +39,15 @@ interface EditMemberClientProps {
     id: string;
     prenom: string;
     nom: string;
+    genre: string | null;
+    dateNaissance: Date | string | null;
+    profession: string | null;
+    adresse: string | null;
     telephone: string | null;
     ville: string | null;
     pays: string | null;
     bio: string | null;
+    photoUrl: string | null;
     statutMembre: string;
     user: {
       id: string;
@@ -56,6 +67,7 @@ export default function EditMemberClient({ member: initialMember, currentUserRol
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
     setValue,
     watch,
@@ -64,10 +76,17 @@ export default function EditMemberClient({ member: initialMember, currentUserRol
     defaultValues: {
       prenom: initialMember.prenom,
       nom: initialMember.nom,
+      genre: (initialMember.genre as '' | 'FEMME' | 'HOMME' | 'AUTRE' | 'NE_PAS_DIRE') || '',
+      dateNaissance: initialMember.dateNaissance
+        ? new Date(initialMember.dateNaissance).toISOString().slice(0, 10)
+        : '',
+      profession: initialMember.profession || '',
+      adresse: initialMember.adresse || '',
       telephone: initialMember.telephone || '',
       ville: initialMember.ville || '',
       pays: initialMember.pays || '',
       bio: initialMember.bio || '',
+      photoUrl: initialMember.photoUrl || '',
       statutMembre: initialMember.statutMembre as 'ACTIF' | 'SUSPENDU' | 'RADIE',
     },
   });
@@ -80,10 +99,21 @@ export default function EditMemberClient({ member: initialMember, currentUserRol
       // Convertir les chaînes vides en null
       const updateData = {
         ...data,
+        genre:
+          data.genre === 'FEMME' ||
+          data.genre === 'HOMME' ||
+          data.genre === 'AUTRE' ||
+          data.genre === 'NE_PAS_DIRE'
+            ? data.genre
+            : null,
+        dateNaissance: data.dateNaissance?.trim() ? data.dateNaissance : null,
+        profession: data.profession?.trim() || null,
+        adresse: data.adresse?.trim() || null,
         telephone: data.telephone || null,
         ville: data.ville || null,
         pays: data.pays || null,
         bio: data.bio || null,
+        photoUrl: data.photoUrl?.trim() || null,
       };
 
       const response = await fetch(`/api/admin/membres/${initialMember.id}`, {
@@ -110,7 +140,7 @@ export default function EditMemberClient({ member: initialMember, currentUserRol
 
   return (
     <>
-      <div className="max-w-4xl mx-auto space-y-6 text-gray-900">
+      <div className="mx-auto max-w-4xl space-y-6 text-gray-900 dark:text-slate-100">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -120,8 +150,8 @@ export default function EditMemberClient({ member: initialMember, currentUserRol
                 Retour
               </Button>
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900">Modifier le membre</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100">Modifier le membre</h1>
+            <p className="mt-1 text-gray-600 dark:text-slate-400">
               {initialMember.prenom} {initialMember.nom}
             </p>
           </div>
@@ -131,16 +161,15 @@ export default function EditMemberClient({ member: initialMember, currentUserRol
         <form onSubmit={handleSubmit(onSubmit)}>
           <Card>
             <CardHeader>
-              <CardTitle>Informations personnelles</CardTitle>
+              <CardTitle className="text-slate-900 dark:text-slate-100">Informations personnelles</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <Label htmlFor="prenom">Prénom *</Label>
                   <Input
                     id="prenom"
                     {...register('prenom')}
-                    className="text-gray-900"
                   />
                   {errors.prenom && (
                     <p className="text-sm text-red-600 mt-1">{errors.prenom.message}</p>
@@ -151,18 +180,61 @@ export default function EditMemberClient({ member: initialMember, currentUserRol
                   <Input
                     id="nom"
                     {...register('nom')}
-                    className="text-gray-900"
                   />
                   {errors.nom && (
                     <p className="text-sm text-red-600 mt-1">{errors.nom.message}</p>
                   )}
                 </div>
                 <div>
+                  <Label htmlFor="genre">Genre</Label>
+                  <select
+                    id="genre"
+                    {...register('genre')}
+                    className="mt-1.5 flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                  >
+                    <option value="">Non renseigné</option>
+                    <option value="FEMME">Femme</option>
+                    <option value="HOMME">Homme</option>
+                    <option value="AUTRE">Autre</option>
+                    <option value="NE_PAS_DIRE">Préfère ne pas dire</option>
+                  </select>
+                </div>
+                <div>
+                  <Label htmlFor="dateNaissance">Date de naissance</Label>
+                  <Input id="dateNaissance" type="date" {...register('dateNaissance')} />
+                </div>
+                <div className="col-span-2">
+                  <Label htmlFor="profession">Profession / occupation</Label>
+                  <Input id="profession" {...register('profession')} />
+                </div>
+                <div className="col-span-2">
+                  <Label htmlFor="adresse">Adresse</Label>
+                  <Input id="adresse" {...register('adresse')} />
+                </div>
+                <div className="col-span-2">
+                  <Controller
+                    name="photoUrl"
+                    control={control}
+                    render={({ field }) => (
+                      <ImageUpload
+                        label="Photo de profil"
+                        value={field.value || ''}
+                        onChange={field.onChange}
+                        hideUrlOption
+                        previewClassName="h-40 w-40 max-h-40 object-cover"
+                        className="max-w-md"
+                      />
+                    )}
+                  />
+                  <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                    Import depuis votre ordinateur (images uniquement).
+                  </p>
+                </div>
+                <div>
                   <Label htmlFor="telephone">Téléphone</Label>
                   <Input
                     id="telephone"
                     {...register('telephone')}
-                    className="text-gray-900"
                   />
                   {errors.telephone && (
                     <p className="text-sm text-red-600 mt-1">{errors.telephone.message}</p>
@@ -173,7 +245,6 @@ export default function EditMemberClient({ member: initialMember, currentUserRol
                   <Input
                     id="ville"
                     {...register('ville')}
-                    className="text-gray-900"
                   />
                   {errors.ville && (
                     <p className="text-sm text-red-600 mt-1">{errors.ville.message}</p>
@@ -184,7 +255,6 @@ export default function EditMemberClient({ member: initialMember, currentUserRol
                   <Input
                     id="pays"
                     {...register('pays')}
-                    className="text-gray-900"
                   />
                   {errors.pays && (
                     <p className="text-sm text-red-600 mt-1">{errors.pays.message}</p>
@@ -196,13 +266,13 @@ export default function EditMemberClient({ member: initialMember, currentUserRol
                     value={statutMembre}
                     onValueChange={(value) => setValue('statutMembre', value as 'ACTIF' | 'SUSPENDU' | 'RADIE')}
                   >
-                    <SelectTrigger className="text-gray-900">
+                    <SelectTrigger className="border-slate-200 bg-white text-gray-900 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="z-50">
-                      <SelectItem value="ACTIF" className="text-gray-900">Actif</SelectItem>
-                      <SelectItem value="SUSPENDU" className="text-gray-900">Suspendu</SelectItem>
-                      <SelectItem value="RADIE" className="text-gray-900">Radié</SelectItem>
+                    <SelectContent className="z-50 border-slate-700 bg-white dark:bg-slate-900 dark:text-slate-100">
+                      <SelectItem value="ACTIF">Actif</SelectItem>
+                      <SelectItem value="SUSPENDU">Suspendu</SelectItem>
+                      <SelectItem value="RADIE">Radié</SelectItem>
                     </SelectContent>
                   </Select>
                   {errors.statutMembre && (
@@ -216,7 +286,7 @@ export default function EditMemberClient({ member: initialMember, currentUserRol
                   id="bio"
                   {...register('bio')}
                   rows={4}
-                  className="text-gray-900"
+                  className="border-slate-200 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
                 />
                 {errors.bio && (
                   <p className="text-sm text-red-600 mt-1">{errors.bio.message}</p>
@@ -228,7 +298,7 @@ export default function EditMemberClient({ member: initialMember, currentUserRol
           {/* Informations compte */}
           <Card>
             <CardHeader>
-              <CardTitle>Compte utilisateur</CardTitle>
+              <CardTitle className="text-slate-900 dark:text-slate-100">Compte utilisateur</CardTitle>
             </CardHeader>
             <CardContent>
               <div>
@@ -236,9 +306,9 @@ export default function EditMemberClient({ member: initialMember, currentUserRol
                 <Input
                   value={initialMember.user.email}
                   disabled
-                  className="text-gray-900 bg-gray-50"
+                  className="bg-gray-50 text-slate-900 dark:bg-slate-800/60 dark:text-slate-300"
                 />
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
                   L'email ne peut pas être modifié depuis cette page
                 </p>
               </div>

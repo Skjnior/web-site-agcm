@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
+import { signOutWithConfirmation } from '@/lib/sign-out-confirm';
 import { Menu, X, LogOut, User, ChevronDown } from 'lucide-react';
 import Logo from '../Logo';
 
@@ -57,8 +58,8 @@ export default function Navbar() {
     setIsMenuOpen(false);
   };
 
-  const handleLogout = () => {
-    signOut({ callbackUrl: '/' });
+  const handleLogout = async () => {
+    if (!(await signOutWithConfirmation({ callbackUrl: '/' }))) return;
     setIsMenuOpen(false);
     setIsUserMenuOpen(false);
   };

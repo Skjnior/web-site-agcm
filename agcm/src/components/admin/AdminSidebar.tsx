@@ -15,7 +15,7 @@ import {
     CheckSquare,
     CircleUser,
 } from 'lucide-react';
-import { signOut } from 'next-auth/react';
+import { signOutWithConfirmation } from '@/lib/sign-out-confirm';
 
 interface SidebarProps {
     role: string | undefined;
@@ -90,7 +90,7 @@ export default function AdminSidebar({ role }: SidebarProps) {
 
             <div className="border-t border-slate-200/90 bg-slate-50/80 p-4 dark:border-slate-800/50 dark:bg-slate-900/20">
                 <button
-                    onClick={() => signOut({ callbackUrl: '/' })}
+                    onClick={() => void signOutWithConfirmation({ callbackUrl: '/' })}
                     className="group flex w-full items-center px-3 py-2.5 text-sm font-medium rounded-xl text-red-400 hover:bg-red-500/10 hover:shadow-sm transition-all duration-200"
                 >
                     <LogOut className="mr-3 h-5 w-5 shrink-0 text-red-500/70 transition-transform duration-200 group-hover:-translate-x-1 group-hover:text-red-400 drop-shadow-[0_0_8px_rgba(248,113,113,0)] group-hover:drop-shadow-[0_0_8px_rgba(248,113,113,0.5)]" />

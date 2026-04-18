@@ -1,0 +1,32 @@
+================================================================================
+AGCM — Correspondance seed : bureau (mandat actif)
+================================================================================
+(postes[0] … postes[14] — 15 premières affectations au mandat actif, prisma/seed.ts)
+
+Mot de passe pour tous les comptes de test : password123
+
+Poste (fonction)                  Email                 Rôle système
+--------------------------------------------------------------------------------
+Président                         user1@agcm.gn         SUPER_ADMIN
+Vice-Président                    user2@agcm.gn         ADMIN
+Secrétaire général                user3@agcm.gn         ADMIN
+Secrétaire adjoint                user4@agcm.gn         ADMIN
+Trésorier                         user5@agcm.gn         ADMIN
+Trésorier adjoint                 user6@agcm.gn         ADMIN
+Responsable communication         user7@agcm.gn         MEMBER
+Responsable projets               user8@agcm.gn         MEMBER
+Responsable événements            user9@agcm.gn         MEMBER
+Responsable partenariats          user10@agcm.gn        MEMBER
+Responsable formation             user11@agcm.gn        MEMBER
+Responsable jeunesse              user12@agcm.gn        MEMBER
+Responsable culture               user13@agcm.gn        MEMBER
+Responsable social                user14@agcm.gn        MEMBER
+Responsable sport                 user15@agcm.gn        MEMBER
+
+--------------------------------------------------------------------------------
+Après connexion :
+  • user1 … user6  → typiquement /admin
+  • user7 … user15 → /dashboard puis /bureau
+--------------------------------------------------------------------------------
+Valable après : npx prisma db seed (base non modifiée manuellement)
+================================================================================

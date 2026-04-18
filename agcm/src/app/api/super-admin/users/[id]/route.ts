@@ -7,6 +7,42 @@ import { prisma } from '@/lib/prisma';
 import { logAction } from '@/lib/audit';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
+import { Prisma } from '@prisma/client';
+
+/** Si la migration `actor_email` n’est pas appliquée (colonne absente), on retombe sur l’ancien comportement. */
+function isMissingAuditActorEmailColumn(error: unknown): boolean {
+  if (!(error instanceof Prisma.PrismaClientKnownRequestError)) return false;
+  if (error.code !== 'P2010') return false;
+  const meta = error.meta as { message?: string } | undefined;
+  const msg = `${error.message} ${meta?.message ?? ''}`;
+  return /actor_email|42703/i.test(msg);
+}
+
+async function deleteUserAndRelatedData(
+  tx: Prisma.TransactionClient,
+  id: string
+) {
+  /** Avant Member/User : les affectations référencent members.id en RESTRICT */
+  await tx.affectationPoste.deleteMany({
+    where: { member: { userId: id } },
+  });
+
+  await tx.comment.deleteMany({ where: { auteurUserId: id } });
+  await tx.bureauMessage.deleteMany({ where: { auteurUserId: id } });
+  await tx.content.updateMany({
+    where: { approvedById: id },
+    data: { approvedById: null, approvedAt: null },
+  });
+  await tx.demandeAdhesion.updateMany({
+    where: { processedById: id },
+    data: { processedById: null },
+  });
+  await tx.demandePartenariat.updateMany({
+    where: { processedById: id },
+    data: { processedById: null },
+  });
+  await tx.user.delete({ where: { id } });
+}
 
 const userUpdateSchema = z.object({
   email: z.string().email().optional(),
@@ -63,7 +99,6 @@ export async function PATCH(
 
   try {
     const body = await request.json();
-    const data = userUpdateSchema.parse(body);
 
     const userBefore = await prisma.user.findUnique({
       where: { id },
@@ -76,6 +111,92 @@ export async function PATCH(
         { status: 404 }
       );
     }
+
+    if (body.lifecycle === 'soft_delete') {
+      if (id === session!.user.id) {
+        return NextResponse.json(
+          { error: 'Vous ne pouvez pas archiver votre propre compte' },
+          { status: 400 }
+        );
+      }
+      if (userBefore.deletedAt) {
+        return NextResponse.json(
+          { error: 'Ce compte est déjà archivé' },
+          { status: 400 }
+        );
+      }
+
+      const user = await prisma.user.update({
+        where: { id },
+        data: {
+          deletedAt: new Date(),
+          isActive: false,
+        },
+        include: { member: true },
+      });
+
+      await logAction({
+        userId: session!.user.id,
+        action: 'UPDATE',
+        entityType: 'User',
+        entityId: id,
+        beforeData: userBefore,
+        afterData: {
+          ...user,
+          lifecycle: 'soft_delete',
+          message: 'Compte archivé (soft delete) — accès désactivé, données conservées en base.',
+        },
+      });
+
+      return NextResponse.json({
+        success: true,
+        user,
+      });
+    }
+
+    if (body.lifecycle === 'restore') {
+      if (id === session!.user.id) {
+        return NextResponse.json(
+          { error: 'Opération invalide' },
+          { status: 400 }
+        );
+      }
+      if (!userBefore.deletedAt) {
+        return NextResponse.json(
+          { error: 'Ce compte n\'est pas archivé' },
+          { status: 400 }
+        );
+      }
+
+      const user = await prisma.user.update({
+        where: { id },
+        data: {
+          deletedAt: null,
+          isActive: true,
+        },
+        include: { member: true },
+      });
+
+      await logAction({
+        userId: session!.user.id,
+        action: 'UPDATE',
+        entityType: 'User',
+        entityId: id,
+        beforeData: userBefore,
+        afterData: {
+          ...user,
+          lifecycle: 'restore',
+          message: 'Compte restauré après archivage.',
+        },
+      });
+
+      return NextResponse.json({
+        success: true,
+        user,
+      });
+    }
+
+    const data = userUpdateSchema.parse(body);
 
     // Préparer les données de mise à jour
     const updateData: any = {};
@@ -151,10 +272,29 @@ export async function DELETE(
       );
     }
 
-    // Supprimer l'utilisateur (cascade supprime le membre)
-    await prisma.user.delete({
-      where: { id },
-    });
+    // Conserver les traces d’audit : détacher l’acteur (actor_email + user_id NULL) si la migration est appliquée
+    try {
+      await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`
+          UPDATE "audit_logs"
+          SET "actor_email" = COALESCE("actor_email", ${userBefore.email}),
+              "user_id" = NULL
+          WHERE "user_id" = ${id}
+        `;
+        await deleteUserAndRelatedData(tx, id);
+      });
+    } catch (error) {
+      if (!isMissingAuditActorEmailColumn(error)) {
+        throw error;
+      }
+      console.warn(
+        '[users DELETE] Colonne audit_logs.actor_email absente — suppression des logs d’audit de cet acteur. Exécutez: npx prisma migrate deploy'
+      );
+      await prisma.$transaction(async (tx) => {
+        await tx.auditLog.deleteMany({ where: { userId: id } });
+        await deleteUserAndRelatedData(tx, id);
+      });
+    }
 
     await logAction({
       userId: session!.user.id,

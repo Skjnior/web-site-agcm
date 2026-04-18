@@ -9,6 +9,7 @@ import { fr } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Eye, Edit, Plus, FileText, Image as ImageIcon } from 'lucide-react';
+import AdminDeleteResourceButton from '@/components/admin/AdminDeleteResourceButton';
 
 export const metadata: Metadata = {
   title: 'Gestion des actualités - Admin AGCM',
@@ -26,10 +27,12 @@ export default async function ActualitesAdminPage({ searchParams }: Props) {
     redirect('/connexion');
   }
 
-  const userRole = (session.user as any).roleSysteme || session.user.role;
+  const userRole = (session.user as { roleSysteme?: string; role?: string }).roleSysteme || session.user.role;
   if (!['ADMIN', 'SUPER_ADMIN'].includes(userRole)) {
     redirect('/dashboard');
   }
+
+  const isSuperAdmin = userRole === 'SUPER_ADMIN';
 
   const params = await searchParams;
   const page = parseInt(params.page || '1', 10);
@@ -144,6 +147,12 @@ export default async function ActualitesAdminPage({ searchParams }: Props) {
                             </Button>
                           </Link>
                         )}
+                        <AdminDeleteResourceButton
+                          apiUrl={`/api/admin/actualites/${actualite.id}`}
+                          title="Supprimer l'actualité"
+                          message={`Êtes-vous sûr de vouloir supprimer l'actualité « ${actualite.titre} » ? Cette action est irréversible.`}
+                          isSuperAdmin={isSuperAdmin}
+                        />
                       </div>
                     </td>
                   </tr>

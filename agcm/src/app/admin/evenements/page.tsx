@@ -9,6 +9,7 @@ import { fr } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Eye, Edit, Plus, Calendar as CalendarIcon, MapPin } from 'lucide-react';
+import AdminDeleteResourceButton from '@/components/admin/AdminDeleteResourceButton';
 
 export const metadata: Metadata = {
   title: 'Gestion des événements - Admin AGCM',
@@ -26,10 +27,12 @@ export default async function EvenementsAdminPage({ searchParams }: Props) {
     redirect('/connexion');
   }
 
-  const userRole = (session.user as any).roleSysteme || session.user.role;
+  const userRole = (session.user as { roleSysteme?: string; role?: string }).roleSysteme || session.user.role;
   if (!['ADMIN', 'SUPER_ADMIN'].includes(userRole)) {
     redirect('/dashboard');
   }
+
+  const isSuperAdmin = userRole === 'SUPER_ADMIN';
 
   const params = await searchParams;
   const page = parseInt(params.page || '1', 10);
@@ -147,6 +150,12 @@ export default async function EvenementsAdminPage({ searchParams }: Props) {
                             </Button>
                           </Link>
                         )}
+                        <AdminDeleteResourceButton
+                          apiUrl={`/api/admin/evenements/${evenement.id}`}
+                          title="Supprimer l'événement"
+                          message={`Êtes-vous sûr de vouloir supprimer l'événement « ${evenement.titre} » ? Cette action est irréversible.`}
+                          isSuperAdmin={isSuperAdmin}
+                        />
                       </div>
                     </td>
                   </tr>

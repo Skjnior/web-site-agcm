@@ -139,33 +139,39 @@ export default function EditMandatPage() {
 
   if (loadingMandat) {
     return (
-      <div className="max-w-3xl mx-auto space-y-6 text-gray-900">
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-guinea-red mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement...</p>
+      <div className="admin-page space-y-8 px-4 pb-12 text-slate-900 animate-in fade-in duration-500 dark:text-slate-100">
+        <div className="admin-glass rounded-2xl p-12 text-center shadow-sm">
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
+          <p className="mt-4 text-slate-600 dark:text-slate-400">Chargement...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 text-gray-900">
-      <div className="flex items-center gap-4">
+    <div className="admin-page mx-auto max-w-3xl space-y-8 px-4 pb-12 text-slate-900 animate-in fade-in duration-500 dark:text-slate-100">
+      <div className="admin-glass flex flex-col gap-4 rounded-2xl p-6 shadow-sm sm:flex-row sm:items-center sm:gap-6">
         <Link href="/admin/mandats">
-          <Button variant="outline" size="sm">
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-slate-300 dark:border-slate-600 dark:hover:bg-slate-800"
+          >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Retour
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Modifier le mandat</h1>
-          <p className="text-gray-600 mt-1">Modifier les informations du mandat</p>
+          <h1 className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-3xl font-bold text-transparent dark:from-slate-100 dark:to-slate-400">
+            Modifier le mandat
+          </h1>
+          <p className="mt-1 text-slate-600 dark:text-slate-400">Modifier les informations du mandat</p>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800">{error}</p>
+        <div className="rounded-xl border border-red-200/80 bg-red-50/90 p-4 dark:border-red-900/50 dark:bg-red-950/40">
+          <p className="text-red-800 dark:text-red-200">{error}</p>
         </div>
       )}
 
@@ -208,7 +214,7 @@ export default function EditMandatPage() {
             <select
               id="statut"
               {...register('statut')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-guinea-red"
+              className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100"
             >
               <option value="ACTIF">Actif</option>
               <option value="EXPIRE">Expiré</option>
@@ -222,21 +228,21 @@ export default function EditMandatPage() {
               <div className="mt-2">
                 <label
                   htmlFor="file-upload-edit"
-                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors"
+                  className="flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-slate-50/80 transition-colors hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-800/50 dark:hover:bg-slate-800"
                 >
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <div className="flex flex-col items-center justify-center pb-6 pt-5">
                     {uploading ? (
                       <>
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-guinea-red mb-2"></div>
-                        <p className="text-sm text-gray-500">Upload en cours...</p>
+                        <div className="mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
+                        <p className="text-sm text-slate-500 dark:text-slate-400">Upload en cours...</p>
                       </>
                     ) : (
                       <>
-                        <Upload className="h-8 w-8 text-gray-400 mb-2" />
-                        <p className="mb-2 text-sm text-gray-500">
+                        <Upload className="mb-2 h-8 w-8 text-slate-400 dark:text-slate-500" />
+                        <p className="mb-2 text-sm text-slate-600 dark:text-slate-400">
                           <span className="font-semibold">Cliquez pour uploader</span> ou glissez-déposez
                         </p>
-                        <p className="text-xs text-gray-500">PDF, Word, Excel, PowerPoint (MAX. 50MB)</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-500">PDF, Word, Excel, PowerPoint (MAX. 50MB)</p>
                       </>
                     )}
                   </div>
@@ -251,22 +257,16 @@ export default function EditMandatPage() {
                 </label>
               </div>
             ) : (
-              <div className="mt-2 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
+              <div className="mt-2 flex items-center justify-between rounded-lg border border-emerald-200/80 bg-emerald-50/90 p-4 dark:border-emerald-900/40 dark:bg-emerald-950/30">
                 <div className="flex items-center gap-3">
-                  <FileText className="h-5 w-5 text-green-600" />
+                  <FileText className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{uploadedFile.name}</p>
-                    <p className="text-xs text-gray-500">Fichier uploadé avec succès</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{uploadedFile.name}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Fichier uploadé avec succès</p>
                   </div>
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleRemoveFile}
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                >
-                  <X className="h-4 w-4 mr-1" />
+                <Button type="button" variant="outline" size="sm" onClick={handleRemoveFile} className="border-red-200 text-red-700 hover:bg-red-50 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-950/40">
+                  <X className="mr-1 h-4 w-4" />
                   Supprimer
                 </Button>
               </div>
@@ -275,11 +275,13 @@ export default function EditMandatPage() {
           </div>
         </div>
 
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-end gap-4 pt-2">
           <Link href="/admin/mandats">
-            <Button type="button" variant="outline">Annuler</Button>
+            <Button type="button" variant="outline" className="border-slate-300 dark:border-slate-600 dark:hover:bg-slate-800">
+              Annuler
+            </Button>
           </Link>
-          <Button type="submit" disabled={loading}>
+          <Button type="submit" variant="edit" disabled={loading}>
             <Save className="h-4 w-4 mr-2" />
             {loading ? 'Enregistrement...' : 'Enregistrer'}
           </Button>

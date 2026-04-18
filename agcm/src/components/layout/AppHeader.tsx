@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+import { signOutWithConfirmation } from '@/lib/sign-out-confirm';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Bell, User, Lock, LogOut, Menu, X } from 'lucide-react';
@@ -51,7 +51,9 @@ export default function AppHeader({ userRole, userInfo, onMobileMenuClick }: App
   }, [session]);
 
   const handleLogout = async () => {
-    await signOut({ redirect: true, callbackUrl: '/' });
+    if (await signOutWithConfirmation({ redirect: true, callbackUrl: '/' })) {
+      setShowUserMenu(false);
+    }
   };
 
   const getRoleLabel = () => {

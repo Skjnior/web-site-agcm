@@ -49,6 +49,7 @@ export default function AdminDemandesDonsPage() {
       type: 'select',
       key: 'type',
       label: 'Type',
+      selectDefault: 'ALL',
       options: [
         { label: 'Financier', value: 'FINANCIER' },
         { label: 'Matériel', value: 'MATERIEL' },
@@ -59,6 +60,7 @@ export default function AdminDemandesDonsPage() {
       type: 'select',
       key: 'statut',
       label: 'Statut',
+      selectDefault: 'NOUVEAU',
       options: [
         { label: 'Nouveau', value: 'NOUVEAU' },
         { label: 'Contacté', value: 'CONTACTE' },
@@ -121,7 +123,7 @@ export default function AdminDemandesDonsPage() {
 
   if (loading && !data) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="admin-page flex min-h-[50vh] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -131,10 +133,12 @@ export default function AdminDemandesDonsPage() {
     <div className="admin-page flex flex-col pointer-events-auto">
       <main className="flex-1 p-4 md:p-8 w-full max-w-[1600px] mx-auto overflow-x-hidden">
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="admin-glass rounded-3xl p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="admin-glass flex flex-col justify-between gap-4 rounded-3xl p-8 shadow-sm md:flex-row md:items-center">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">Intentions de Don</h1>
-              <p className="text-slate-500 mt-1">Gérer les intentions de don</p>
+              <h1 className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-3xl font-bold text-transparent dark:from-slate-100 dark:to-slate-400">
+                Intentions de Don
+              </h1>
+              <p className="mt-1 text-slate-500 dark:text-slate-400">Gérer les intentions de don</p>
             </div>
           </div>
 
@@ -148,51 +152,87 @@ export default function AdminDemandesDonsPage() {
 
           {data && (
             <>
-              <div className="admin-glass rounded-3xl shadow-sm overflow-hidden">
-                <div className="divide-y divide-slate-200/50">
+              <div className="admin-glass overflow-hidden rounded-3xl shadow-sm">
+                <div className="divide-y divide-slate-200/50 dark:divide-slate-700/80">
                   {data.data.length === 0 ? (
-                    <div className="px-6 py-12 text-center text-slate-500">
+                    <div className="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
                       Aucune intention de don trouvée
                     </div>
                   ) : (
                     data.data.map((don) => (
-                      <div key={don.id} className="p-6 hover:bg-primary-50/50 transition-colors group">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${don.type === 'FINANCIER' ? 'bg-green-100/50 text-green-700 border-green-200' :
-                                don.type === 'MATERIEL' ? 'bg-blue-100/50 text-blue-700 border-blue-200' :
-                                  'bg-slate-100/50 text-slate-700 border-slate-200'
-                                }`}>
+                      <div
+                        key={don.id}
+                        className="group p-6 transition-colors hover:bg-primary-50/50 dark:hover:bg-slate-800/50"
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="min-w-0 flex-1">
+                            <div className="mb-2 flex flex-wrap items-center gap-3">
+                              <span
+                                className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
+                                  don.type === 'FINANCIER'
+                                    ? 'border-green-200 bg-green-100/50 text-green-800 dark:border-green-800/50 dark:bg-green-950/40 dark:text-green-300'
+                                    : don.type === 'MATERIEL'
+                                      ? 'border-blue-200 bg-blue-100/50 text-blue-800 dark:border-blue-800/50 dark:bg-blue-950/40 dark:text-blue-300'
+                                      : 'border-slate-200 bg-slate-100/50 text-slate-800 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-200'
+                                }`}
+                              >
                                 {don.type}
                               </span>
-                              <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${don.statut === 'CONFIRME' ? 'bg-green-100/50 text-green-700 border-green-200' :
-                                don.statut === 'CONTACTE' ? 'bg-yellow-100/50 text-yellow-700 border-yellow-200' :
-                                  don.statut === 'CLASSE_SANS_SUITE' ? 'bg-red-100/50 text-red-700 border-red-200' :
-                                    'bg-slate-100/50 text-slate-700 border-slate-200'
-                                }`}>
+                              <span
+                                className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
+                                  don.statut === 'CONFIRME'
+                                    ? 'border-green-200 bg-green-100/50 text-green-800 dark:border-green-800/50 dark:bg-green-950/40 dark:text-green-300'
+                                    : don.statut === 'CONTACTE'
+                                      ? 'border-amber-200 bg-amber-100/50 text-amber-900 dark:border-amber-800/50 dark:bg-amber-950/40 dark:text-amber-200'
+                                      : don.statut === 'CLASSE_SANS_SUITE'
+                                        ? 'border-red-200 bg-red-100/50 text-red-800 dark:border-red-800/50 dark:bg-red-950/40 dark:text-red-300'
+                                        : 'border-slate-200 bg-slate-100/50 text-slate-800 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-200'
+                                }`}
+                              >
                                 {don.statut}
                               </span>
                             </div>
-                            <div className="text-sm text-slate-600 space-y-1 mt-3">
-                              {don.nom && <p><span className="font-medium text-slate-700">Nom :</span> {don.nom}</p>}
-                              {don.email && <p><span className="font-medium text-slate-700">Email :</span> {don.email}</p>}
-                              {don.telephone && <p><span className="font-medium text-slate-700">Téléphone :</span> {don.telephone}</p>}
-                              {don.montantEstime && <p><span className="font-medium text-slate-700">Montant estimé :</span> {don.montantEstime} €</p>}
-                              {don.description && <p className="mt-3 text-slate-500 italic max-w-2xl rounded-xl border border-slate-100 bg-slate-50/50 p-3 dark:border-slate-700/50 dark:bg-slate-800/40">"{don.description}"</p>}
-                              <p className="text-slate-400 mt-2 text-xs font-medium">
+                            <div className="mt-3 space-y-1 text-sm text-slate-600 dark:text-slate-400">
+                              {don.nom && (
+                                <p>
+                                  <span className="font-medium text-slate-700 dark:text-slate-300">Nom :</span> {don.nom}
+                                </p>
+                              )}
+                              {don.email && (
+                                <p>
+                                  <span className="font-medium text-slate-700 dark:text-slate-300">Email :</span> {don.email}
+                                </p>
+                              )}
+                              {don.telephone && (
+                                <p>
+                                  <span className="font-medium text-slate-700 dark:text-slate-300">Téléphone :</span>{' '}
+                                  {don.telephone}
+                                </p>
+                              )}
+                              {don.montantEstime && (
+                                <p>
+                                  <span className="font-medium text-slate-700 dark:text-slate-300">Montant estimé :</span>{' '}
+                                  {don.montantEstime} €
+                                </p>
+                              )}
+                              {don.description && (
+                                <p className="mt-3 max-w-2xl rounded-xl border border-slate-100 bg-slate-50/50 p-3 italic text-slate-500 dark:border-slate-700/50 dark:bg-slate-800/40 dark:text-slate-400">
+                                  &quot;{don.description}&quot;
+                                </p>
+                              )}
+                              <p className="mt-2 text-xs font-medium text-slate-400 dark:text-slate-500">
                                 {new Date(don.createdAt).toLocaleDateString('fr-FR', {
                                   day: 'numeric', month: 'long', year: 'numeric'
                                 })}
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2 ml-4">
+                          <div className="ml-4 flex shrink-0 items-center gap-2">
                             <select
                               value={don.statut}
                               onChange={(e) => handleUpdateStatus(don.id, e.target.value)}
                               disabled={processing === don.id}
-                              className="rounded-xl border border-slate-200 shadow-sm px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all disabled:opacity-50"
+                              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition-all focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:ring-primary-400/30"
                             >
                               <option value="NOUVEAU">Nouveau</option>
                               <option value="CONTACTE">Contacté</option>
@@ -216,7 +256,7 @@ export default function AdminDemandesDonsPage() {
                   hasNext={data.pagination.hasNext}
                   hasPrev={data.pagination.hasPrev}
                   onPageChange={setPage}
-                  className="mt-6 admin-glass rounded-2xl p-2 shadow-sm"
+                  className="admin-glass mt-6 rounded-2xl p-4 shadow-sm"
                 />
               )}
             </>

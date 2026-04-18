@@ -229,6 +229,10 @@ section[id] {
   color: #374151;
 }
 
+.dark .prose {
+  color: #e2e8f0;
+}
+
 .prose img {
   max-width: 100%;
   height: auto;

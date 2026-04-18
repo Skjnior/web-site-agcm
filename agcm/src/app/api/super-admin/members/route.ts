@@ -32,15 +32,21 @@ export async function GET(request: NextRequest) {
       ],
     });
 
+    const data = members.map((m) => ({
+      id: m.id,
+      prenom: m.prenom,
+      nom: m.nom,
+      email: m.user.email,
+      telephone: m.telephone,
+      photoUrl: m.photoUrl,
+      fullName: `${m.prenom} ${m.nom}`,
+    }));
+
+    /** `data` : même convention que les autres listes super-admin ; `members` conservé pour compatibilité */
     return NextResponse.json({
       success: true,
-      members: members.map(m => ({
-        id: m.id,
-        prenom: m.prenom,
-        nom: m.nom,
-        email: m.user.email,
-        fullName: `${m.prenom} ${m.nom}`,
-      })),
+      data,
+      members: data,
     });
   } catch (error) {
     console.error('Erreur lors de la récupération des membres:', error);

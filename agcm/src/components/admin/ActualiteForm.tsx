@@ -104,7 +104,7 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
   return (
     <form onSubmit={handleSubmit} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="admin-glass rounded-3xl p-8 shadow-sm space-y-8">
-        <h2 className="text-xl font-semibold text-slate-900 border-b border-slate-200/50 pb-4">Informations générales</h2>
+        <h2 className="border-b border-slate-200/50 pb-4 text-xl font-semibold text-slate-900 dark:border-slate-700 dark:text-slate-100">Informations générales</h2>
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label htmlFor="titre" className="block text-sm font-medium text-slate-700">

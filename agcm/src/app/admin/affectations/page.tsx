@@ -285,7 +285,7 @@ export default function SuperAdminAffectationsPage() {
       key: 'member',
       label: 'Membre',
       render: (affectation: Affectation) => (
-        <div className="font-medium text-gray-900">
+        <div className="font-medium text-slate-900 dark:text-slate-100">
           {affectation.member.prenom} {affectation.member.nom}
         </div>
       ),
@@ -294,21 +294,21 @@ export default function SuperAdminAffectationsPage() {
       key: 'poste',
       label: 'Poste',
       render: (affectation: Affectation) => (
-        <div className="text-gray-900">{affectation.poste.nom}</div>
+        <div className="text-slate-900 dark:text-slate-100">{affectation.poste.nom}</div>
       ),
     },
     {
       key: 'mandat',
       label: 'Mandat',
       render: (affectation: Affectation) => (
-        <div className="text-gray-900">{affectation.mandat.titre}</div>
+        <div className="text-slate-900 dark:text-slate-100">{affectation.mandat.titre}</div>
       ),
     },
     {
       key: 'dates',
       label: 'Période',
       render: (affectation: Affectation) => (
-        <div className="text-gray-900">
+        <div className="text-slate-900 dark:text-slate-100">
           {new Date(affectation.dateDebut).toLocaleDateString('fr-FR')} -{' '}
           {affectation.dateFin
             ? new Date(affectation.dateFin).toLocaleDateString('fr-FR')
@@ -405,28 +405,29 @@ export default function SuperAdminAffectationsPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 text-gray-900">
-      <div className="flex items-center justify-between">
+    <div className="admin-page mx-auto max-w-7xl space-y-8 px-4 pb-12 text-slate-900 animate-in fade-in duration-500 dark:text-slate-100">
+      <div className="admin-glass flex flex-col gap-4 rounded-3xl p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Gestion des affectations</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-3xl font-bold text-transparent dark:from-slate-100 dark:to-slate-400">
+            Gestion des affectations
+          </h1>
+          <p className="mt-1 text-slate-600 dark:text-slate-400">
             {data?.pagination.total || 0} affectation{data?.pagination.total !== 1 ? 's' : ''}
           </p>
         </div>
-        <Link href="/admin/affectations/nouveau">
+        <Link href="/admin/affectations/nouveau" className="shrink-0">
           <Button variant="add">
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="mr-2 h-4 w-4" />
             Nouvelle affectation
           </Button>
         </Link>
       </div>
 
-      {/* Filtres de recherche */}
       <div className="admin-panel p-4 space-y-4">
-        <div className="flex items-center gap-4 flex-wrap">
-          <div className="flex-1 min-w-[200px]">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="min-w-[200px] flex-1">
             <div className="relative flex items-center gap-2">
-              <SearchIcon className="absolute left-3 h-4 w-4 text-gray-400 pointer-events-none" />
+              <SearchIcon className="pointer-events-none absolute left-3 h-4 w-4 text-slate-400 dark:text-slate-500" />
               <Input
                 placeholder="Rechercher par membre..."
                 value={search}
@@ -436,58 +437,65 @@ export default function SuperAdminAffectationsPage() {
                     handleSearch();
                   }
                 }}
-                className="pl-10 text-gray-900"
+                className="pl-10"
               />
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={handleSearch}
-                className="shrink-0"
+                className="shrink-0 border-slate-300 dark:border-slate-600 dark:hover:bg-slate-800"
               >
                 <SearchIcon className="h-4 w-4" />
               </Button>
             </div>
           </div>
-          <Select 
-            value={mandatFilter || 'all'} 
+          <Select
+            value={mandatFilter || 'all'}
             onValueChange={(value) => {
               setMandatFilter(value);
               handleFilterChange('mandatId', value);
             }}
             disabled={loadingMandats}
           >
-            <SelectTrigger className="w-[200px] text-gray-900">
+            <SelectTrigger className="w-[200px] border-slate-200 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100">
               <SelectValue placeholder="Mandat" />
             </SelectTrigger>
-            <SelectContent className="z-50">
-              <SelectItem value="all" className="text-gray-900">Tous les mandats</SelectItem>
+            <SelectContent className="z-50 border-slate-700 bg-white dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+              <SelectItem value="all">Tous les mandats</SelectItem>
               {mandats.map((mandat) => (
-                <SelectItem key={mandat.id} value={mandat.id} className="text-gray-900">
+                <SelectItem key={mandat.id} value={mandat.id}>
                   {mandat.titre}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Select 
-            value={statutFilter || 'all'} 
+          <Select
+            value={statutFilter || 'all'}
             onValueChange={(value) => {
               setStatutFilter(value);
               handleFilterChange('statut', value);
             }}
           >
-            <SelectTrigger className="w-[180px] text-gray-900">
+            <SelectTrigger className="w-[180px] border-slate-200 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100">
               <SelectValue placeholder="Statut" />
             </SelectTrigger>
-            <SelectContent className="z-50">
-              <SelectItem value="all" className="text-gray-900">Tous les statuts</SelectItem>
-              <SelectItem value="ACTIF" className="text-gray-900">Actif</SelectItem>
-              <SelectItem value="INACTIF" className="text-gray-900">Inactif</SelectItem>
+            <SelectContent className="z-50 border-slate-700 bg-white dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+              <SelectItem value="all">Tous les statuts</SelectItem>
+              <SelectItem value="ACTIF">Actif</SelectItem>
+              <SelectItem value="INACTIF">Inactif</SelectItem>
             </SelectContent>
           </Select>
-          {(searchParams.get('search') || (searchParams.get('mandatId') && searchParams.get('mandatId') !== 'all') || (searchParams.get('statut') && searchParams.get('statut') !== 'all')) && (
-            <Button variant="outline" onClick={handleResetFilters} size="sm">
-              <X className="h-4 w-4 mr-2" />
+          {(searchParams.get('search') ||
+            (searchParams.get('mandatId') && searchParams.get('mandatId') !== 'all') ||
+            (searchParams.get('statut') && searchParams.get('statut') !== 'all')) && (
+            <Button
+              variant="outline"
+              onClick={handleResetFilters}
+              size="sm"
+              className="border-slate-300 dark:border-slate-600 dark:hover:bg-slate-800"
+            >
+              <X className="mr-2 h-4 w-4" />
               Réinitialiser
             </Button>
           )}

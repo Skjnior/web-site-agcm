@@ -22,12 +22,16 @@ export async function GET(request: NextRequest) {
       statut: statut as any,
     };
 
-    // Filtre par recherche (nom, prénom, email)
+    // Filtre par recherche (nom, prénom, email, ville, pays, téléphone)
     if (search) {
       where.OR = [
         { prenom: { contains: search, mode: 'insensitive' } },
         { nom: { contains: search, mode: 'insensitive' } },
         { email: { contains: search, mode: 'insensitive' } },
+        { telephone: { contains: search, mode: 'insensitive' } },
+        { ville: { contains: search, mode: 'insensitive' } },
+        { pays: { contains: search, mode: 'insensitive' } },
+        { message: { contains: search, mode: 'insensitive' } },
       ];
     }
 

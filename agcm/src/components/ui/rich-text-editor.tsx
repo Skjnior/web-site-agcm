@@ -72,28 +72,28 @@ export function RichTextEditor({ content, onChange, placeholder, className = '' 
 
   if (!isMounted || !editor) {
     return (
-      <div className="border rounded-lg overflow-hidden">
-        <div className="border-b bg-gray-50 p-2 flex flex-wrap gap-2">
+      <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-600">
+        <div className="flex flex-wrap gap-2 border-b border-slate-200 bg-gray-50 p-2 dark:border-slate-600 dark:bg-slate-800/80">
           <div className="h-8 w-16 bg-gray-200 rounded animate-pulse" />
           <div className="h-8 w-16 bg-gray-200 rounded animate-pulse" />
           <div className="h-8 w-16 bg-gray-200 rounded animate-pulse" />
         </div>
-        <div className="min-h-[200px] p-4 bg-gray-50 animate-pulse" />
+        <div className="min-h-[200px] animate-pulse bg-gray-50 p-4 dark:bg-slate-900/50" />
       </div>
     );
   }
 
   return (
-    <div className="border rounded-lg overflow-hidden">
-      <div className="border-b bg-gray-50 p-2 flex flex-wrap gap-2">
-        <button
+      <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-600">
+        <div className="flex flex-wrap gap-2 border-b border-slate-200 bg-gray-50 p-2 dark:border-slate-600 dark:bg-slate-800/80">
+          <button
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
           disabled={!editor.can().chain().focus().toggleBold().run()}
           className={`px-3 py-1 rounded text-sm font-medium ${
             editor.isActive('bold')
               ? 'bg-blue-600 text-white'
-              : 'bg-white text-gray-700 hover:bg-gray-100'
+              : 'bg-white text-gray-700 hover:bg-gray-100 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600'
           }`}
         >
           <strong>B</strong>
@@ -105,7 +105,7 @@ export function RichTextEditor({ content, onChange, placeholder, className = '' 
           className={`px-3 py-1 rounded text-sm font-medium ${
             editor.isActive('italic')
               ? 'bg-blue-600 text-white'
-              : 'bg-white text-gray-700 hover:bg-gray-100'
+              : 'bg-white text-gray-700 hover:bg-gray-100 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600'
           }`}
         >
           <em>I</em>
@@ -116,7 +116,7 @@ export function RichTextEditor({ content, onChange, placeholder, className = '' 
           className={`px-3 py-1 rounded text-sm font-medium ${
             editor.isActive('heading', { level: 1 })
               ? 'bg-blue-600 text-white'
-              : 'bg-white text-gray-700 hover:bg-gray-100'
+              : 'bg-white text-gray-700 hover:bg-gray-100 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600'
           }`}
         >
           H1
@@ -127,7 +127,7 @@ export function RichTextEditor({ content, onChange, placeholder, className = '' 
           className={`px-3 py-1 rounded text-sm font-medium ${
             editor.isActive('heading', { level: 2 })
               ? 'bg-blue-600 text-white'
-              : 'bg-white text-gray-700 hover:bg-gray-100'
+              : 'bg-white text-gray-700 hover:bg-gray-100 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600'
           }`}
         >
           H2
@@ -138,7 +138,7 @@ export function RichTextEditor({ content, onChange, placeholder, className = '' 
           className={`px-3 py-1 rounded text-sm font-medium ${
             editor.isActive('bulletList')
               ? 'bg-blue-600 text-white'
-              : 'bg-white text-gray-700 hover:bg-gray-100'
+              : 'bg-white text-gray-700 hover:bg-gray-100 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600'
           }`}
         >
           •
@@ -149,7 +149,7 @@ export function RichTextEditor({ content, onChange, placeholder, className = '' 
           className={`px-3 py-1 rounded text-sm font-medium ${
             editor.isActive('orderedList')
               ? 'bg-blue-600 text-white'
-              : 'bg-white text-gray-700 hover:bg-gray-100'
+              : 'bg-white text-gray-700 hover:bg-gray-100 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600'
           }`}
         >
           1.
@@ -160,7 +160,7 @@ export function RichTextEditor({ content, onChange, placeholder, className = '' 
           className={`px-3 py-1 rounded text-sm font-medium ${
             editor.isActive('blockquote')
               ? 'bg-blue-600 text-white'
-              : 'bg-white text-gray-700 hover:bg-gray-100'
+              : 'bg-white text-gray-700 hover:bg-gray-100 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600'
           }`}
         >
           "
@@ -169,12 +169,15 @@ export function RichTextEditor({ content, onChange, placeholder, className = '' 
           type="button"
           onClick={handleImageUpload}
           disabled={isUploading}
-          className="px-3 py-1 rounded text-sm font-medium bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+          className="rounded px-3 py-1 text-sm font-medium bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
         >
           {isUploading ? 'Upload...' : '🖼️'}
         </button>
       </div>
-      <EditorContent editor={editor} className="min-h-[200px] p-4" />
+      <EditorContent
+        editor={editor}
+        className="min-h-[200px] bg-white p-4 text-gray-900 dark:bg-slate-900/40 dark:text-slate-100"
+      />
     </div>
   );
 }

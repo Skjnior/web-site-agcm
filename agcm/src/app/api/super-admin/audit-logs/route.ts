@@ -19,22 +19,29 @@ export async function GET(request: NextRequest) {
   const { page, limit, offset } = parsePagination(request);
 
   try {
-    const where: any = {
+    const baseWhere: Record<string, unknown> = {
       ...(entityType && entityType !== 'all' ? { entityType } : {}),
       ...(entityId ? { entityId } : {}),
       ...(userId ? { userId } : {}),
       ...(action && action !== 'all' ? { action } : {}),
     };
 
-    // Filtre par recherche (email utilisateur)
-    if (search) {
-      where.user = {
-        email: {
-          contains: search,
-          mode: 'insensitive',
-        },
-      };
-    }
+    const searchWhere = {
+      OR: [
+        { user: { email: { contains: search, mode: 'insensitive' as const } } },
+        { actorEmail: { contains: search, mode: 'insensitive' as const } },
+      ],
+    };
+
+    const hasSearch = search.trim().length > 0;
+    const hasBase = Object.keys(baseWhere).length > 0;
+
+    const where: Record<string, unknown> =
+      hasSearch && hasBase
+        ? { AND: [baseWhere, searchWhere] }
+        : hasSearch
+          ? searchWhere
+          : baseWhere;
 
     const [total, logs] = await Promise.all([
       prisma.auditLog.count({ where }),

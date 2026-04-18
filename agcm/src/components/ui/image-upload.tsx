@@ -7,9 +7,20 @@ type ImageUploadProps = {
   onChange: (url: string) => void;
   label?: string;
   className?: string;
+  /** Uniquement fichier depuis l’ordinateur (masque la saisie d’URL optionnelle) */
+  hideUrlOption?: boolean;
+  /** Classes pour la zone de prévisualisation (ex. taille portrait) */
+  previewClassName?: string;
 };
 
-export function ImageUpload({ value, onChange, label = "Image", className = '' }: ImageUploadProps) {
+export function ImageUpload({
+  value,
+  onChange,
+  label = 'Image',
+  className = '',
+  hideUrlOption = false,
+  previewClassName = 'h-48 max-h-48',
+}: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(value || null);
   const [showUrlInput, setShowUrlInput] = useState(false);
@@ -76,7 +87,7 @@ export function ImageUpload({ value, onChange, label = "Image", className = '' }
 
   return (
     <div className={className}>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
+      <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-300">
         {label}
       </label>
       
@@ -86,7 +97,7 @@ export function ImageUpload({ value, onChange, label = "Image", className = '' }
             <img
               src={preview}
               alt="Preview"
-              className="max-w-full h-48 object-cover rounded-lg border"
+              className={`max-w-full rounded-lg border border-slate-200 object-cover dark:border-slate-600 ${previewClassName}`}
             />
             <button
               type="button"
@@ -97,29 +108,29 @@ export function ImageUpload({ value, onChange, label = "Image", className = '' }
               ✕
             </button>
           </div>
-          {showUrlInput && (
+          {!hideUrlOption && showUrlInput && (
             <div className="space-y-1">
               <input
                 type="url"
                 value={value || ''}
                 onChange={handleUrlChange}
                 placeholder="URL de l'image (optionnel)"
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
               />
               <button
                 type="button"
                 onClick={() => setShowUrlInput(false)}
-                className="text-xs text-gray-500 hover:text-gray-700"
+                className="text-xs text-gray-500 hover:text-gray-700 dark:text-slate-400"
               >
                 Masquer le champ URL
               </button>
             </div>
           )}
-          {!showUrlInput && (
+          {!hideUrlOption && !showUrlInput && (
             <button
               type="button"
               onClick={() => setShowUrlInput(true)}
-              className="text-xs text-gray-500 hover:text-gray-700 underline"
+              className="text-xs text-gray-500 hover:text-gray-700 underline dark:text-slate-400"
             >
               Modifier l'URL (optionnel)
             </button>
@@ -127,7 +138,7 @@ export function ImageUpload({ value, onChange, label = "Image", className = '' }
         </div>
       ) : (
         <div className="space-y-2">
-          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+          <label className="flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 transition-colors hover:bg-gray-100 dark:border-slate-600 dark:bg-slate-800/40 dark:hover:bg-slate-800/70">
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
               {isUploading ? (
                 <div className="text-gray-500">Upload en cours...</div>
@@ -161,14 +172,14 @@ export function ImageUpload({ value, onChange, label = "Image", className = '' }
               disabled={isUploading}
             />
           </label>
-          {showUrlInput ? (
+          {!hideUrlOption && showUrlInput ? (
             <div className="space-y-1">
               <input
                 type="url"
                 value={value || ''}
                 onChange={handleUrlChange}
                 placeholder="Ou entrez une URL d'image (optionnel)"
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
               />
               <button
                 type="button"
@@ -178,20 +189,20 @@ export function ImageUpload({ value, onChange, label = "Image", className = '' }
                     onChange('');
                   }
                 }}
-                className="text-xs text-gray-500 hover:text-gray-700"
+                className="text-xs text-gray-500 hover:text-gray-700 dark:text-slate-400"
               >
                 Masquer le champ URL
               </button>
             </div>
-          ) : (
+          ) : !hideUrlOption ? (
             <button
               type="button"
               onClick={() => setShowUrlInput(true)}
-              className="text-xs text-gray-500 hover:text-gray-700 underline"
+              className="text-xs text-gray-500 hover:text-gray-700 underline dark:text-slate-400"
             >
               Ou utiliser une URL d'image (optionnel)
             </button>
-          )}
+          ) : null}
         </div>
       )}
     </div>

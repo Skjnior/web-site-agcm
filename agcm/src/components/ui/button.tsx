@@ -19,11 +19,15 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
-        // Variants personnalisés pour les actions
-        add: "bg-green-600 text-white hover:bg-green-700 focus-visible:ring-green-500/20",
-        edit: "bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500/20",
-        delete: "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500/20",
-        view: "bg-gray-600 text-white hover:bg-gray-700 focus-visible:ring-gray-500/20",
+        // Variants personnalisés pour les actions (clair + sombre)
+        add:
+          "bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:ring-emerald-500/30 dark:bg-emerald-600 dark:hover:bg-emerald-500 dark:focus-visible:ring-emerald-400/40",
+        edit:
+          "bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500/30 dark:bg-blue-600 dark:hover:bg-blue-500 dark:focus-visible:ring-blue-400/40",
+        delete:
+          "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500/30 dark:bg-red-600 dark:hover:bg-red-500 dark:focus-visible:ring-red-400/40",
+        view:
+          "bg-slate-600 text-white hover:bg-slate-700 focus-visible:ring-slate-500/30 dark:bg-slate-600 dark:hover:bg-slate-500 dark:focus-visible:ring-slate-400/40",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
@@ -56,7 +60,7 @@ function Button({
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant, size }), className)}
       {...props}
     />
   )

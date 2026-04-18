@@ -14,13 +14,21 @@ type AuditData = {
 };
 
 /**
- * Log une action dans l'audit
+ * Log une action dans l'audit (conserve actorEmail pour traçabilité si le compte est supprimé plus tard)
  */
 export async function logAction(data: AuditData) {
   try {
+    let actorEmail: string | null = null;
+    const u = await prisma.user.findUnique({
+      where: { id: data.userId },
+      select: { email: true },
+    });
+    actorEmail = u?.email ?? null;
+
     await prisma.auditLog.create({
       data: {
         userId: data.userId,
+        actorEmail,
         action: data.action,
         entityType: data.entityType,
         entityId: data.entityId,
@@ -71,6 +79,3 @@ export async function getUserAuditLogs(userId: string, limit = 50) {
     take: limit,
   });
 }
-
-
-
