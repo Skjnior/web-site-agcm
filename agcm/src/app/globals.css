@@ -138,17 +138,17 @@ section[id] {
 @layer components {
   /* Panneaux admin : pas de blanc pur en mode sombre */
   .admin-panel {
-    @apply rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700/80 dark:bg-slate-900 dark:shadow-none;
+    @apply rounded-lg border border-slate-700/80 bg-slate-900 shadow-none;
   }
   .admin-panel-form {
     @apply admin-panel space-y-6 p-6;
   }
   .admin-page {
-    @apply min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100;
+    @apply min-h-screen bg-slate-950 text-slate-100;
   }
   /* Ajouter rounded-3xl | rounded-2xl etc. sur l’élément */
   .admin-glass {
-    @apply border border-slate-200/50 bg-white/70 shadow-sm backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/75 dark:shadow-none;
+    @apply border border-slate-700/50 bg-slate-900/75 shadow-none backdrop-blur-xl;
   }
 }
 

@@ -119,13 +119,6 @@ export default function SuperAdminContentsClient({
     }
   };
 
-  const handleFilterChange = (newStatus: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', '1');
-    params.set('status', newStatus);
-    router.push(`/super-admin/contents?${params.toString()}`);
-  };
-
   const handleSearch = () => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', '1');
@@ -134,26 +127,26 @@ export default function SuperAdminContentsClient({
     } else {
       params.delete('search');
     }
-    router.push(`/super-admin/contents?${params.toString()}`);
+    router.push(`/admin/contents?${params.toString()}`);
   };
 
   const handleResetFilters = () => {
     setSearch('');
-    router.push('/super-admin/contents');
+    router.push('/admin/contents');
   };
 
   const hasActiveFilters = search || (status && status !== 'ALL');
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 text-gray-900">
+    <div className="mx-auto max-w-7xl space-y-6 text-slate-100">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+          <h1 className="flex items-center gap-2 text-3xl font-bold text-slate-100">
             <FileText className="h-8 w-8" />
             Gestion des contenus
           </h1>
-          <p className="text-gray-600 mt-1">
+          <p className="mt-1 text-slate-400">
             Super Admin : Visualisez et gérez tous les contenus de la plateforme
           </p>
         </div>
@@ -166,8 +159,8 @@ export default function SuperAdminContentsClient({
       </div>
 
       {/* Alerte Super Admin */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <p className="text-sm text-blue-800">
+      <div className="rounded-lg border border-blue-500/30 bg-blue-950/40 p-4">
+        <p className="text-sm text-blue-200">
           🔑 <strong>Super Admin :</strong> Vous avez accès à tous les contenus de tous les membres du bureau. Vous pouvez modifier, supprimer ou publier n'importe quel contenu.
         </p>
       </div>
@@ -177,7 +170,7 @@ export default function SuperAdminContentsClient({
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex-1 min-w-[200px]">
             <div className="relative flex items-center gap-2">
-              <SearchIcon className="absolute left-3 h-4 w-4 text-gray-400 pointer-events-none" />
+              <SearchIcon className="pointer-events-none absolute left-3 h-4 w-4 text-slate-500" />
               <Input
                 placeholder="Rechercher par titre ou contenu..."
                 value={search}
@@ -187,7 +180,7 @@ export default function SuperAdminContentsClient({
                     handleSearch();
                   }
                 }}
-                className="pl-10 text-gray-900"
+                className="border-slate-600 bg-slate-800/50 pl-10 text-slate-100 placeholder:text-slate-500"
               />
               <Button
                 type="button"
@@ -211,8 +204,8 @@ export default function SuperAdminContentsClient({
 
       {/* Filtres par statut */}
       <div className="admin-panel border overflow-hidden">
-        <div className="flex gap-2 border-b border-gray-200 p-2 overflow-x-auto">
-          <Link href="/super-admin/contents?status=ALL">
+        <div className="flex gap-2 overflow-x-auto border-b border-slate-700 p-2">
+          <Link href="/admin/contents?status=ALL">
             <Button
               variant={status === 'ALL' ? 'default' : 'ghost'}
               className="rounded-b-none whitespace-nowrap"
@@ -220,7 +213,7 @@ export default function SuperAdminContentsClient({
               Tous ({stats.brouillon + stats.soumis + stats.approuve + stats.publie + stats.rejete + stats.archive})
             </Button>
           </Link>
-          <Link href="/super-admin/contents?status=BROUILLON">
+          <Link href="/admin/contents?status=BROUILLON">
             <Button
               variant={status === 'BROUILLON' ? 'default' : 'ghost'}
               className="rounded-b-none whitespace-nowrap"
@@ -228,7 +221,7 @@ export default function SuperAdminContentsClient({
               Brouillons ({stats.brouillon})
             </Button>
           </Link>
-          <Link href="/super-admin/contents?status=SOUMIS">
+          <Link href="/admin/contents?status=SOUMIS">
             <Button
               variant={status === 'SOUMIS' ? 'default' : 'ghost'}
               className="rounded-b-none whitespace-nowrap"
@@ -236,7 +229,7 @@ export default function SuperAdminContentsClient({
               En attente ({stats.soumis})
             </Button>
           </Link>
-          <Link href="/super-admin/contents?status=APPROUVE">
+          <Link href="/admin/contents?status=APPROUVE">
             <Button
               variant={status === 'APPROUVE' ? 'default' : 'ghost'}
               className="rounded-b-none whitespace-nowrap"
@@ -244,7 +237,7 @@ export default function SuperAdminContentsClient({
               Approuvés ({stats.approuve})
             </Button>
           </Link>
-          <Link href="/super-admin/contents?status=PUBLIE">
+          <Link href="/admin/contents?status=PUBLIE">
             <Button
               variant={status === 'PUBLIE' ? 'default' : 'ghost'}
               className="rounded-b-none whitespace-nowrap"
@@ -252,7 +245,7 @@ export default function SuperAdminContentsClient({
               Publiés ({stats.publie})
             </Button>
           </Link>
-          <Link href="/super-admin/contents?status=REJETE">
+          <Link href="/admin/contents?status=REJETE">
             <Button
               variant={status === 'REJETE' ? 'default' : 'ghost'}
               className="rounded-b-none whitespace-nowrap"
@@ -260,7 +253,7 @@ export default function SuperAdminContentsClient({
               Rejetés ({stats.rejete})
             </Button>
           </Link>
-          <Link href="/super-admin/contents?status=ARCHIVE">
+          <Link href="/admin/contents?status=ARCHIVE">
             <Button
               variant={status === 'ARCHIVE' ? 'default' : 'ghost'}
               className="rounded-b-none whitespace-nowrap"
@@ -275,7 +268,7 @@ export default function SuperAdminContentsClient({
       {loading ? (
         <div className="admin-panel p-12 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement...</p>
+          <p className="mt-4 text-slate-400">Chargement...</p>
         </div>
       ) : (
         <ContentsList
@@ -284,47 +277,14 @@ export default function SuperAdminContentsClient({
           totalPages={totalPages}
           total={total}
           isSuperAdmin={true}
+          basePath="/admin/contents"
+          pageSize={20}
+          getPaginationHref={(p) => {
+            const params = new URLSearchParams(searchParams.toString());
+            params.set('page', String(p));
+            return `/admin/contents?${params.toString()}`;
+          }}
         />
-      )}
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between admin-panel border px-6 py-4">
-          <div className="text-sm text-gray-700">
-            Affichage de <span className="font-medium">{(page - 1) * 20 + 1}</span> à{' '}
-            <span className="font-medium">{Math.min(page * 20, total)}</span> sur{' '}
-            <span className="font-medium">{total}</span> contenus
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                const params = new URLSearchParams(searchParams.toString());
-                params.set('page', String(Math.max(1, page - 1)));
-                router.push(`/super-admin/contents?${params.toString()}`);
-              }}
-              disabled={page === 1}
-            >
-              Précédent
-            </Button>
-            <span className="text-sm text-gray-700">
-              Page {page} sur {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                const params = new URLSearchParams(searchParams.toString());
-                params.set('page', String(Math.min(totalPages, page + 1)));
-                router.push(`/super-admin/contents?${params.toString()}`);
-              }}
-              disabled={page === totalPages}
-            >
-              Suivant
-            </Button>
-          </div>
-        </div>
       )}
     </div>
   );

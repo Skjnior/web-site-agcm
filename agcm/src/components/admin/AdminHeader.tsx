@@ -4,8 +4,6 @@ import { Bell, Menu, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ThemeToggle } from '@/components/theme/ThemeToggle';
-
 interface AdminHeaderProps {
     user: {
         name: string;
@@ -27,16 +25,16 @@ export default function AdminHeader({ user }: AdminHeaderProps) {
     });
 
     return (
-        <header className="sticky top-0 z-10 flex h-16 flex-shrink-0 items-center gap-x-4 border-b border-slate-200/90 bg-white/95 backdrop-blur-xl px-4 shadow-sm dark:border-slate-800/50 dark:bg-slate-900/50 dark:shadow-[0_4px_24px_-12px_rgba(0,0,0,0.5)] sm:gap-x-6 sm:px-6 lg:px-8 transition-all duration-300">
+        <header className="sticky top-0 z-10 flex h-16 flex-shrink-0 items-center gap-x-4 border-b border-slate-800/50 bg-slate-900/50 px-4 shadow-[0_4px_24px_-12px_rgba(0,0,0,0.5)] backdrop-blur-xl transition-all duration-300 sm:gap-x-6 sm:px-6 lg:px-8">
 
             {/* Mobile menu button */}
-            <button type="button" className="-m-2.5 p-2.5 rounded-lg text-slate-600 transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 md:hidden">
+            <button type="button" className="-m-2.5 rounded-lg p-2.5 text-slate-300 transition-colors hover:bg-slate-800 md:hidden">
                 <span className="sr-only">Ouvrir le menu</span>
                 <Menu className="h-6 w-6" aria-hidden="true" />
             </button>
 
             {/* Separator */}
-            <div className="h-6 w-px bg-slate-200 dark:bg-slate-800 md:hidden" aria-hidden="true" />
+            <div className="h-6 w-px bg-slate-800 md:hidden" aria-hidden="true" />
 
             <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 items-center">
                 {/* Breadcrumb / Title area */}
@@ -45,8 +43,8 @@ export default function AdminHeader({ user }: AdminHeaderProps) {
                         <ol role="list" className="flex items-center space-x-2">
                             {breadcrumbs.map((crumb, idx) => (
                                 <li key={crumb.name} className="flex items-center text-sm">
-                                    {idx > 0 && <ChevronRight className="mx-1 h-4 w-4 text-slate-400 dark:text-slate-600" />}
-                                    <span className={`font-medium ${crumb.isLast ? 'text-slate-900 dark:text-slate-100' : 'text-slate-500 dark:text-slate-400'}`}>
+                                    {idx > 0 && <ChevronRight className="mx-1 h-4 w-4 text-slate-600" />}
+                                    <span className={`font-medium ${crumb.isLast ? 'text-slate-100' : 'text-slate-400'}`}>
                                         {crumb.name}
                                     </span>
                                 </li>
@@ -56,24 +54,23 @@ export default function AdminHeader({ user }: AdminHeaderProps) {
                 </div>
 
                 <div className="flex items-center gap-x-4 lg:gap-x-6">
-                    <ThemeToggle />
                     {/* Notifications */}
-                    <button type="button" className="group relative -m-2.5 rounded-full p-2.5 text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-300">
+                    <button type="button" className="group relative -m-2.5 rounded-full p-2.5 text-slate-400 transition-all hover:bg-slate-800 hover:text-slate-300">
                         <span className="sr-only">Voir les notifications</span>
                         <Bell className="h-5 w-5 group-hover:animate-pulse" aria-hidden="true" />
-                        <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)] ring-2 ring-white dark:ring-slate-900" />
+                        <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)] ring-2 ring-slate-900" />
                     </button>
 
                     {/* Separator */}
-                    <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-slate-200 dark:lg:bg-slate-800" aria-hidden="true" />
+                    <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-slate-800" aria-hidden="true" />
 
                     {/* Profil — lien vers /admin/profil */}
                     <Link
                         href="/admin/profil"
-                        className="group -m-1.5 flex items-center rounded-lg border border-transparent p-1.5 pr-2 transition-all hover:border-slate-200 hover:bg-slate-100 dark:hover:border-slate-800 dark:hover:bg-slate-800/50"
+                        className="group -m-1.5 flex items-center rounded-lg border border-transparent p-1.5 pr-2 transition-all hover:border-slate-800 hover:bg-slate-800/50"
                     >
                         <span className="sr-only">Mon profil</span>
-                        <div className="relative h-9 w-9 overflow-hidden rounded-full border border-slate-200 bg-slate-100 shadow-sm ring-2 ring-transparent transition-all group-hover:ring-blue-500/30 dark:border-slate-700 dark:bg-slate-800">
+                        <div className="relative h-9 w-9 overflow-hidden rounded-full border border-slate-700 bg-slate-800 shadow-sm ring-2 ring-transparent transition-all group-hover:ring-blue-500/30">
                             {user.photoUrl ? (
                                 <Image
                                     className="h-full w-full object-cover"
@@ -89,7 +86,7 @@ export default function AdminHeader({ user }: AdminHeaderProps) {
                             )}
                         </div>
                         <span className="hidden lg:flex lg:items-center">
-                            <span className="ml-3 text-sm font-semibold leading-6 text-slate-800 transition-colors group-hover:text-blue-600 dark:text-slate-200 dark:group-hover:text-blue-400" aria-hidden="true">
+                            <span className="ml-3 text-sm font-semibold leading-6 text-slate-200 transition-colors group-hover:text-blue-400" aria-hidden="true">
                                 {user.name}
                             </span>
                             <span className="ml-2 rounded-md bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-400 ring-1 ring-inset ring-blue-500/20">

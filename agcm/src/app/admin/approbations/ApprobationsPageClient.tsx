@@ -124,7 +124,7 @@ export default function ApprobationsPageClient({
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto" />
         </div>
       ) : (
-        <div className="admin-panel overflow-hidden rounded-xl border border-slate-200 shadow-sm dark:border-slate-700/80">
+        <div className="admin-panel overflow-hidden rounded-xl">
           <ApprobationsList
             contents={contents}
             currentPage={page}

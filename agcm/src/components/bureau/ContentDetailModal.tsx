@@ -88,7 +88,7 @@ export default function ContentDetailModal({
         <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between z-10">
           <h2 className="text-2xl font-bold text-gray-900">Détails du contenu</h2>
           <div className="flex items-center gap-2">
-            <Link href={isSuperAdmin ? `/super-admin/contents/${content.id}/edit` : `/bureau/contents/${content.id}/edit`}>
+            <Link href={isSuperAdmin ? `/admin/contents/${content.id}/edit` : `/bureau/contents/${content.id}/edit`}>
               <Button variant="edit" size="sm">
                 <Edit className="h-4 w-4 mr-1" />
                 Modifier
