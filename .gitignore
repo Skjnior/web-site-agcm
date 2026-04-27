@@ -1,7 +1,11 @@
 # Dependencies
 node_modules/
 
-# Environment (les secrets vivent dans des fichiers non versionnés ; voir agcm/.env.example)
+# Environment (les secrets ne sont jamais versionnés — modèle : agcm/.env.example)
+**/.env
+!**/.env.example
+**/.env.*
+!**/.env.example
 /.env.local
 /.env.*.local
 
