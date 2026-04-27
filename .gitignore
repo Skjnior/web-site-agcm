@@ -1,7 +1,7 @@
 # Dependencies
 node_modules/
 
-# Environment (fichiers nommés .env.local à la racine uniquement ; agcm/.env.local est versionné pour l’équipe)
+# Environment (les secrets vivent dans des fichiers non versionnés ; voir agcm/.env.example)
 /.env.local
 /.env.*.local
 

@@ -118,7 +118,11 @@ export function SignOutConfirmProvider({ children }: { children: ReactNode }) {
     const payload = pending;
     setIsLoading(true);
     try {
-      await signOut({ callbackUrl: payload.callbackUrl, redirect: payload.redirect });
+      if (payload.redirect) {
+        await signOut({ callbackUrl: payload.callbackUrl, redirect: true });
+      } else {
+        await signOut({ callbackUrl: payload.callbackUrl, redirect: false });
+      }
       payload.resolve(true);
     } catch {
       payload.resolve(false);

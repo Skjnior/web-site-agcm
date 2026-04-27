@@ -30,7 +30,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# Fichiers .env versionnés pour l’équipe (ne pas commiter de secrets sur un dépôt public sans précaution).
+# Secrets et environnement local (ne jamais commiter — voir .env.example)
+.env
+.env.*
+!.env.example
 
 # vercel
 .vercel

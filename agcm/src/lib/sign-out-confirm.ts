@@ -42,7 +42,11 @@ export function signOutWithConfirmation(options?: {
     );
     if (ok) {
       void import('next-auth/react').then(({ signOut }) => {
-        void signOut({ callbackUrl, redirect });
+        if (redirect) {
+          void signOut({ callbackUrl, redirect: true });
+        } else {
+          void signOut({ callbackUrl, redirect: false });
+        }
       });
     }
     resolve(ok);
