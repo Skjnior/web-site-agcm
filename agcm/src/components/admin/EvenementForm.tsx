@@ -44,13 +44,13 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
     heureFin: initialData?.heureFin || '17:00',
     lieu: initialData?.lieu || '',
     lienVisio: initialData?.lienVisio || '',
-    inscriptionRequise: initialData?.inscriptionRequise ?? true,
+    inscriptionRequise: initialData?.inscriptionRequise ?? false,
     placesMax: initialData?.placesMax,
     dateInscriptionFin: initialData?.dateInscriptionFin || '',
     programme: initialData?.programme || '',
     intervenants: initialData?.intervenants || '',
     imageUrl: initialData?.imageUrl || '',
-    status: initialData?.status || 'PLANIFIE',
+    status: initialData?.status || 'A_VENIR',
     published: initialData?.published ?? false,
   });
 
@@ -361,10 +361,9 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
               onChange={(e) => setFormData((prev) => ({ ...prev, status: e.target.value }))}
               className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
             >
-              <option value="PLANIFIE">Planifié (À venir)</option>
+              <option value="A_VENIR">À venir</option>
               <option value="EN_COURS">En cours</option>
-              <option value="TERMINE">Terminé</option>
-              <option value="ANNULE">Annulé</option>
+              <option value="PASSE">Terminé (passé)</option>
             </select>
           </div>
           <div className="md:col-span-2 pt-2">

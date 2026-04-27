@@ -4,7 +4,8 @@ import { auth } from '@/lib/auth';
 import { canAccessSalonBureau } from '@/lib/rbac';
 import { getMandatActif } from '@/lib/mandat';
 import ChatInterface from '@/components/app/ChatInterface';
-import { MessageCircle, Lock, Shield } from 'lucide-react';
+import { MemberPageHeader } from '@/components/app/MemberPageShell';
+import { MessageCircle, Shield } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Chat Bureau - AGCM',
@@ -27,28 +28,23 @@ export default async function ChatPage() {
   const mandatActif = await getMandatActif();
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
-        <div className="flex items-center gap-3 mb-2">
-          <Lock className="h-6 w-6 text-purple-400" />
-          <h1 className="text-3xl font-bold text-slate-100 flex items-center gap-3">
-            <MessageCircle className="h-8 w-8 text-purple-400" />
-            Salon privé bureau
-          </h1>
+    <div className="mx-auto w-full max-w-7xl space-y-6">
+      <MemberPageHeader
+        title="Salon privé bureau"
+        description="Espace de discussion réservé aux membres actifs du bureau exécutif."
+        icon={MessageCircle}
+        iconClassName="text-purple-400"
+      />
+
+      {mandatActif && (
+        <div className="admin-panel flex items-start gap-3 border border-purple-500/25 bg-purple-500/10 p-4 text-sm text-purple-200">
+          <Shield className="mt-0.5 h-5 w-5 shrink-0 text-purple-400" aria-hidden />
+          <p>
+            Mandat actif : {new Date(mandatActif.dateDebut).getFullYear()} –{' '}
+            {new Date(mandatActif.dateFin).getFullYear()}. Les messages des anciens mandats ne sont pas accessibles.
+          </p>
         </div>
-        <p className="text-slate-400 mb-2">
-          Espace de discussion réservé aux membres actifs du bureau exécutif.
-        </p>
-        {mandatActif && (
-          <div className="flex items-center gap-2 text-sm text-purple-300/90">
-            <Shield className="h-4 w-4" />
-            <span>
-              Mandat actif : {new Date(mandatActif.dateDebut).getFullYear()} – {new Date(mandatActif.dateFin).getFullYear()}.
-              Les messages des anciens mandats ne sont pas accessibles.
-            </span>
-          </div>
-        )}
-      </div>
+      )}
 
       <ChatInterface
         scope="PRIVE_BUREAU"

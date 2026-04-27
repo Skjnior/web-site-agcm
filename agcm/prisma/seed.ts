@@ -1,8 +1,9 @@
 // prisma/seed.ts
 // Script de seed pour générer 600 entrées dans CHAQUE table (21 tables)
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { SITE_PUBLIC_DEFAULT_PAYLOAD } from '../src/config/site-public-default-payload';
 
 const prisma = new PrismaClient();
 
@@ -67,6 +68,7 @@ async function main() {
 
   // Nettoyer toutes les données existantes
   console.log('🧹 Nettoyage des données existantes...');
+  await prisma.sitePublicPage.deleteMany();
   await prisma.auditLog.deleteMany();
   await prisma.bureauMessageAttachment.deleteMany();
   await prisma.bureauMessage.deleteMany();
@@ -909,6 +911,21 @@ async function main() {
   console.log(`✅ ${realNews.length} actualités publiées créées\n`);
 
   // ============================================
+  // Contenu éditorial site vitrine (landing / à propos)
+  // ============================================
+  await prisma.sitePublicPage.upsert({
+    where: { id: 'default' },
+    create: {
+      id: 'default',
+      payload: SITE_PUBLIC_DEFAULT_PAYLOAD as unknown as Prisma.InputJsonValue,
+    },
+    update: {
+      payload: SITE_PUBLIC_DEFAULT_PAYLOAD as unknown as Prisma.InputJsonValue,
+    },
+  });
+  console.log('✅ Contenu public du site (SitePublicPage)\n');
+
+  // ============================================
   // RÉSUMÉ FINAL
   // ============================================
   console.log('\n📊 RÉSUMÉ DU SEED');
@@ -934,6 +951,7 @@ async function main() {
     bureauMessages: await prisma.bureauMessage.count(),
     auditLogs: await prisma.auditLog.count(),
     citationsPresident: await prisma.presidentCitation.count(),
+    sitePublicPage: await prisma.sitePublicPage.count(),
   };
 
   Object.entries(counts).forEach(([table, count]) => {

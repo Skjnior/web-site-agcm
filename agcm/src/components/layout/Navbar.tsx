@@ -2,21 +2,28 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { signOutWithConfirmation } from '@/lib/sign-out-confirm';
 import { Menu, X, LogOut, User, ChevronDown } from 'lucide-react';
 import Logo from '../Logo';
+import { publicNavForHeader } from '@/config/site-public-nav';
 
-const navLinks = [
-  { id: '#axes', label: 'Nos axes' },
-  { id: '#about', label: 'À propos' },
-  { id: '#actualites', label: 'Actualités' },
-  { id: '#evenements', label: 'Événements' },
-  { id: '#dons', label: 'Faire un don' },
-  { id: '#contact', label: 'Contact' },
-];
+const NAV_OFFSET = 80;
+
+function isHashHomeHref(href: string) {
+  return href.startsWith('/#') && href.length > 2;
+}
+
+function isNavActive(pathname: string, href: string) {
+  if (href === '/') return pathname === '/';
+  if (isHashHomeHref(href)) return false;
+  if (href.startsWith('/#')) return false;
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export default function Navbar() {
+  const pathname = usePathname();
   const { data: session, status } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -39,14 +46,15 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (e: React.MouseEvent, id: string) => {
-    if (typeof window !== 'undefined' && window.location.pathname !== '/') {
-      return;
-    }
+  const scrollToHomeSection = (e: React.MouseEvent, href: string) => {
+    if (!isHashHomeHref(href) || pathname !== '/') return;
     e.preventDefault();
-    const el = document.querySelector(id);
+    const id = href.split('#')[1];
+    if (!id) return;
+    const el = document.getElementById(id);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const y = el.getBoundingClientRect().top + window.pageYOffset - NAV_OFFSET;
+      window.scrollTo({ top: y, behavior: 'smooth' });
     }
     setIsMenuOpen(false);
   };
@@ -74,16 +82,14 @@ export default function Navbar() {
           : 'bg-slate-900/90 backdrop-blur-lg'
       }`}
     >
-      {/* Barre tricolore guinéenne - plus visible */}
       <div className="h-1 flex">
         <div className="flex-1 bg-[#dc2626]" />
         <div className="flex-1 bg-[#eab308]" />
         <div className="flex-1 bg-[#16a34a]" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-[72px]">
-          {/* Logo */}
+      <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-6">
+        <div className="flex h-16 min-h-0 items-center gap-2 lg:h-[68px] lg:gap-3">
           <Link
             href="/"
             onClick={(e) => {
@@ -92,45 +98,57 @@ export default function Navbar() {
                 scrollToTop();
               }
             }}
-            className="flex items-center gap-2 shrink-0 group"
+            className="group flex min-w-0 shrink-0 items-center"
           >
-            <Logo />
+            <Logo variant="navbar" />
           </Link>
 
-          {/* Desktop nav - liens centrés et espacés */}
-          <div className="hidden lg:flex items-center gap-0.5">
-            {navLinks.map((link) => (
-              <Link
-                key={link.id}
-                href={link.id}
-                onClick={(e) => scrollToSection(e, link.id)}
-                className="px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200"
-              >
-                {link.label}
-              </Link>
-            ))}
+          <div className="hidden min-h-0 min-w-0 flex-1 justify-center lg:flex">
+            <nav
+              className="flex max-w-full flex-nowrap items-center gap-0.5 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] xl:gap-1 [&::-webkit-scrollbar]:hidden"
+              aria-label="Navigation principale"
+            >
+              {publicNavForHeader.map((link) => {
+                const active = isNavActive(pathname, link.href);
+                return (
+                  <Link
+                    key={link.href + link.label}
+                    href={link.href}
+                    onClick={(e) => scrollToHomeSection(e, link.href)}
+                    className={`shrink-0 rounded-md px-2 py-2 text-xs font-medium transition-all duration-200 xl:px-2.5 xl:text-sm ${
+                      active
+                        ? 'bg-white/10 text-white'
+                        : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
 
-          {/* CTA / User actions */}
-          <div className="flex items-center gap-2 sm:gap-3" ref={userMenuRef}>
+          <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3" ref={userMenuRef}>
             {isLoggedIn ? (
-              <div className="hidden sm:block relative">
+              <div className="relative hidden sm:block">
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-white/10 hover:bg-white/15 rounded-xl border border-white/10 transition-all duration-200"
+                  className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-4 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-white/15"
                 >
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500/20 to-green-600/20 border border-emerald-500/30">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-500/30 bg-gradient-to-br from-emerald-500/20 to-green-600/20">
                     <User className="h-4 w-4 text-emerald-400" />
                   </div>
                   <span>Mon espace</span>
-                  <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown
+                    className={`h-4 w-4 text-slate-400 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`}
+                  />
                 </button>
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-52 py-2 bg-slate-800/95 backdrop-blur-xl rounded-xl shadow-xl border border-slate-700/50 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                  <div className="absolute right-0 z-50 mt-2 w-52 animate-in rounded-xl border border-slate-700/50 bg-slate-800/95 py-2 shadow-xl backdrop-blur-xl fade-in slide-in-from-top-2 duration-200">
                     <Link
                       href="/dashboard"
                       onClick={() => setIsUserMenuOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-200 hover:text-white hover:bg-white/5 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-200 transition-colors hover:bg-white/5 hover:text-white"
                     >
                       <User className="h-4 w-4 text-slate-400" />
                       Tableau de bord
@@ -138,7 +156,7 @@ export default function Navbar() {
                     <div className="my-1 border-t border-slate-700/50" />
                     <button
                       onClick={handleLogout}
-                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300"
                     >
                       <LogOut className="h-4 w-4" />
                       Déconnexion
@@ -149,7 +167,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/connexion"
-                className="hidden sm:inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-600 rounded-lg shadow-lg shadow-red-500/25 transition-all hover:shadow-red-500/40 hover:scale-[1.02]"
+                className="hidden whitespace-nowrap sm:inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-red-600 to-red-500 px-3 py-2 text-xs font-semibold text-white shadow-lg shadow-red-500/25 transition-all hover:scale-[1.02] hover:from-red-500 hover:to-red-600 hover:shadow-red-500/40 xl:px-5 xl:py-2.5 xl:text-sm"
               >
                 Espace membre
               </Link>
@@ -157,7 +175,7 @@ export default function Navbar() {
 
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+              className="rounded-lg p-2.5 text-slate-400 transition-colors hover:bg-white/5 hover:text-white lg:hidden"
               aria-label={isMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
             >
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -166,27 +184,33 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="lg:hidden border-t border-slate-700/50 bg-slate-900/98 backdrop-blur-xl animate-in slide-in-from-top-2 duration-200">
-          <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.id}
-                href={link.id}
-                onClick={(e) => scrollToSection(e, link.id)}
-                className="block px-4 py-3 text-slate-300 hover:text-white hover:bg-white/5 rounded-lg font-medium transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <div className="pt-3 mt-3 border-t border-slate-700/50 space-y-2">
+        <div className="animate-in border-t border-slate-700/50 bg-slate-900/98 backdrop-blur-xl slide-in-from-top-2 duration-200 lg:hidden">
+          <div className="mx-auto max-w-7xl space-y-1 px-4 py-4">
+            {publicNavForHeader.map((link) => {
+              const active = isNavActive(pathname, link.href);
+              return (
+                <Link
+                  key={link.href + link.label + 'm'}
+                  href={link.href}
+                  onClick={(e) => scrollToHomeSection(e, link.href)}
+                  className={`block rounded-lg px-4 py-3 font-medium transition-colors ${
+                    active
+                      ? 'bg-white/10 text-white'
+                      : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+            <div className="mt-3 space-y-2 border-t border-slate-700/50 pt-3">
               {isLoggedIn ? (
                 <>
                   <Link
                     href="/dashboard"
                     onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 text-white font-medium bg-white/10 rounded-xl border border-white/10"
+                    className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/10 px-4 py-3 font-medium text-white"
                   >
                     <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/20">
                       <User className="h-4 w-4 text-emerald-400" />
@@ -195,7 +219,7 @@ export default function Navbar() {
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-3 w-full px-4 py-3 text-slate-300 hover:text-red-400 font-medium rounded-xl hover:bg-red-500/10 transition-colors"
+                    className="flex w-full items-center gap-3 rounded-xl px-4 py-3 font-medium text-slate-300 transition-colors hover:bg-red-500/10 hover:text-red-400"
                   >
                     <LogOut className="h-4 w-4" />
                     Déconnexion
@@ -205,7 +229,7 @@ export default function Navbar() {
                 <Link
                   href="/connexion"
                   onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center justify-center px-4 py-3 text-white font-semibold bg-gradient-to-r from-red-600 to-red-500 rounded-lg"
+                  className="flex items-center justify-center rounded-lg bg-gradient-to-r from-red-600 to-red-500 px-4 py-3 font-semibold text-white"
                 >
                   Espace membre
                 </Link>

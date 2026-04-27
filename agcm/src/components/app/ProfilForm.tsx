@@ -165,13 +165,23 @@ export default function ProfilForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={formClass}>
       {error && (
-        <div className={isDark ? 'bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl' : 'bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded dark:bg-red-950/40 dark:border-red-500/30 dark:text-red-300'}>
+        <div
+          className={
+            isDark ? 'app-banner-error' : 'rounded border border-red-200 bg-red-50 px-4 py-3 text-red-800 dark:border-red-500/30 dark:bg-red-950/40 dark:text-red-300'
+          }
+        >
           {error}
         </div>
       )}
 
       {success && (
-        <div className={isDark ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-3 rounded-xl' : 'bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded dark:bg-emerald-950/30 dark:border-emerald-500/25 dark:text-emerald-300'}>
+        <div
+          className={
+            isDark
+              ? 'app-banner-success'
+              : 'rounded border border-green-200 bg-green-50 px-4 py-3 text-green-800 dark:border-emerald-500/25 dark:bg-emerald-950/30 dark:text-emerald-300'
+          }
+        >
           Profil mis à jour avec succès !
         </div>
       )}

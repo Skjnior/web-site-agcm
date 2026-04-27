@@ -150,6 +150,16 @@ section[id] {
   .admin-glass {
     @apply border border-slate-700/50 bg-slate-900/75 shadow-none backdrop-blur-xl;
   }
+  /* Bandeaux feedback (espace membre / admin sombre) */
+  .app-banner-error {
+    @apply rounded-xl border border-red-900/50 bg-red-950/50 px-4 py-3 text-sm text-red-200;
+  }
+  .app-banner-success {
+    @apply rounded-xl border border-emerald-900/50 bg-emerald-950/40 px-4 py-3 text-sm text-emerald-200;
+  }
+  .app-banner-info {
+    @apply rounded-xl border border-blue-900/50 bg-blue-950/40 px-4 py-3 text-sm text-blue-200;
+  }
 }
 
 @keyframes blob {

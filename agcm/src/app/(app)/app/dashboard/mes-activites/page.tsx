@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { Newspaper, ArrowRight, ExternalLink, BookOpen } from 'lucide-react';
+import MemberPageShell from '@/components/app/MemberPageShell';
 
 export const metadata: Metadata = {
   title: 'Actualités & activités - AGCM',
@@ -75,24 +76,22 @@ export default async function MesActivitesPage({
   ];
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-100 to-slate-400 flex items-center gap-3">
-            <BookOpen className="h-8 w-8 text-emerald-400" />
-            Actualités & activités
-          </h1>
-          <p className="text-slate-400 mt-1">Restez informé des dernières publications</p>
-        </div>
+    <MemberPageShell
+      title="Actualités & activités"
+      description="Restez informé des dernières publications"
+      icon={BookOpen}
+      iconClassName="text-emerald-400"
+      actions={
         <Link
           href="/actualites"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition-all"
+          className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-emerald-700"
         >
           <ExternalLink className="h-4 w-4" />
-          Voir toutes les actualités
+          Site public
         </Link>
-      </div>
-
+      }
+    >
+      <div className="space-y-8">
       {/* Filtres */}
       <div className="flex flex-wrap gap-2">
         {filters.map((f) => (
@@ -112,7 +111,7 @@ export default async function MesActivitesPage({
 
       {/* Liste */}
       {contents.length === 0 ? (
-        <div className="bg-slate-900/40 border border-slate-800/50 rounded-2xl p-12 text-center">
+        <div className="admin-panel p-12 text-center">
           <Newspaper className="h-12 w-12 text-slate-600 mx-auto mb-3" />
           <p className="text-slate-500">
             {type
@@ -131,7 +130,7 @@ export default async function MesActivitesPage({
               <Link
                 key={content.id}
                 href={`/actualites/${content.id}`}
-                className="block group bg-slate-900/40 border border-slate-800/50 rounded-2xl overflow-hidden hover:border-emerald-500/30 hover:bg-slate-800/30 transition-all"
+                className="admin-panel group block overflow-hidden transition-all hover:border-emerald-500/30 hover:bg-slate-800/40"
               >
                 <div className="flex flex-col sm:flex-row">
                   {content.imagePrincipale && (
@@ -176,12 +175,13 @@ export default async function MesActivitesPage({
         <div className="text-center">
           <Link
             href="/actualites"
-            className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-slate-400 transition-colors hover:text-white"
           >
             Voir les {total} publications <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       )}
-    </div>
+      </div>
+    </MemberPageShell>
   );
 }

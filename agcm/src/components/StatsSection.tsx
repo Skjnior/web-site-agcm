@@ -8,12 +8,7 @@ interface Stat {
 }
 
 export default function StatsSection() {
-  const [stats, setStats] = useState<Stat[]>([
-    { label: 'Membres', value: '+551' },
-    { label: 'Événements / an', value: '0' },
-    { label: 'Projets actifs', value: '120+' },
-    { label: 'Actualités', value: '100+' },
-  ]);
+  const [stats, setStats] = useState<Stat[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,10 +17,11 @@ export default function StatsSection() {
         const response = await fetch('/api/public/stats');
         if (response.ok) {
           const data = await response.json();
-          setStats(data.stats || stats);
+          if (Array.isArray(data.stats)) setStats(data.stats);
         }
       } catch (error) {
         console.error('Erreur lors du chargement des stats:', error);
+        setStats([]);
       } finally {
         setLoading(false);
       }
@@ -44,6 +40,14 @@ export default function StatsSection() {
           </div>
         ))}
       </div>
+    );
+  }
+
+  if (stats.length === 0) {
+    return (
+      <p className="text-sm text-slate-400">
+        Statistiques indisponibles pour le moment.
+      </p>
     );
   }
 

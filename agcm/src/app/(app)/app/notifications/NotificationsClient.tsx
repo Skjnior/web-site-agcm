@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Bell, CheckCircle2, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { MemberPageHeader } from '@/components/app/MemberPageShell';
 
 interface Notification {
   id: string;
@@ -59,29 +60,27 @@ export default function NotificationsClient({ initialNotifications }: Notificati
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   return (
-    <>
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-100 to-slate-400 flex items-center gap-3">
-            <Bell className="h-8 w-8 text-blue-400" />
-            Mes Notifications
-          </h1>
-          <p className="text-slate-400 mt-1">Restez informé des dernières activités</p>
-        </div>
+    <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <MemberPageHeader
+        title="Mes notifications"
+        description="Restez informé des dernières activités"
+        icon={Bell}
+        iconClassName="text-blue-400"
+        actions={
+          unreadCount > 0 ? (
+            <Button
+              variant="outline"
+              className="rounded-xl border-slate-700 bg-slate-800/50 text-slate-300 backdrop-blur-sm transition-all hover:bg-slate-700 hover:text-white"
+              onClick={markAllAsRead}
+            >
+              <CheckCircle2 className="mr-2 h-4 w-4" />
+              Tout marquer comme lu
+            </Button>
+          ) : null
+        }
+      />
 
-        {unreadCount > 0 && (
-          <Button
-            variant="outline"
-            className="border-slate-700 bg-slate-800/50 text-slate-300 hover:text-white hover:bg-slate-700 transition-all rounded-xl backdrop-blur-sm"
-            onClick={markAllAsRead}
-          >
-            <CheckCircle2 className="w-4 h-4 mr-2" />
-            Tout marquer comme lu
-          </Button>
-        )}
-      </div>
-
-      <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-800/50 rounded-3xl shadow-[0_8px_32px_-12px_rgba(0,0,0,0.5)] overflow-hidden">
+      <div className="admin-panel overflow-hidden">
         <div className="divide-y divide-slate-800/50">
           {notifications.map((notification) => (
             <div
@@ -144,6 +143,6 @@ export default function NotificationsClient({ initialNotifications }: Notificati
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }

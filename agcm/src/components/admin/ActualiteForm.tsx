@@ -1,7 +1,7 @@
 // components/admin/ActualiteForm.tsx
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { ImageUpload } from '@/components/ui/image-upload';
@@ -26,19 +26,29 @@ type ActualiteFormProps = {
 
 export default function ActualiteForm({ actualiteId, initialData }: ActualiteFormProps) {
   const router = useRouter();
+  const feedbackRef = useRef<HTMLDivElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(
+    null,
+  );
   const [formData, setFormData] = useState<ActualiteFormData>({
     titre: initialData?.titre || '',
     slug: initialData?.slug || '',
     resume: initialData?.resume || '',
     content: initialData?.content || '',
-    categorie: initialData?.categorie || 'AUTRE',
+    categorie: initialData?.categorie || 'ACTUALITE',
     tags: initialData?.tags || '',
     imageUrl: initialData?.imageUrl || '',
     auteur: initialData?.auteur || '',
     published: initialData?.published ?? false,
     datePublication: initialData?.datePublication || '',
   });
+
+  useEffect(() => {
+    if (feedback && feedbackRef.current) {
+      feedbackRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [feedback]);
 
   const generateSlug = (title: string) => {
     return title
@@ -61,19 +71,13 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setFeedback(null);
 
     try {
       const url = actualiteId
         ? `/api/admin/actualites/${actualiteId}`
         : '/api/admin/actualites';
       const method = actualiteId ? 'PUT' : 'POST';
-
-      // Log pour déboguer
-      console.log('Submitting actualite form data:', {
-        titre: formData.titre,
-        imageUrl: formData.imageUrl,
-        slug: formData.slug,
-      });
 
       const res = await fetch(url, {
         method,
@@ -82,20 +86,37 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
           ...formData,
           contenu: formData.content,
           type: formData.categorie,
-          imagePrincipale: formData.imageUrl,
-          // Extra mappings for the backend to be safe
+          imageUrl: formData.imageUrl,
         }),
       });
 
+      const data = await res.json().catch(() => ({}));
+
       if (res.ok) {
-        router.push('/admin/actualites');
+        setFeedback({
+          type: 'success',
+          message: actualiteId
+            ? 'Actualité mise à jour avec succès.'
+            : 'Actualité créée avec succès.',
+        });
         router.refresh();
+        if (!actualiteId) {
+          window.setTimeout(() => {
+            router.push('/admin/actualites');
+          }, 1400);
+        }
       } else {
-        const data = await res.json();
-        alert(data.error || 'Erreur lors de la sauvegarde');
+        const msg =
+          typeof data.error === 'string'
+            ? data.error
+            : 'Une erreur est survenue lors de la sauvegarde.';
+        setFeedback({ type: 'error', message: msg });
       }
-    } catch (error) {
-      alert('Erreur lors de la sauvegarde');
+    } catch {
+      setFeedback({
+        type: 'error',
+        message: 'Impossible de joindre le serveur. Réessayez dans un instant.',
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -103,6 +124,19 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {feedback && (
+        <div
+          ref={feedbackRef}
+          role="alert"
+          className={
+            feedback.type === 'success'
+              ? 'rounded-xl border border-emerald-800/60 bg-emerald-950/40 px-4 py-3 text-sm text-emerald-100'
+              : 'rounded-xl border border-red-800/60 bg-red-950/40 px-4 py-3 text-sm text-red-100'
+          }
+        >
+          {feedback.message}
+        </div>
+      )}
       <div className="admin-glass rounded-3xl p-8 shadow-sm space-y-8">
         <h2 className="border-b border-slate-200/50 pb-4 text-xl font-semibold text-slate-900 dark:border-slate-700 dark:text-slate-100">Informations générales</h2>
         <div className="grid md:grid-cols-2 gap-6">
@@ -145,13 +179,10 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
               onChange={(e) => setFormData((prev) => ({ ...prev, categorie: e.target.value }))}
               className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
             >
-              <option value="ACTUALITE">Actualité standard</option>
-              <option value="EVENEMENT">Événement</option>
-              <option value="FORMATION">Formation</option>
-              <option value="REGLEMENTATION">Réglementation</option>
-              <option value="VIE_ASSOCIATIVE">Vie associative</option>
-              <option value="PARTENARIAT">Partenariat</option>
-              <option value="AUTRE">Autre</option>
+              <option value="ACTUALITE">Actualité</option>
+              <option value="ANNONCE">Annonce / événement</option>
+              <option value="ACTIVITE">Activité & formation</option>
+              <option value="PARTAGE">Partage & informations</option>
             </select>
           </div>
           <div className="space-y-2">
@@ -170,11 +201,10 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
           </div>
           <div className="md:col-span-2 space-y-2">
             <label htmlFor="resume" className="block text-sm font-medium text-slate-700">
-              Résumé <span className="text-red-500">*</span>
+              Résumé <span className="text-slate-400">(optionnel)</span>
             </label>
             <textarea
               id="resume"
-              required
               rows={3}
               value={formData.resume}
               onChange={(e) => setFormData((prev) => ({ ...prev, resume: e.target.value }))}

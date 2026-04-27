@@ -27,7 +27,7 @@ export default function AppLayoutClient({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex h-screen w-full bg-slate-950 overflow-hidden text-slate-100 font-sans selection:bg-blue-500/30">
+    <div className="dark flex h-screen w-full overflow-hidden bg-slate-950 font-sans text-slate-100 selection:bg-blue-500/30">
       {/* Background decoration */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
         <div className="absolute top-[10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-blue-900/20 blur-[120px]" />

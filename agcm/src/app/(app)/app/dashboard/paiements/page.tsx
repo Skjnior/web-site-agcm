@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma';
 import { isBureauActif } from '@/lib/rbac';
 import { CreditCard, Receipt, Info, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import MemberPageShell from '@/components/app/MemberPageShell';
 
 export const metadata: Metadata = {
   title: 'Mes paiements - AGCM',
@@ -30,19 +31,17 @@ export default async function PaiementsPage() {
   const isBureau = await isBureauActif(user.id);
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div>
-        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-100 to-slate-400 flex items-center gap-3">
-          <CreditCard className="h-8 w-8 text-purple-400" />
-          Mes paiements
-        </h1>
-        <p className="text-slate-400 mt-1">Cotisations et historique</p>
-      </div>
-
-      {/* Accès rapide salon privé bureau (visible uniquement pour les membres du bureau) */}
+    <MemberPageShell
+      title="Mes paiements"
+      description="Cotisations et historique"
+      icon={CreditCard}
+      iconClassName="text-purple-400"
+      narrow
+    >
+      <div className="space-y-8">
       {isBureau && (
         <Link href="/app/chat">
-          <div className="bg-purple-500/10 backdrop-blur-xl border border-purple-500/30 rounded-2xl p-6 shadow-[0_8px_32px_-12px_rgba(0,0,0,0.5)] hover:bg-purple-500/15 transition-colors">
+          <div className="admin-glass rounded-2xl border border-purple-500/30 bg-purple-500/10 p-6 transition-colors hover:bg-purple-500/15">
             <div className="flex items-center gap-4">
               <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-purple-500/20 flex items-center justify-center">
                 <MessageSquare className="h-7 w-7 text-purple-400" />
@@ -61,7 +60,7 @@ export default async function PaiementsPage() {
         </Link>
       )}
 
-      <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-800/50 rounded-2xl p-8 shadow-[0_8px_32px_-12px_rgba(0,0,0,0.5)]">
+      <div className="admin-panel p-8">
         <div className="flex flex-col items-center text-center py-12">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-800/50 mb-6 border border-slate-700/50">
             <Receipt className="h-10 w-10 text-slate-500" />
@@ -83,6 +82,7 @@ export default async function PaiementsPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </MemberPageShell>
   );
 }

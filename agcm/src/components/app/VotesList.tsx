@@ -1,13 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, XCircle, Clock, Vote as VoteIcon, Plus, Edit, Trash2, X, Eye } from 'lucide-react';
-import Link from 'next/link';
-
 interface Vote {
   id: string;
   titre: string;
@@ -62,7 +60,8 @@ export default function VotesList({
   const [selectedVote, setSelectedVote] = useState<Vote | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showDetailedResponses, setShowDetailedResponses] = useState<Record<string, boolean>>({});
-  
+  const [banner, setBanner] = useState<{ type: 'error'; message: string } | null>(null);
+
   // Vérifier le rôle depuis la session si userRole n'est pas fourni
   // Essayer plusieurs champs possibles (roleSysteme, role)
   const sessionRole = (session?.user as any)?.roleSysteme || (session?.user as any)?.role;
@@ -81,19 +80,6 @@ export default function VotesList({
   // Afficher les boutons si Super Admin
   const showButtons = isSuperAdmin;
 
-  // Debug pour diagnostic
-  useEffect(() => {
-    console.log('🔍 VotesList Debug:', {
-      userRole,
-      sessionRole,
-      actualRole,
-      isSuperAdmin,
-      showButtons,
-      sessionStatus: session ? 'loaded' : 'loading',
-      sessionUser: session?.user,
-    });
-  }, [userRole, session, sessionRole, actualRole, isSuperAdmin, showButtons]);
-
   const handleDelete = async (voteId: string) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce vote ? Cette action est irréversible.')) {
       return;
@@ -107,12 +93,13 @@ export default function VotesList({
 
       if (response.ok) {
         router.refresh();
+        setBanner(null);
       } else {
         const data = await response.json();
-        alert(data.error || 'Erreur lors de la suppression');
+        setBanner({ type: 'error', message: data.error || 'Erreur lors de la suppression' });
       }
     } catch (error) {
-      alert('Erreur lors de la suppression');
+      setBanner({ type: 'error', message: 'Erreur lors de la suppression' });
     } finally {
       setDeleting(null);
     }
@@ -135,41 +122,42 @@ export default function VotesList({
         window.location.reload();
       } else {
         const data = await response.json();
-        alert(data.error || 'Erreur lors du vote');
+        setBanner({ type: 'error', message: data.error || 'Erreur lors du vote' });
       }
     } catch (error) {
-      alert('Erreur lors du vote');
+      setBanner({ type: 'error', message: 'Erreur lors du vote' });
     } finally {
       setVoting(null);
     }
   };
 
-  // Debug immédiat pour voir les valeurs
-  console.log('🔍 VotesList Render:', {
-    userRole,
-    userRoleType: typeof userRole,
-    userRoleUpper: userRole?.toUpperCase(),
-    sessionRole,
-    sessionRoleType: typeof sessionRole,
-    actualRole,
-    isSuperAdmin,
-    showButtons,
-    'WILL SHOW BUTTONS': showButtons,
-    'FORCE CHECK': userRole === 'SUPER_ADMIN' || sessionRole === 'SUPER_ADMIN',
-  });
-
   return (
     <div className="space-y-4">
+      {banner && (
+        <div className="app-banner-error flex items-start justify-between gap-3">
+          <p className="flex-1">{banner.message}</p>
+          <button
+            type="button"
+            onClick={() => setBanner(null)}
+            className="shrink-0 rounded p-1 text-current opacity-70 hover:opacity-100"
+            aria-label="Fermer"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
       {/* Bouton créer pour Super Admin */}
       {showButtons && (
-        <div className="bg-white rounded-lg shadow-lg p-6 flex justify-between items-center border-2 border-guinea-red/20">
+        <div className="admin-glass flex items-center justify-between rounded-lg border-2 border-guinea-red/25 p-6 shadow-none">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Gestion des sondages</h2>
-            <p className="text-sm text-gray-600 mt-1">En tant que Super Admin, vous pouvez créer, modifier et supprimer des sondages</p>
+            <h2 className="text-lg font-semibold text-slate-100">Gestion des sondages</h2>
+            <p className="mt-1 text-sm text-slate-400">
+              En tant que Super Admin, vous pouvez créer, modifier et supprimer des sondages
+            </p>
           </div>
           <Button 
             onClick={() => router.push('/app/votes/nouveau')}
-            className="bg-gradient-to-r from-guinea-red to-red-600 hover:from-red-600 hover:to-red-700 shadow-lg hover:shadow-xl transition-all"
+            className="bg-gradient-to-r from-guinea-red to-red-600 shadow-lg transition-all hover:from-red-600 hover:to-red-700 hover:shadow-xl"
           >
             <Plus className="h-4 w-4 mr-2" />
             Créer un sondage
@@ -178,13 +166,13 @@ export default function VotesList({
       )}
 
       {votes.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <VoteIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600">Aucun sondage disponible</p>
+        <div className="admin-panel p-12 text-center shadow-none">
+          <VoteIcon className="mx-auto mb-4 h-12 w-12 text-slate-500" />
+          <p className="text-slate-300">Aucun sondage disponible</p>
           {showButtons && (
             <Button 
               variant="outline" 
-              className="mt-4"
+              className="mt-4 border-slate-600 bg-slate-900 text-slate-200 hover:bg-slate-800"
               onClick={() => router.push('/app/votes/nouveau')}
             >
               Créer le premier sondage
@@ -203,13 +191,13 @@ export default function VotesList({
         const isTermine = now > vote.dateFin;
 
         return (
-          <div key={vote.id} className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-start justify-between mb-4">
+          <div key={vote.id} className="admin-panel p-6 shadow-none">
+            <div className="mb-4 flex items-start justify-between">
               <div className="flex-1">
-                <div className="flex items-start justify-between mb-2 gap-4">
-                  <div className="flex items-center gap-3 flex-wrap flex-1">
+                <div className="mb-2 flex flex-wrap items-start justify-between gap-4">
+                  <div className="flex flex-1 flex-wrap items-center gap-3">
                     <h3 
-                      className="text-xl font-semibold text-gray-900 cursor-pointer hover:text-guinea-red transition-colors"
+                      className="cursor-pointer text-xl font-semibold text-slate-100 transition-colors hover:text-guinea-red"
                       onClick={() => {
                         setSelectedVote(vote);
                         setIsModalOpen(true);
@@ -234,21 +222,21 @@ export default function VotesList({
                         setSelectedVote(vote);
                         setIsModalOpen(true);
                       }}
-                      className="text-gray-600 hover:text-guinea-red"
+                      className="text-slate-400 hover:text-guinea-red"
                       title="Voir les détails"
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
                   </div>
                   {showButtons && (
-                    <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="flex flex-shrink-0 items-center gap-2">
                       {/* Ne pas permettre la modification si le sondage est terminé */}
                       {!isTermine && (
                         <Button 
                           variant="outline" 
                           size="sm"
                           onClick={() => router.push(`/app/votes/${vote.id}/edit`)}
-                          className="border-blue-500 text-blue-700 hover:bg-blue-50 hover:border-blue-600"
+                          className="border-blue-700/60 bg-slate-950 text-blue-200 hover:border-blue-500 hover:bg-slate-900"
                         >
                           <Edit className="h-4 w-4 mr-1" />
                           Modifier
@@ -259,7 +247,7 @@ export default function VotesList({
                         size="sm"
                         onClick={() => handleDelete(vote.id)}
                         disabled={deleting === vote.id}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-400 hover:border-red-500"
+                        className="border-red-800/70 bg-red-950/30 text-red-200 hover:border-red-600 hover:bg-red-950/50"
                       >
                         {deleting === vote.id ? (
                           <span className="animate-spin">⏳</span>
@@ -274,9 +262,9 @@ export default function VotesList({
                   )}
                 </div>
                 {vote.description && (
-                  <p className="text-gray-600 mb-3">{vote.description}</p>
+                  <p className="mb-3 text-slate-400">{vote.description}</p>
                 )}
-                <div className="flex items-center gap-4 text-sm text-gray-500">
+                <div className="flex items-center gap-4 text-sm text-slate-500">
                   <div className="flex items-center gap-1">
                     <Clock className="h-4 w-4" />
                     <span>
@@ -291,50 +279,50 @@ export default function VotesList({
 
             {/* Résultats */}
             {vote.hasVoted && (
-              <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700">Résultats</span>
-                  <span className="text-sm text-gray-500">{total} réponse{total > 1 ? 's' : ''}</span>
+              <div className="mb-4 rounded-lg border border-slate-700/80 bg-slate-950/50 p-4">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-sm font-medium text-slate-200">Résultats</span>
+                  <span className="text-sm text-slate-500">{total} réponse{total > 1 ? 's' : ''}</span>
                 </div>
                 <div className="space-y-2">
                   <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-gray-600">Oui</span>
-                      <span className="text-sm font-medium text-gray-900">
+                    <div className="mb-1 flex items-center justify-between">
+                      <span className="text-sm text-slate-400">Oui</span>
+                      <span className="text-sm font-medium text-slate-100">
                         {vote.ouiCount} ({ouiPercent}%)
                       </span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="h-2 w-full rounded-full bg-slate-700">
                       <div
-                        className="bg-green-600 h-2 rounded-full transition-all"
+                        className="h-2 rounded-full bg-emerald-600 transition-all"
                         style={{ width: `${ouiPercent}%` }}
                       />
                     </div>
                   </div>
                   <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-gray-600">Non</span>
-                      <span className="text-sm font-medium text-gray-900">
+                    <div className="mb-1 flex items-center justify-between">
+                      <span className="text-sm text-slate-400">Non</span>
+                      <span className="text-sm font-medium text-slate-100">
                         {vote.nonCount} ({nonPercent}%)
                       </span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="h-2 w-full rounded-full bg-slate-700">
                       <div
-                        className="bg-red-600 h-2 rounded-full transition-all"
+                        className="h-2 rounded-full bg-red-600 transition-all"
                         style={{ width: `${nonPercent}%` }}
                       />
                     </div>
                   </div>
                 </div>
                 {vote.userVote !== null && (
-                  <div className="mt-3 text-sm text-gray-600">
-                    Votre choix : <strong>{vote.userVote ? 'Oui' : 'Non'}</strong>
+                  <div className="mt-3 text-sm text-slate-400">
+                    Votre choix : <strong className="text-slate-100">{vote.userVote ? 'Oui' : 'Non'}</strong>
                   </div>
                 )}
                 
                 {/* Détails des réponses - Seulement pour Super Admin */}
                 {isSuperAdmin && vote.detailedResponses && vote.detailedResponses.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
+                  <div className="mt-4 border-t border-slate-700 pt-4">
                     <button
                       onClick={() => {
                         setShowDetailedResponses(prev => ({
@@ -342,18 +330,21 @@ export default function VotesList({
                           [vote.id]: !prev[vote.id]
                         }));
                       }}
-                      className="flex items-center justify-between w-full text-sm font-semibold text-gray-700 hover:text-guinea-red transition-colors mb-2"
+                      className="mb-2 flex w-full items-center justify-between text-sm font-semibold text-slate-200 transition-colors hover:text-guinea-red"
                     >
                       <span>Détails des réponses (Super Admin uniquement)</span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-slate-500">
                         {showDetailedResponses[vote.id] ? 'Masquer' : 'Afficher'} ({vote.detailedResponses.length})
                       </span>
                     </button>
                     {showDetailedResponses[vote.id] && (
-                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                      <div className="max-h-48 space-y-2 overflow-y-auto">
                         {vote.detailedResponses.map((response) => (
-                          <div key={response.id} className="flex items-center justify-between text-xs bg-white p-2 rounded">
-                            <span className="text-gray-700">
+                          <div
+                            key={response.id}
+                            className="admin-panel flex items-center justify-between rounded p-2 text-xs shadow-none"
+                          >
+                            <span className="text-slate-300">
                               {response.user.member 
                                 ? `${response.user.member.prenom} ${response.user.member.nom}`
                                 : response.user.email}
@@ -372,31 +363,31 @@ export default function VotesList({
 
             {/* Actions */}
                   {vote.isActive && !vote.hasVoted && (
-                    <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+                    <div className="flex items-center gap-3 border-t border-slate-700 pt-4">
                       <Button
                         variant="outline"
-                        className="flex-1 bg-green-50 hover:bg-green-100 border-green-300 text-green-700"
+                        className="flex-1 border-emerald-800/70 bg-emerald-950/40 text-emerald-200 hover:bg-emerald-950/60"
                         onClick={() => handleVote(vote.id, true)}
                         disabled={voting === vote.id}
                       >
-                        <CheckCircle className="h-4 w-4 mr-2" />
+                        <CheckCircle className="mr-2 h-4 w-4" />
                         {voting === vote.id ? 'Envoi...' : 'Oui'}
                       </Button>
                       <Button
                         variant="outline"
-                        className="flex-1 bg-red-50 hover:bg-red-100 border-red-300 text-red-700"
+                        className="flex-1 border-red-800/70 bg-red-950/40 text-red-200 hover:bg-red-950/60"
                         onClick={() => handleVote(vote.id, false)}
                         disabled={voting === vote.id}
                       >
-                        <XCircle className="h-4 w-4 mr-2" />
+                        <XCircle className="mr-2 h-4 w-4" />
                         {voting === vote.id ? 'Envoi...' : 'Non'}
                       </Button>
                     </div>
                   )}
 
                   {!vote.isActive && !vote.hasVoted && (
-                    <div className="pt-4 border-t border-gray-200">
-                      <p className="text-sm text-gray-500 text-center">
+                    <div className="border-t border-slate-700 pt-4">
+                      <p className="text-center text-sm text-slate-500">
                         {new Date() < vote.dateDebut 
                           ? 'Ce sondage n\'est pas encore ouvert'
                           : 'Ce sondage n\'est plus actif'}
@@ -411,10 +402,10 @@ export default function VotesList({
 
       {/* Modal de détails du sondage */}
       {isModalOpen && selectedVote && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">Détails du sondage</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="admin-panel max-h-[90vh] w-full max-w-2xl overflow-y-auto shadow-xl">
+            <div className="sticky top-0 flex items-center justify-between border-b border-slate-700 bg-slate-900/95 px-6 py-4 backdrop-blur-sm">
+              <h2 className="text-2xl font-bold text-slate-100">Détails du sondage</h2>
               <Button
                 variant="ghost"
                 size="sm"
@@ -422,17 +413,17 @@ export default function VotesList({
                   setIsModalOpen(false);
                   setSelectedVote(null);
                 }}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-slate-400 hover:bg-slate-800 hover:text-slate-100"
               >
                 <X className="h-5 w-5" />
               </Button>
             </div>
             
-            <div className="p-6 space-y-6">
+            <div className="space-y-6 p-6">
               {/* Titre et badges */}
               <div>
-                <div className="flex items-center gap-3 mb-3">
-                  <h3 className="text-xl font-semibold text-gray-900">{selectedVote.titre}</h3>
+                <div className="mb-3 flex flex-wrap items-center gap-3">
+                  <h3 className="text-xl font-semibold text-slate-100">{selectedVote.titre}</h3>
                   {selectedVote.isActive ? (
                     <Badge variant="soumis">En cours</Badge>
                   ) : new Date() < selectedVote.dateDebut ? (
@@ -445,13 +436,13 @@ export default function VotesList({
                   </Badge>
                 </div>
                 {selectedVote.description && (
-                  <p className="text-gray-700 mt-2">{selectedVote.description}</p>
+                  <p className="mt-2 text-slate-400">{selectedVote.description}</p>
                 )}
               </div>
 
               {/* Informations */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-2 text-gray-600">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="flex items-center gap-2 text-slate-400">
                   <Clock className="h-4 w-4" />
                   <span className="text-sm">
                     <strong>Date de début :</strong> {new Date(selectedVote.dateDebut).toLocaleDateString('fr-FR', {
@@ -463,7 +454,7 @@ export default function VotesList({
                     })}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 text-gray-600">
+                <div className="flex items-center gap-2 text-slate-400">
                   <Clock className="h-4 w-4" />
                   <span className="text-sm">
                     <strong>Date de fin :</strong> {new Date(selectedVote.dateFin).toLocaleDateString('fr-FR', {
@@ -476,7 +467,7 @@ export default function VotesList({
                   </span>
                 </div>
                 {selectedVote.createdByPoste && (
-                  <div className="flex items-center gap-2 text-gray-600">
+                  <div className="flex items-center gap-2 text-slate-400">
                     <VoteIcon className="h-4 w-4" />
                     <span className="text-sm">
                       <strong>Créé par :</strong> {selectedVote.createdByPoste.nom}
@@ -487,25 +478,25 @@ export default function VotesList({
 
               {/* Résultats */}
               {selectedVote.hasVoted && (
-                <div className="bg-gray-50 rounded-lg p-4 space-y-4">
+                <div className="space-y-4 rounded-lg border border-slate-700/80 bg-slate-950/50 p-4">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-semibold text-gray-900">Résultats</h4>
-                    <span className="text-sm text-gray-500">
+                    <h4 className="font-semibold text-slate-100">Résultats</h4>
+                    <span className="text-sm text-slate-500">
                       {selectedVote.totalVotes} réponse{selectedVote.totalVotes > 1 ? 's' : ''}
                     </span>
                   </div>
                   
                   <div className="space-y-3">
                     <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-700">Oui</span>
-                        <span className="text-sm font-semibold text-gray-900">
+                      <div className="mb-2 flex items-center justify-between">
+                        <span className="text-sm font-medium text-slate-300">Oui</span>
+                        <span className="text-sm font-semibold text-slate-100">
                           {selectedVote.ouiCount} ({selectedVote.totalVotes > 0 ? Math.round((selectedVote.ouiCount / selectedVote.totalVotes) * 100) : 0}%)
                         </span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="h-2 w-full rounded-full bg-slate-700">
                         <div
-                          className="bg-green-600 h-2 rounded-full transition-all"
+                          className="h-2 rounded-full bg-emerald-600 transition-all"
                           style={{ 
                             width: `${selectedVote.totalVotes > 0 ? Math.round((selectedVote.ouiCount / selectedVote.totalVotes) * 100) : 0}%` 
                           }}
@@ -514,9 +505,9 @@ export default function VotesList({
                     </div>
                     
                     <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-700">Non</span>
-                        <span className="text-sm font-semibold text-gray-900">
+                      <div className="mb-2 flex items-center justify-between">
+                        <span className="text-sm font-medium text-slate-300">Non</span>
+                        <span className="text-sm font-semibold text-slate-100">
                           {selectedVote.nonCount} ({selectedVote.totalVotes > 0 ? Math.round((selectedVote.nonCount / selectedVote.totalVotes) * 100) : 0}%)
                         </span>
                       </div>
@@ -532,16 +523,17 @@ export default function VotesList({
                   </div>
 
                   {selectedVote.userVote !== null && (
-                    <div className="mt-3 pt-3 border-t border-gray-200">
-                      <p className="text-sm text-gray-600">
-                        Votre choix : <strong className="text-gray-900">{selectedVote.userVote ? 'Oui' : 'Non'}</strong>
+                    <div className="mt-3 border-t border-slate-700 pt-3">
+                      <p className="text-sm text-slate-400">
+                        Votre choix :{' '}
+                        <strong className="text-slate-100">{selectedVote.userVote ? 'Oui' : 'Non'}</strong>
                       </p>
                     </div>
                   )}
 
                   {/* Détails des réponses - Seulement pour Super Admin */}
                   {isSuperAdmin && selectedVote.detailedResponses && selectedVote.detailedResponses.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="mt-4 border-t border-slate-700 pt-4">
                       <button
                         onClick={() => {
                           setShowDetailedResponses(prev => ({
@@ -549,18 +541,21 @@ export default function VotesList({
                             [selectedVote.id]: !prev[selectedVote.id]
                           }));
                         }}
-                        className="flex items-center justify-between w-full text-sm font-semibold text-gray-700 hover:text-guinea-red transition-colors mb-3"
+                        className="mb-3 flex w-full items-center justify-between text-sm font-semibold text-slate-200 transition-colors hover:text-guinea-red"
                       >
                         <span>Détails des réponses (Super Admin uniquement)</span>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-slate-500">
                           {showDetailedResponses[selectedVote.id] ? 'Masquer' : 'Afficher'} ({selectedVote.detailedResponses.length})
                         </span>
                       </button>
                       {showDetailedResponses[selectedVote.id] && (
-                        <div className="space-y-2 max-h-60 overflow-y-auto">
+                        <div className="max-h-60 space-y-2 overflow-y-auto">
                           {selectedVote.detailedResponses.map((response) => (
-                            <div key={response.id} className="flex items-center justify-between text-sm bg-white p-2 rounded border border-gray-200">
-                              <span className="text-gray-700">
+                            <div
+                              key={response.id}
+                              className="admin-panel flex items-center justify-between rounded p-2 text-sm shadow-none"
+                            >
+                              <span className="text-slate-300">
                                 {response.user.member 
                                   ? `${response.user.member.prenom} ${response.user.member.nom}`
                                   : response.user.email}
@@ -578,31 +573,31 @@ export default function VotesList({
               )}
 
               {/* Actions */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+              <div className="flex flex-wrap items-center justify-end gap-3 border-t border-slate-700 pt-4">
                 {selectedVote.isActive && !selectedVote.hasVoted && (
                   <>
                     <Button
                       variant="outline"
-                      className="flex-1 bg-green-50 hover:bg-green-100 border-green-300 text-green-700"
+                      className="flex-1 border-emerald-800/70 bg-emerald-950/40 text-emerald-200 hover:bg-emerald-950/60"
                       onClick={() => {
                         handleVote(selectedVote.id, true);
                         setIsModalOpen(false);
                       }}
                       disabled={voting === selectedVote.id}
                     >
-                      <CheckCircle className="h-4 w-4 mr-2" />
+                      <CheckCircle className="mr-2 h-4 w-4" />
                       {voting === selectedVote.id ? 'Envoi...' : 'Oui'}
                     </Button>
                     <Button
                       variant="outline"
-                      className="flex-1 bg-red-50 hover:bg-red-100 border-red-300 text-red-700"
+                      className="flex-1 border-red-800/70 bg-red-950/40 text-red-200 hover:bg-red-950/60"
                       onClick={() => {
                         handleVote(selectedVote.id, false);
                         setIsModalOpen(false);
                       }}
                       disabled={voting === selectedVote.id}
                     >
-                      <XCircle className="h-4 w-4 mr-2" />
+                      <XCircle className="mr-2 h-4 w-4" />
                       {voting === selectedVote.id ? 'Envoi...' : 'Non'}
                     </Button>
                   </>
@@ -614,9 +609,9 @@ export default function VotesList({
                       setIsModalOpen(false);
                       router.push(`/app/votes/${selectedVote.id}/edit`);
                     }}
-                    className="border-blue-500 text-blue-700 hover:bg-blue-50"
+                    className="border-blue-700/60 bg-slate-950 text-blue-200 hover:bg-slate-900"
                   >
-                    <Edit className="h-4 w-4 mr-2" />
+                    <Edit className="mr-2 h-4 w-4" />
                     Modifier
                   </Button>
                 )}
@@ -626,6 +621,7 @@ export default function VotesList({
                     setIsModalOpen(false);
                     setSelectedVote(null);
                   }}
+                  className="border-slate-600 bg-slate-900 text-slate-200 hover:bg-slate-800"
                 >
                   Fermer
                 </Button>
@@ -637,19 +633,23 @@ export default function VotesList({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="bg-white rounded-lg shadow px-6 py-4 flex items-center justify-between">
-          <div className="text-sm text-gray-700">
+        <div className="admin-panel flex items-center justify-between px-6 py-4 shadow-none">
+          <div className="text-sm text-slate-300">
             Page {currentPage} sur {totalPages}
           </div>
           <div className="flex gap-2">
             {currentPage > 1 && (
               <a href={`/app/votes?page=${currentPage - 1}`}>
-                <Button variant="outline" size="sm">Précédent</Button>
+                <Button variant="outline" size="sm" className="border-slate-600 bg-slate-950 text-slate-200 hover:bg-slate-900">
+                  Précédent
+                </Button>
               </a>
             )}
             {currentPage < totalPages && (
               <a href={`/app/votes?page=${currentPage + 1}`}>
-                <Button variant="outline" size="sm">Suivant</Button>
+                <Button variant="outline" size="sm" className="border-slate-600 bg-slate-950 text-slate-200 hover:bg-slate-900">
+                  Suivant
+                </Button>
               </a>
             )}
           </div>

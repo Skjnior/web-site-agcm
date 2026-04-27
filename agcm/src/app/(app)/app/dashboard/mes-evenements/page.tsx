@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { Calendar, MapPin, ArrowRight, ExternalLink } from 'lucide-react';
+import MemberPageShell from '@/components/app/MemberPageShell';
 
 export const metadata: Metadata = {
   title: 'Mes événements - AGCM',
@@ -84,7 +85,7 @@ export default async function MesEvenementsPage() {
     return (
       <Link
         href={`/evenements/${event.slug}`}
-        className="block group bg-slate-900/40 border border-slate-800/50 rounded-2xl overflow-hidden hover:border-blue-500/30 hover:bg-slate-800/30 transition-all"
+        className="admin-panel group block overflow-hidden transition-all hover:border-blue-500/30 hover:bg-slate-800/40"
       >
         <div className="flex flex-col sm:flex-row">
           {imageUrl && (
@@ -135,29 +136,27 @@ export default async function MesEvenementsPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-100 to-slate-400 flex items-center gap-3">
-            <Calendar className="h-8 w-8 text-blue-400" />
-            Mes événements
-          </h1>
-          <p className="text-slate-400 mt-1">Découvrez et participez aux événements de l&apos;association</p>
-        </div>
+    <MemberPageShell
+      title="Mes événements"
+      description="Découvrez et participez aux événements de l'association"
+      icon={Calendar}
+      iconClassName="text-blue-400"
+      actions={
         <Link
           href="/evenements"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-all"
+          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
         >
           <ExternalLink className="h-4 w-4" />
-          Voir le calendrier complet
+          Calendrier complet
         </Link>
-      </div>
-
+      }
+    >
+      <div className="space-y-10">
       {/* À venir */}
       <section>
         <h2 className="text-lg font-semibold text-slate-200 mb-4">À venir</h2>
         {aVenir.length === 0 ? (
-          <div className="bg-slate-900/40 border border-slate-800/50 rounded-2xl p-12 text-center">
+          <div className="admin-panel p-12 text-center">
             <Calendar className="h-12 w-12 text-slate-600 mx-auto mb-3" />
             <p className="text-slate-500">Aucun événement à venir.</p>
             <Link href="/evenements" className="text-blue-400 hover:text-blue-300 text-sm mt-2 inline-block">
@@ -196,6 +195,7 @@ export default async function MesEvenementsPage() {
           </div>
         </section>
       )}
-    </div>
+      </div>
+    </MemberPageShell>
   );
 }

@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import ProfilForm from '@/components/app/ProfilForm';
+import MemberPageShell from '@/components/app/MemberPageShell';
+import { User } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Mon profil - AGCM',
@@ -35,18 +37,17 @@ export default async function ProfilPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div>
-        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-100 to-slate-400">
-          Mon profil
-        </h1>
-        <p className="text-slate-400 mt-1">Gérez vos informations personnelles</p>
-      </div>
-
-      <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-800/50 rounded-2xl p-6 sm:p-8 shadow-[0_8px_32px_-12px_rgba(0,0,0,0.5)] relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -z-10" />
+    <MemberPageShell
+      title="Mon profil"
+      description="Gérez vos informations personnelles"
+      icon={User}
+      iconClassName="text-sky-400"
+      narrow
+    >
+      <div className="admin-panel relative overflow-hidden p-6 sm:p-8">
+        <div className="-z-10 absolute top-0 right-0 h-64 w-64 rounded-full bg-blue-500/5 blur-3xl" />
         <ProfilForm member={member} dark />
       </div>
-    </div>
+    </MemberPageShell>
   );
 }

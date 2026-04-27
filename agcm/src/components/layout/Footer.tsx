@@ -1,6 +1,7 @@
 // components/layout/Footer.tsx
 import Link from 'next/link';
 import Image from 'next/image';
+import { publicNavFooterQuickLinks } from '@/config/site-public-nav';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -16,14 +17,6 @@ export default function Footer() {
     // Données officielles
     president: "Mr. ALKALY MOHAMED TAHEY CONDE"
   };
-
-  const quickLinks = [
-    { name: "Accueil", href: "/" },
-    { name: "À propos", href: "/a-propos" },
-    { name: "Événements", href: "/evenements" },
-    { name: "Actualités", href: "/actualites" },
-    { name: "Contact", href: "/contact" }
-  ];
 
   const legalLinks = [
     { name: "Mentions légales", href: "/mentions-legales" },
@@ -103,8 +96,8 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-bold mb-4">Navigation</h4>
             <ul className="space-y-2">
-              {quickLinks.map((link) => (
-                <li key={link.href}>
+              {publicNavFooterQuickLinks.map((link) => (
+                <li key={`${link.href}-${link.name}`}>
                   <Link
                     href={link.href}
                     className="text-sm hover:text-guinea-yellow transition-colors"

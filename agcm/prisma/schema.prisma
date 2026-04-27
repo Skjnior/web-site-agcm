@@ -235,6 +235,15 @@ model ProjetPartner {
   @@map("projets_partners")
 }
 
+/// Contenu éditorial du site vitrine (accueil, sections statiques). Clé fixe `default` en seed.
+model SitePublicPage {
+  id        String   @id
+  payload   Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("site_public_page")
+}
+
 model Event {
   id               String       @id @default(cuid())
   titre            String

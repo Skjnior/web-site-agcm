@@ -3,7 +3,8 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { Calendar, Newspaper, ArrowRight, MapPin, User } from 'lucide-react';
+import { Calendar, Newspaper, ArrowRight, MapPin, User, LayoutDashboard } from 'lucide-react';
+import MemberPageShell from '@/components/app/MemberPageShell';
 
 export const metadata: Metadata = {
   title: 'Tableau de bord - AGCM',
@@ -77,28 +78,28 @@ export default async function MemberDashboardPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-100 to-slate-400">
-            Bienvenue, {member.prenom} !
-          </h1>
-          <p className="text-slate-400 mt-1">Votre espace membre AGCM</p>
-        </div>
+    <MemberPageShell
+      title={`Bienvenue, ${member.prenom} !`}
+      description="Votre espace membre AGCM"
+      icon={LayoutDashboard}
+      iconClassName="text-emerald-400"
+      actions={
         <Link
           href="/app/dashboard/profil"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:bg-slate-700/50 hover:text-white transition-all"
+          className="inline-flex items-center gap-2 rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-2 text-sm font-medium text-slate-300 transition-all hover:bg-slate-700/50 hover:text-white"
         >
           <User className="h-4 w-4" />
           Mon profil
         </Link>
-      </div>
+      }
+    >
+      <div className="space-y-6">
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Link
           href="/app/dashboard/mes-evenements"
-          className="bg-slate-900/40 backdrop-blur-xl border border-slate-800/50 rounded-2xl p-6 hover:border-blue-500/30 hover:bg-slate-800/30 transition-all group"
+          className="admin-panel block p-6 transition-all hover:border-blue-500/30 hover:bg-slate-800/40 group"
         >
           <div className="flex items-center justify-between">
             <div>
@@ -116,7 +117,7 @@ export default async function MemberDashboardPage() {
 
         <Link
           href="/app/dashboard/mes-activites"
-          className="bg-slate-900/40 backdrop-blur-xl border border-slate-800/50 rounded-2xl p-6 hover:border-emerald-500/30 hover:bg-slate-800/30 transition-all group"
+          className="admin-panel block p-6 transition-all hover:border-emerald-500/30 hover:bg-slate-800/40 group"
         >
           <div className="flex items-center justify-between">
             <div>
@@ -136,8 +137,8 @@ export default async function MemberDashboardPage() {
       {/* Contenu principal */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Événements à venir */}
-        <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-800/50 rounded-2xl overflow-hidden">
-          <div className="p-4 border-b border-slate-800/50 flex items-center justify-between">
+        <div className="admin-panel overflow-hidden">
+          <div className="flex items-center justify-between border-b border-slate-700/80 p-4">
             <h2 className="text-lg font-semibold text-slate-200">Événements à venir</h2>
             <Link
               href="/app/dashboard/mes-evenements"
@@ -195,8 +196,8 @@ export default async function MemberDashboardPage() {
         </div>
 
         {/* Actualités récentes */}
-        <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-800/50 rounded-2xl overflow-hidden">
-          <div className="p-4 border-b border-slate-800/50 flex items-center justify-between">
+        <div className="admin-panel overflow-hidden">
+          <div className="flex items-center justify-between border-b border-slate-700/80 p-4">
             <h2 className="text-lg font-semibold text-slate-200">Dernières actualités</h2>
             <Link
               href="/app/dashboard/mes-activites"
@@ -245,6 +246,7 @@ export default async function MemberDashboardPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </MemberPageShell>
   );
 }

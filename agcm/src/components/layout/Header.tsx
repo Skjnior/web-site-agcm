@@ -9,6 +9,7 @@ import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import MobileMenu from './MobileMenu';
 import UserMenu from './UserMenu';
+import { publicNavForHeader } from '@/config/site-public-nav';
 
 export default function Header() {
   const { data: session, status } = useSession();
@@ -16,7 +17,6 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Détecter le scroll pour changer le style du header
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -27,17 +27,13 @@ export default function Header() {
 
   const navLinks = [
     { name: 'Accueil', href: '/' },
-    { name: 'À propos', href: '/a-propos' },
-    { name: 'Formations', href: '/formations' },
-    { name: 'Événements', href: '/evenements' },
-    { name: 'Actualités', href: '/actualites' },
-    { name: 'Ressources', href: '/ressources' },
-    { name: 'Contact', href: '/contact' },
+    ...publicNavForHeader.map((l) => ({ name: l.label, href: l.href })),
   ];
 
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/';
-    return pathname.startsWith(href);
+    if (href.startsWith('/#')) return false;
+    return pathname === href || pathname.startsWith(`${href}/`);
   };
 
   return (
@@ -80,8 +76,18 @@ export default function Header() {
             <nav className="hidden lg:flex items-center gap-1">
               {navLinks.map((link) => (
                 <Link
-                  key={link.href}
+                  key={link.href + link.name}
                   href={link.href}
+                  onClick={(e) => {
+                    if (!link.href.startsWith('/#') || pathname !== '/') return;
+                    e.preventDefault();
+                    const id = link.href.split('#')[1];
+                    const el = id ? document.getElementById(id) : null;
+                    if (el) {
+                      const y = el.getBoundingClientRect().top + window.pageYOffset - 80;
+                      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+                    }
+                  }}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     isActive(link.href)
                       ? 'text-guinea-red bg-guinea-red/10'
