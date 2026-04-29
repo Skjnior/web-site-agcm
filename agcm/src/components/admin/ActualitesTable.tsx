@@ -85,7 +85,8 @@ export default function ActualitesTable({ actualites, isSuperAdmin }: Actualites
                     variant={
                       actualite.statutWorkflow === 'PUBLIE' ? 'approuve' :
                         actualite.statutWorkflow === 'BROUILLON' ? 'default' :
-                          actualite.statutWorkflow}
+                          'secondary'
+                    }
                   >
                     {actualite.statutWorkflow}
                   </Badge>
