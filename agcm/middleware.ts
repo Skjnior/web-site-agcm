@@ -45,7 +45,7 @@ function shouldTrackPath(path: string): boolean {
 
 function getClientIP(req: NextRequest): string | null {
   return (
-    req.ip ||
+    (req as any).ip ||
     req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
     req.headers.get('x-real-ip') ||
     null

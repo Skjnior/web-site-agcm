@@ -7,7 +7,7 @@ import { fr } from 'date-fns/locale';
 import { Edit, Eye, User as UserIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import SmartImage from '@/components/ui/smart-image';
+import { SmartImage } from '@/components/ui/smart-image';
 import AdminDeleteResourceButton from '@/components/admin/AdminDeleteResourceButton';
 
 interface Actualite {
