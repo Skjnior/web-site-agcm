@@ -23,6 +23,7 @@ type Props = {
     page?: string;
     q?: string;
     status?: string;
+    type?: string;
   }>;
 };
 
