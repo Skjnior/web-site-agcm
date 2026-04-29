@@ -148,6 +148,84 @@ function JsonPayloadBlock({
   );
 }
 
+function DiffViewer({ beforeData, afterData }: { beforeData: unknown; afterData: unknown }) {
+  if (!hasPayload(beforeData) || !hasPayload(afterData)) return null;
+
+  const obj1 = typeof beforeData === 'object' && beforeData !== null ? (beforeData as Record<string, unknown>) : {};
+  const obj2 = typeof afterData === 'object' && afterData !== null ? (afterData as Record<string, unknown>) : {};
+
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+  const allKeys = Array.from(new Set([...keys1, ...keys2])).sort();
+
+  const diffs = allKeys.map((key) => {
+    const val1 = obj1[key];
+    const val2 = obj2[key];
+
+    if (val1 === undefined) return { key, type: 'added', val: val2 };
+    if (val2 === undefined) return { key, type: 'removed', val: val1 };
+    
+    const str1 = JSON.stringify(val1);
+    const str2 = JSON.stringify(val2);
+    
+    if (str1 !== str2) return { key, type: 'changed', oldVal: val1, newVal: val2 };
+    return { key, type: 'unchanged', val: val1 };
+  });
+
+  const hasChanges = diffs.some((d) => d.type !== 'unchanged');
+
+  if (!hasChanges) {
+    return (
+      <div className="rounded-lg border border-slate-200 p-4 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+        Aucune différence détectée entre les deux états.
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+      <div className="border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/50">
+        <h3 className="font-semibold text-slate-900 dark:text-slate-100">Changements détectés</h3>
+      </div>
+      <div className="divide-y divide-slate-100 dark:divide-slate-800">
+        {diffs.filter(d => d.type !== 'unchanged').map((diff) => (
+          <div key={diff.key} className="p-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-4">
+            <div className="font-mono text-sm font-medium text-slate-700 dark:text-slate-300 sm:w-1/4 sm:shrink-0">
+              {diff.key}
+            </div>
+            <div className="flex-1 font-mono text-xs">
+              {diff.type === 'added' && (
+                <div className="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-800 dark:border-emerald-900/30 dark:bg-emerald-900/20 dark:text-emerald-300">
+                  <span className="mr-2 font-bold">+</span>
+                  {stringifyPayload(diff.val)}
+                </div>
+              )}
+              {diff.type === 'removed' && (
+                <div className="rounded border border-red-200 bg-red-50 px-3 py-2 text-red-800 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-300">
+                  <span className="mr-2 font-bold">-</span>
+                  {stringifyPayload(diff.val)}
+                </div>
+              )}
+              {diff.type === 'changed' && (
+                <div className="space-y-1">
+                  <div className="rounded border border-red-200 bg-red-50 px-3 py-2 text-red-800 line-through dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400">
+                    <span className="mr-2 font-bold">-</span>
+                    {stringifyPayload(diff.oldVal)}
+                  </div>
+                  <div className="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-800 dark:border-emerald-900/30 dark:bg-emerald-900/20 dark:text-emerald-300">
+                    <span className="mr-2 font-bold">+</span>
+                    {stringifyPayload(diff.newVal)}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function AuditLogDetailPage() {
   const params = useParams();
   const id = params.id as string;
@@ -355,21 +433,25 @@ export default function AuditLogDetailPage() {
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-stretch">
-          <JsonPayloadBlock
-            title="Données avant"
+        <div className="mt-6 space-y-6">
+          <DiffViewer beforeData={log.beforeData} afterData={log.afterData} />
+          
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-stretch">
+            <JsonPayloadBlock
+              title="Données avant (JSON)"
             subtitle="État tel qu’il était avant l’action (si enregistré)"
             data={log.beforeData}
             emptyHint="Aucune donnée « avant » pour ce log. C’est normal pour une création pure, ou si l’API n’a pas stocké l’état précédent."
             accent="amber"
           />
           <JsonPayloadBlock
-            title="Données après"
+            title="Données après (JSON)"
             subtitle="État résultant après l’action (si enregistré)"
             data={log.afterData}
             emptyHint="Aucune donnée « après » pour ce log. C’est normal pour une suppression, ou si seul l’état précédent a été conservé."
             accent="emerald"
           />
+        </div>
         </div>
       </div>
     </div>

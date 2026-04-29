@@ -512,6 +512,7 @@ export default function SuperAdminAuditLogsPage() {
             : undefined
         }
         actions={getActions}
+        onRowClick={(log) => router.push(`/admin/logs/${log.id}`)}
         loading={loading}
         emptyMessage="Aucun log ne correspond aux critères. Modifiez les filtres ou réinitialisez."
       />

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { usePagination } from '@/hooks/use-pagination';
 import { useFilters } from '@/hooks/use-filters';
 import { Loader2, Check, X } from 'lucide-react';
+import { DataTable } from '@/components/super-admin/DataTable';
 
 interface DonationIntent {
   id: string;
@@ -150,117 +151,114 @@ export default function AdminDemandesDonsPage() {
             className="admin-glass rounded-2xl p-4 shadow-sm mb-6"
           />
 
-          {data && (
-            <>
-              <div className="admin-glass overflow-hidden rounded-3xl shadow-sm">
-                <div className="divide-y divide-slate-200/50 dark:divide-slate-700/80">
-                  {data.data.length === 0 ? (
-                    <div className="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
-                      Aucune intention de don trouvée
-                    </div>
-                  ) : (
-                    data.data.map((don) => (
-                      <div
-                        key={don.id}
-                        className="group p-6 transition-colors hover:bg-primary-50/50 dark:hover:bg-slate-800/50"
-                      >
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="min-w-0 flex-1">
-                            <div className="mb-2 flex flex-wrap items-center gap-3">
-                              <span
-                                className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
-                                  don.type === 'FINANCIER'
-                                    ? 'border-green-200 bg-green-100/50 text-green-800 dark:border-green-800/50 dark:bg-green-950/40 dark:text-green-300'
-                                    : don.type === 'MATERIEL'
-                                      ? 'border-blue-200 bg-blue-100/50 text-blue-800 dark:border-blue-800/50 dark:bg-blue-950/40 dark:text-blue-300'
-                                      : 'border-slate-200 bg-slate-100/50 text-slate-800 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-200'
-                                }`}
-                              >
-                                {don.type}
-                              </span>
-                              <span
-                                className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
-                                  don.statut === 'CONFIRME'
-                                    ? 'border-green-200 bg-green-100/50 text-green-800 dark:border-green-800/50 dark:bg-green-950/40 dark:text-green-300'
-                                    : don.statut === 'CONTACTE'
-                                      ? 'border-amber-200 bg-amber-100/50 text-amber-900 dark:border-amber-800/50 dark:bg-amber-950/40 dark:text-amber-200'
-                                      : don.statut === 'CLASSE_SANS_SUITE'
-                                        ? 'border-red-200 bg-red-100/50 text-red-800 dark:border-red-800/50 dark:bg-red-950/40 dark:text-red-300'
-                                        : 'border-slate-200 bg-slate-100/50 text-slate-800 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-200'
-                                }`}
-                              >
-                                {don.statut}
-                              </span>
-                            </div>
-                            <div className="mt-3 space-y-1 text-sm text-slate-600 dark:text-slate-400">
-                              {don.nom && (
-                                <p>
-                                  <span className="font-medium text-slate-700 dark:text-slate-300">Nom :</span> {don.nom}
-                                </p>
-                              )}
-                              {don.email && (
-                                <p>
-                                  <span className="font-medium text-slate-700 dark:text-slate-300">Email :</span> {don.email}
-                                </p>
-                              )}
-                              {don.telephone && (
-                                <p>
-                                  <span className="font-medium text-slate-700 dark:text-slate-300">Téléphone :</span>{' '}
-                                  {don.telephone}
-                                </p>
-                              )}
-                              {don.montantEstime && (
-                                <p>
-                                  <span className="font-medium text-slate-700 dark:text-slate-300">Montant estimé :</span>{' '}
-                                  {don.montantEstime} €
-                                </p>
-                              )}
-                              {don.description && (
-                                <p className="mt-3 max-w-2xl rounded-xl border border-slate-100 bg-slate-50/50 p-3 italic text-slate-500 dark:border-slate-700/50 dark:bg-slate-800/40 dark:text-slate-400">
-                                  &quot;{don.description}&quot;
-                                </p>
-                              )}
-                              <p className="mt-2 text-xs font-medium text-slate-400 dark:text-slate-500">
-                                {new Date(don.createdAt).toLocaleDateString('fr-FR', {
-                                  day: 'numeric', month: 'long', year: 'numeric'
-                                })}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="ml-4 flex shrink-0 items-center gap-2">
-                            <select
-                              value={don.statut}
-                              onChange={(e) => handleUpdateStatus(don.id, e.target.value)}
-                              disabled={processing === don.id}
-                              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition-all focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:ring-primary-400/30"
-                            >
-                              <option value="NOUVEAU">Nouveau</option>
-                              <option value="CONTACTE">Contacté</option>
-                              <option value="CONFIRME">Confirmé</option>
-                              <option value="CLASSE_SANS_SUITE">Classé sans suite</option>
-                            </select>
-                          </div>
-                        </div>
+          <DataTable
+            data={data?.data || []}
+            columns={[
+              {
+                key: 'type',
+                label: 'Type',
+                render: (don) => (
+                  <span
+                    className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
+                      don.type === 'FINANCIER'
+                        ? 'border-green-200 bg-green-100/50 text-green-800 dark:border-green-800/50 dark:bg-green-950/40 dark:text-green-300'
+                        : don.type === 'MATERIEL'
+                          ? 'border-blue-200 bg-blue-100/50 text-blue-800 dark:border-blue-800/50 dark:bg-blue-950/40 dark:text-blue-300'
+                          : 'border-slate-200 bg-slate-100/50 text-slate-800 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-200'
+                    }`}
+                  >
+                    {don.type}
+                  </span>
+                ),
+              },
+              {
+                key: 'nom',
+                label: 'Donateur',
+                render: (don) => (
+                  <div>
+                    <div className="font-medium text-slate-900 dark:text-slate-100">{don.nom || 'Anonyme'}</div>
+                    <div className="text-xs text-slate-500">{don.email}</div>
+                  </div>
+                ),
+              },
+              {
+                key: 'montantEstime',
+                label: 'Montant/Détails',
+                render: (don) => (
+                  <div className="text-sm">
+                    {don.montantEstime ? `${don.montantEstime} €` : '-'}
+                    {don.description && (
+                      <div className="text-xs text-slate-500 truncate max-w-[200px]" title={don.description}>
+                        {don.description}
                       </div>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              {data.pagination.totalPages > 1 && (
-                <Pagination
-                  page={data.pagination.page}
-                  limit={data.pagination.limit}
-                  total={data.pagination.total}
-                  totalPages={data.pagination.totalPages}
-                  hasNext={data.pagination.hasNext}
-                  hasPrev={data.pagination.hasPrev}
-                  onPageChange={setPage}
-                  className="admin-glass mt-6 rounded-2xl p-4 shadow-sm"
-                />
-              )}
-            </>
-          )}
+                    )}
+                  </div>
+                ),
+              },
+              {
+                key: 'statut',
+                label: 'Statut',
+                render: (don) => (
+                  <span
+                    className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
+                      don.statut === 'CONFIRME'
+                        ? 'border-green-200 bg-green-100/50 text-green-800 dark:border-green-800/50 dark:bg-green-950/40 dark:text-green-300'
+                        : don.statut === 'CONTACTE'
+                          ? 'border-amber-200 bg-amber-100/50 text-amber-900 dark:border-amber-800/50 dark:bg-amber-950/40 dark:text-amber-200'
+                          : don.statut === 'CLASSE_SANS_SUITE'
+                            ? 'border-red-200 bg-red-100/50 text-red-800 dark:border-red-800/50 dark:bg-red-950/40 dark:text-red-300'
+                            : 'border-slate-200 bg-slate-100/50 text-slate-800 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-200'
+                    }`}
+                  >
+                    {don.statut}
+                  </span>
+                ),
+              },
+              {
+                key: 'createdAt',
+                label: 'Date',
+                render: (don) => (
+                  <div className="text-xs text-slate-500">
+                    {new Date(don.createdAt).toLocaleDateString('fr-FR')}
+                  </div>
+                ),
+              },
+            ]}
+            pagination={{
+              page: data?.pagination.page || 1,
+              limit: data?.pagination.limit || 20,
+              total: data?.pagination.total || 0,
+              totalPages: data?.pagination.totalPages || 1,
+              hasNext: data?.pagination.hasNext || false,
+              hasPrev: data?.pagination.hasPrev || false,
+              onPageChange: setPage,
+            }}
+            actions={(don) => [
+              {
+                label: 'Nouveau',
+                onClick: () => handleUpdateStatus(don.id, 'NOUVEAU'),
+                disabled: processing === don.id,
+              },
+              {
+                label: 'Contacté',
+                onClick: () => handleUpdateStatus(don.id, 'CONTACTE'),
+                disabled: processing === don.id,
+              },
+              {
+                label: 'Confirmé',
+                onClick: () => handleUpdateStatus(don.id, 'CONFIRME'),
+                disabled: processing === don.id,
+              },
+              {
+                label: 'Classé sans suite',
+                onClick: () => handleUpdateStatus(don.id, 'CLASSE_SANS_SUITE'),
+                disabled: processing === don.id,
+                variant: 'destructive',
+              },
+            ]}
+            emptyMessage="Aucune intention de don trouvée"
+            loading={loading && !data}
+          />
         </div>
       </main>
     </div>

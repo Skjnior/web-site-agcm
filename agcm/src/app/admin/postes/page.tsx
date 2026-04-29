@@ -303,6 +303,7 @@ export default function SuperAdminPostesPage() {
             : undefined
         }
         actions={getActions}
+        onRowClick={(poste) => router.push(`/admin/postes/${poste.id}`)}
         loading={loading}
         emptyMessage="Aucun poste trouvé"
       />

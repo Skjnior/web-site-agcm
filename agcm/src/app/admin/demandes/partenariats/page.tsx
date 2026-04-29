@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { usePagination } from '@/hooks/use-pagination';
 import { useFilters } from '@/hooks/use-filters';
 import { Loader2, Check, X } from 'lucide-react';
+import { DataTable } from '@/components/super-admin/DataTable';
 
 interface DemandePartenariat {
   id: string;
@@ -160,121 +161,88 @@ export default function AdminDemandesPartenariatsPage() {
             className="admin-glass rounded-2xl p-4 shadow-sm mb-6"
           />
 
-          {data && (
-            <>
-              <div className="admin-glass overflow-hidden rounded-3xl shadow-sm">
-                <div className="divide-y divide-slate-200/50 dark:divide-slate-700/80">
-                  {data.data.length === 0 ? (
-                    <div className="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
-                      Aucune demande trouvée
-                    </div>
-                  ) : (
-                    data.data.map((demande) => (
-                      <div
-                        key={demande.id}
-                        className="group p-6 transition-colors hover:bg-primary-50/50 dark:hover:bg-slate-800/50"
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="mb-2 flex flex-wrap items-center gap-3">
-                              <h3 className="text-lg font-semibold text-slate-900 transition-colors group-hover:text-primary-700 dark:text-slate-100 dark:group-hover:text-primary-400">
-                                {demande.organisation}
-                              </h3>
-                              <span
-                                className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
-                                  demande.statut === 'APPROUVEE'
-                                    ? 'border-green-200 bg-green-100/50 text-green-800 dark:border-green-800/50 dark:bg-green-950/40 dark:text-green-300'
-                                    : demande.statut === 'REFUSEE'
-                                      ? 'border-red-200 bg-red-100/50 text-red-800 dark:border-red-800/50 dark:bg-red-950/40 dark:text-red-300'
-                                      : 'border-amber-200 bg-amber-100/50 text-amber-900 dark:border-amber-800/50 dark:bg-amber-950/40 dark:text-amber-200'
-                                }`}
-                              >
-                                {demande.statut}
-                              </span>
-                            </div>
-                            <div className="space-y-1 text-sm text-slate-600 dark:text-slate-400">
-                              {demande.contactNom && (
-                                <p>
-                                  <span className="font-medium text-slate-700 dark:text-slate-300">Contact :</span>{' '}
-                                  {demande.contactNom}
-                                </p>
-                              )}
-                              <p>
-                                <span className="font-medium text-slate-700 dark:text-slate-300">Email :</span> {demande.email}
-                              </p>
-                              {demande.telephone && (
-                                <p>
-                                  <span className="font-medium text-slate-700 dark:text-slate-300">Téléphone :</span>{' '}
-                                  {demande.telephone}
-                                </p>
-                              )}
-                              {demande.typePartenariat && (
-                                <p>
-                                  <span className="font-medium text-slate-700 dark:text-slate-300">Type :</span>{' '}
-                                  {demande.typePartenariat}
-                                </p>
-                              )}
-                              {demande.message && (
-                                <p className="mt-3 max-w-2xl rounded-xl border border-slate-100 bg-slate-50/50 p-3 italic text-slate-500 dark:border-slate-700/50 dark:bg-slate-800/40 dark:text-slate-400">
-                                  &quot;{demande.message}&quot;
-                                </p>
-                              )}
-                              <p className="mt-2 text-xs font-medium text-slate-400 dark:text-slate-500">
-                                {new Date(demande.createdAt).toLocaleDateString('fr-FR', {
-                                  day: 'numeric', month: 'long', year: 'numeric'
-                                })}
-                              </p>
-                            </div>
-                          </div>
-                          {demande.statut === 'EN_ATTENTE' && (
-                            <div className="ml-4 flex shrink-0 items-center gap-2">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleApprove(demande.id)}
-                                disabled={processing === demande.id}
-                                className="text-green-600 hover:bg-green-50 hover:text-green-700 dark:text-green-400 dark:hover:bg-green-950/40 dark:hover:text-green-300"
-                              >
-                                {processing === demande.id ? (
-                                  <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                                ) : (
-                                  <Check className="h-4 w-4 mr-1" />
-                                )}
-                                Approuver
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleReject(demande.id)}
-                                disabled={processing === demande.id}
-                                className="text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/40 dark:hover:text-red-300"
-                              >
-                                <X className="h-4 w-4 mr-1" />
-                                Refuser
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              {data.pagination.totalPages > 1 && (
-                <Pagination
-                  page={data.pagination.page}
-                  limit={data.pagination.limit}
-                  total={data.pagination.total}
-                  totalPages={data.pagination.totalPages}
-                  hasNext={data.pagination.hasNext}
-                  hasPrev={data.pagination.hasPrev}
-                  onPageChange={setPage}
-                  className="admin-glass mt-6 rounded-2xl p-4 shadow-sm"
-                />
-              )}
-            </>
-          )}
+          <DataTable
+            data={data?.data || []}
+            columns={[
+              {
+                key: 'organisation',
+                label: 'Organisation',
+                render: (demande) => (
+                  <div className="font-medium text-slate-900 dark:text-slate-100">{demande.organisation}</div>
+                ),
+              },
+              {
+                key: 'contact',
+                label: 'Contact',
+                render: (demande) => (
+                  <div>
+                    <div className="text-sm font-medium">{demande.contactNom || '-'}</div>
+                    <div className="text-xs text-slate-500">{demande.email}</div>
+                  </div>
+                ),
+              },
+              {
+                key: 'typePartenariat',
+                label: 'Type',
+                render: (demande) => (
+                  <div className="text-sm">{demande.typePartenariat || '-'}</div>
+                ),
+              },
+              {
+                key: 'statut',
+                label: 'Statut',
+                render: (demande) => (
+                  <span
+                    className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
+                      demande.statut === 'APPROUVEE'
+                        ? 'border-green-200 bg-green-100/50 text-green-800 dark:border-green-800/50 dark:bg-green-950/40 dark:text-green-300'
+                        : demande.statut === 'REFUSEE'
+                          ? 'border-red-200 bg-red-100/50 text-red-800 dark:border-red-800/50 dark:bg-red-950/40 dark:text-red-300'
+                          : 'border-amber-200 bg-amber-100/50 text-amber-900 dark:border-amber-800/50 dark:bg-amber-950/40 dark:text-amber-200'
+                    }`}
+                  >
+                    {demande.statut}
+                  </span>
+                ),
+              },
+              {
+                key: 'createdAt',
+                label: 'Date',
+                render: (demande) => (
+                  <div className="text-xs text-slate-500">
+                    {new Date(demande.createdAt).toLocaleDateString('fr-FR')}
+                  </div>
+                ),
+              },
+            ]}
+            pagination={{
+              page: data?.pagination.page || 1,
+              limit: data?.pagination.limit || 20,
+              total: data?.pagination.total || 0,
+              totalPages: data?.pagination.totalPages || 1,
+              hasNext: data?.pagination.hasNext || false,
+              hasPrev: data?.pagination.hasPrev || false,
+              onPageChange: setPage,
+            }}
+            actions={(demande) => 
+              demande.statut === 'EN_ATTENTE' ? [
+                {
+                  label: 'Approuver',
+                  onClick: () => handleApprove(demande.id),
+                  disabled: processing === demande.id,
+                  variant: 'add',
+                },
+                {
+                  label: 'Refuser',
+                  onClick: () => handleReject(demande.id),
+                  disabled: processing === demande.id,
+                  variant: 'destructive',
+                },
+              ] : []
+            }
+            emptyMessage="Aucune demande de partenariat trouvée"
+            loading={loading && !data}
+          />
         </div>
       </main>
     </div>

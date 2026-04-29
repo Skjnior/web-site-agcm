@@ -135,7 +135,11 @@ export default function MembersTable({ members, currentUserRole, currentUserId, 
                 const canEdit = member.canAct !== false;
 
                 return (
-                  <tr key={member.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/60">
+                  <tr
+                    key={member.id}
+                    onClick={() => router.push(`/admin/membres/${member.id}`)}
+                    className="cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800/60 transition-colors"
+                  >
                     <td className="px-6 py-4">
                       <div className="font-medium text-gray-900 dark:text-slate-100">
                         {member.prenom} {member.nom}
@@ -186,7 +190,7 @@ export default function MembersTable({ members, currentUserRole, currentUserId, 
                     <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-slate-400">
                       {formatDate(member.dateAdhesion)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-2">
                         <Link href={`/admin/membres/${member.id}`}>
                           <Button variant="view" size="sm">

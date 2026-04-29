@@ -14,6 +14,7 @@ import {
     GraduationCap,
     CheckSquare,
     CircleUser,
+    Activity,
 } from 'lucide-react';
 import { signOutWithConfirmation } from '@/lib/sign-out-confirm';
 
@@ -40,7 +41,8 @@ export default function AdminSidebar({ role }: SidebarProps) {
             { name: 'Mandats', href: '/admin/mandats', icon: GraduationCap },
             { name: 'Postes', href: '/admin/postes', icon: FolderOpen },
             { name: 'Affectations', href: '/admin/affectations', icon: ClipboardList },
-            { name: 'Logs système', href: '/admin/logs', icon: ShieldAlert }
+            { name: 'Logs système', href: '/admin/logs', icon: ShieldAlert },
+            { name: 'Visites', href: '/admin/logs/visits', icon: Activity }
         );
     }
 

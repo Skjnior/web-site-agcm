@@ -205,7 +205,11 @@ export default function ApprobationsList({
               {contents.map((content) => {
                 const auteur = content.auteurPoste.affectations[0]?.member;
                 return (
-                  <tr key={content.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/60">
+                  <tr
+                    key={content.id}
+                    onClick={() => handleView(content)}
+                    className="cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800/60 transition-colors"
+                  >
                     <td className="px-6 py-4">
                       <div className="font-medium text-gray-900 dark:text-slate-100">{content.titre}</div>
                       {content.contenu && (
@@ -238,7 +242,7 @@ export default function ApprobationsList({
                     <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-slate-400">
                       {new Date(content.createdAt).toLocaleDateString('fr-FR')}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-2">
                         <Button
                           variant="view"

@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import Navbar from "@/components/layout/Navbar";
 import ScrollToTop from "@/components/layout/ScrollToTop";
+import PageViewTracker from "@/components/analytics/PageViewTracker";
 
 export const metadata: Metadata = {
   title: "AGCM - Association des Guinéens de La Charente-Maritime",
@@ -32,6 +33,7 @@ export default function RootLayout({
     <html lang="fr" suppressHydrationWarning>
       <body className="bg-gradient-to-b from-agcm-900 via-agcm-800 to-agcm-900 text-white overflow-x-hidden" suppressHydrationWarning>
         <Providers>
+          <PageViewTracker />
           <Navbar />
           {children}
           <ScrollToTop />

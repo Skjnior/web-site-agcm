@@ -514,6 +514,7 @@ export default function SuperAdminAffectationsPage() {
             : undefined
         }
         actions={getActions}
+        onRowClick={(affectation) => router.push(`/admin/affectations/${affectation.id}`)}
         loading={loading}
         emptyMessage="Aucune affectation trouvée"
       />

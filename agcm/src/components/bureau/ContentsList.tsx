@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -57,6 +58,7 @@ export default function ContentsList({
   getPaginationHref,
 }: ContentsListProps) {
   const [submitting, setSubmitting] = useState<string | null>(null);
+  const router = useRouter();
 
   const pageHref = (pageNum: number) =>
     getPaginationHref ? getPaginationHref(pageNum) : `${basePath}?page=${pageNum}`;
@@ -187,7 +189,11 @@ export default function ContentsList({
             }
           >
             {contents.map((content) => (
-              <tr key={content.id} className={isSuperAdmin ? 'hover:bg-slate-800/60' : 'hover:bg-gray-50'}>
+              <tr
+                key={content.id}
+                onClick={() => router.push(isSuperAdmin ? `/admin/contents/${content.id}` : `/bureau/contents/${content.id}`)}
+                className={`cursor-pointer transition-colors ${isSuperAdmin ? 'hover:bg-slate-800/60' : 'hover:bg-gray-50'}`}
+              >
                 <td className="px-4 py-4 align-top">
                   <div
                     className={`break-words pr-2 font-medium ${isSuperAdmin ? 'text-slate-100' : 'text-gray-900'}`}
@@ -256,7 +262,7 @@ export default function ContentsList({
                     year: 'numeric',
                   })}
                 </td>
-                <td className="px-3 sm:px-4 py-4 align-top text-right text-sm font-medium">
+                <td className="px-3 sm:px-4 py-4 align-top text-right text-sm font-medium" onClick={(e) => e.stopPropagation()}>
                   <div className="flex items-center justify-end gap-1 sm:gap-1.5 flex-wrap">
                     <Link href={isSuperAdmin ? `/admin/contents/${content.id}` : `/bureau/contents/${content.id}`}>
                       <Button variant="view" size="sm" className="text-xs px-2 py-1 h-7">

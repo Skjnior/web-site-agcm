@@ -25,6 +25,7 @@ model User {
   demandesPartenariatProcessed DemandePartenariat[] @relation("DemandePartenariatProcessedBy")
   member                       Member?
   notifications                Notification[]
+  pageViews                    PageView[]
 
   @@map("users")
 }
@@ -403,6 +404,32 @@ model AuditLog {
   @@map("audit_logs")
 }
 
+model PageView {
+  id          String   @id @default(cuid())
+  path        String
+  method      String   @default("GET")
+  ipAddress   String?  @map("ip_address")
+  userAgent   String?  @map("user_agent")
+  referer     String?
+  country     String?
+  countryCode String?  @map("country_code")
+  city        String?
+  region      String?
+  isp         String?
+  isProxy     Boolean  @default(false) @map("is_proxy")
+  sessionId   String?  @map("session_id")
+  userId      String?  @map("user_id")
+  statusCode  Int?     @map("status_code")
+  createdAt   DateTime @default(now()) @map("created_at")
+  user        User?    @relation(fields: [userId], references: [id])
+
+  @@index([path, createdAt])
+  @@index([userId, createdAt])
+  @@index([ipAddress, createdAt])
+  @@index([createdAt])
+  @@map("page_views")
+}
+
 model PresidentCitation {
   id          String    @id @default(cuid())
   nom         String
@@ -424,9 +451,9 @@ enum RoleSysteme {
 
 enum StatutMembre {
   ACTIF
-  INACTIF
   SUSPENDU
   RADIE
+  INACTIF
 }
 
 /// Genre déclaré (optionnel)

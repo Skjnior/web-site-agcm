@@ -337,6 +337,7 @@ export default function SuperAdminMandatsPage() {
             : undefined
         }
         actions={getActions}
+        onRowClick={(mandat) => router.push(`/admin/mandats/${mandat.id}`)}
         loading={loading}
         emptyMessage="Aucun mandat trouvé"
       />
