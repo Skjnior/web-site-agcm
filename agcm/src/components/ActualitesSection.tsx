@@ -153,7 +153,7 @@ function HeroCard({
       <div className="p-5 flex flex-col flex-1">
         {actu.contenu && (
           <p className="text-slate-600 text-sm mb-4 line-clamp-3 flex-1">
-            {actu.contenu}
+            {actu.contenu.replace(/<[^>]*>?/gm, '')}
           </p>
         )}
         <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-100">
@@ -250,7 +250,9 @@ function SmallCard({
           {actu.titre}
         </h4>
         {actu.contenu && (
-          <p className="text-slate-500 text-xs line-clamp-2 mb-2">{actu.contenu}</p>
+          <p className="text-slate-500 text-xs line-clamp-2 mb-2">
+            {actu.contenu.replace(/<[^>]*>?/gm, '')}
+          </p>
         )}
         <div className="flex items-center gap-2 text-[11px] text-slate-400">
           <Clock className="w-3 h-3" />

@@ -16,6 +16,7 @@ import {
   Loader2,
   Archive,
   Undo2,
+  User,
 } from 'lucide-react';
 import { DataTable } from '@/components/super-admin/DataTable';
 import { Input } from '@/components/ui/input';
@@ -421,6 +422,12 @@ export default function SuperAdminUsersPage() {
   const getActions = (user: User): ActionItem[] => {
     const actions: ActionItem[] = [
       {
+        label: 'Détails',
+        onClick: () => router.push(`/admin/users/${user.id}/edit`),
+        variant: 'view',
+        icon: <User className="mr-2 h-4 w-4" />,
+      },
+      {
         label: 'Modifier',
         onClick: () => router.push(`/admin/users/${user.id}/edit`),
         variant: 'edit',
@@ -612,6 +619,7 @@ export default function SuperAdminUsersPage() {
             : undefined
         }
         actions={getActions}
+        onRowClick={(user) => router.push(`/admin/users/${user.id}/edit`)}
         loading={loading}
         emptyMessage="Aucun utilisateur trouvé"
       />

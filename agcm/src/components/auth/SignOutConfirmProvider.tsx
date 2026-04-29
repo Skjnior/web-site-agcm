@@ -30,7 +30,7 @@ function SignOutDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="sign-out-dialog-title"
-        className="relative w-full max-w-md overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xl dark:border-slate-700/90 dark:bg-slate-900 dark:shadow-black/40"
+        className="relative w-full max-w-md overflow-hidden rounded-2xl border-2 border-red-500 bg-white shadow-2xl dark:border-red-600 dark:bg-slate-900 dark:shadow-black/40"
       >
         <div className="border-b border-slate-200/80 bg-gradient-to-r from-slate-50 to-slate-100/90 px-6 py-5 dark:border-slate-700/80 dark:from-slate-800/90 dark:to-slate-900/90">
           <div className="flex items-start gap-4">
@@ -40,7 +40,7 @@ function SignOutDialog({
             <div className="min-w-0 flex-1 pt-0.5">
               <h2
                 id="sign-out-dialog-title"
-                className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100"
+                className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-50"
               >
                 Se déconnecter ?
               </h2>
@@ -52,8 +52,8 @@ function SignOutDialog({
           </div>
         </div>
 
-        <div className="px-6 py-5">
-          <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+        <div className="px-6 py-6">
+          <p className="text-base leading-relaxed text-slate-700 dark:text-slate-200">
             Vous allez quitter votre espace membre. Les formulaires non enregistrés pourront être perdus. Vous pourrez
             vous reconnecter à tout moment avec vos identifiants.
           </p>
@@ -65,7 +65,7 @@ function SignOutDialog({
             variant="outline"
             onClick={onCancel}
             disabled={isLoading}
-            className="w-full border-slate-300 sm:w-auto dark:border-slate-600 dark:hover:bg-slate-800"
+            className="w-full border-slate-300 text-slate-700 hover:bg-slate-100 sm:w-auto dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800 py-6 sm:py-2"
           >
             Rester connecté
           </Button>
@@ -74,7 +74,7 @@ function SignOutDialog({
             variant="destructive"
             onClick={onConfirm}
             disabled={isLoading}
-            className="w-full gap-2 sm:w-auto"
+            className="w-full gap-2 sm:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold py-6 sm:py-2"
           >
             {isLoading ? (
               <>
@@ -114,17 +114,21 @@ export function SignOutConfirmProvider({ children }: { children: ReactNode }) {
   };
 
   const handleConfirm = async () => {
-    if (!pending || isLoading) return;
+    console.log('SignOutConfirmProvider: handleConfirm called');
+    if (!pending || isLoading) {
+      console.log('SignOutConfirmProvider: pending is null or isLoading is true', { pending: !!pending, isLoading });
+      return;
+    }
     const payload = pending;
     setIsLoading(true);
     try {
-      if (payload.redirect) {
-        await signOut({ callbackUrl: payload.callbackUrl, redirect: true });
-      } else {
-        await signOut({ callbackUrl: payload.callbackUrl, redirect: false });
-      }
+      console.log('SignOutConfirmProvider: calling signOut', { callbackUrl: payload.callbackUrl, redirect: payload.redirect });
+      await signOut({ callbackUrl: payload.callbackUrl, redirect: true });
+      // Fallback au cas où le redirect de next-auth échoue
+      window.location.href = payload.callbackUrl;
       payload.resolve(true);
-    } catch {
+    } catch (error) {
+      console.error('SignOutConfirmProvider: signOut error', error);
       payload.resolve(false);
     } finally {
       setIsLoading(false);

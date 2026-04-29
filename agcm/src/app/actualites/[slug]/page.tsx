@@ -137,12 +137,13 @@ export default async function ActualiteDetailPage({ params }: PageProps) {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-10">
           <article className="bg-white rounded-2xl shadow-xl overflow-hidden">
             {/* Image principale */}
-            <div className="relative aspect-[16/7] w-full overflow-hidden border-b border-slate-100">
+            <div className="relative w-full overflow-hidden border-b border-slate-100 min-h-[300px] max-h-[600px]">
               <Image
                 src={content.imagePrincipale || 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80'}
                 alt={content.titre}
-                fill
-                className="object-cover"
+                width={1200}
+                height={600}
+                className="w-full h-auto object-cover"
                 priority
               />
             </div>
@@ -151,11 +152,12 @@ export default async function ActualiteDetailPage({ params }: PageProps) {
 
               {/* Contenu */}
               {content.contenu ? (
-                <div className="prose prose-slate max-w-none text-base leading-relaxed whitespace-pre-line">
-                  {content.contenu}
-                </div>
+                <div 
+                  className="prose prose-slate dark:prose-invert max-w-none text-base leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: content.contenu }}
+                />
               ) : (
-                <p className="text-slate-400 italic">Aucun contenu disponible.</p>
+                <p className="text-slate-400 italic text-center py-8">Aucun contenu disponible.</p>
               )}
 
               {/* Lien externe */}

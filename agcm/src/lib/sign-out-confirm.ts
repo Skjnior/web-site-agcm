@@ -33,6 +33,7 @@ export function signOutWithConfirmation(options?: {
     }
 
     if (openHandler) {
+      console.log('signOutWithConfirmation: calling openHandler');
       openHandler({ callbackUrl, redirect, resolve });
       return;
     }
@@ -40,8 +41,10 @@ export function signOutWithConfirmation(options?: {
     const ok = window.confirm(
       'Voulez-vous vraiment vous déconnecter ?\n\nVous devrez vous reconnecter pour accéder à nouveau à votre compte.'
     );
+    console.log('signOutWithConfirmation: ok =', ok);
     if (ok) {
       void import('next-auth/react').then(({ signOut }) => {
+        console.log('signOutWithConfirmation: calling signOut from next-auth/react');
         if (redirect) {
           void signOut({ callbackUrl, redirect: true });
         } else {

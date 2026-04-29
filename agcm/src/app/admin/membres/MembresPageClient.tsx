@@ -272,7 +272,7 @@ export default function MembresPageClient({
                     handleSearch();
                   }
                 }}
-                className="pl-10"
+                className="pl-10 border-slate-600 bg-slate-800/50 text-slate-100"
               />
               <Button
                 type="button"
@@ -292,13 +292,14 @@ export default function MembresPageClient({
               handleFilterChange('status', value);
             }}
           >
-            <SelectTrigger className="w-[180px] border-slate-200 bg-white text-gray-900 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100">
+            <SelectTrigger className="w-[180px] border-slate-600 bg-slate-800/50 text-slate-100">
               <SelectValue placeholder="Statut" />
             </SelectTrigger>
-            <SelectContent className="z-50 border-slate-700 bg-white dark:bg-slate-900 dark:text-slate-100">
+            <SelectContent className="z-[100]" position="popper">
               <SelectItem value="all">Tous les statuts</SelectItem>
               <SelectItem value="EN_ATTENTE">En attente</SelectItem>
               <SelectItem value="ACTIF">Actif</SelectItem>
+              <SelectItem value="INACTIF">Inactif</SelectItem>
               <SelectItem value="SUSPENDU">Suspendu</SelectItem>
               <SelectItem value="RADIE">Radié</SelectItem>
             </SelectContent>
@@ -310,10 +311,10 @@ export default function MembresPageClient({
               handleFilterChange('type', value);
             }}
           >
-            <SelectTrigger className="w-[180px] border-slate-200 bg-white text-gray-900 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100">
+            <SelectTrigger className="w-[180px] border-slate-600 bg-slate-800/50 text-slate-100">
               <SelectValue placeholder="Type" />
             </SelectTrigger>
-            <SelectContent className="z-50 border-slate-700 bg-white dark:bg-slate-900 dark:text-slate-100">
+            <SelectContent className="z-[100]" position="popper">
               <SelectItem value="all">Tous les types</SelectItem>
               <SelectItem value="ETUDIANT">Étudiant</SelectItem>
               <SelectItem value="PROFESSIONNEL">Professionnel</SelectItem>
@@ -328,10 +329,10 @@ export default function MembresPageClient({
               handleFilterChange('bureau', value === 'bureau' ? '1' : 'all');
             }}
           >
-            <SelectTrigger className="w-[200px] border-slate-200 bg-white text-gray-900 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100">
+            <SelectTrigger className="w-[200px] border-slate-600 bg-slate-800/50 text-slate-100">
               <SelectValue placeholder="Portée liste" />
             </SelectTrigger>
-            <SelectContent className="z-50 border-slate-700 bg-white dark:bg-slate-900 dark:text-slate-100">
+            <SelectContent className="z-[100]" position="popper">
               <SelectItem value="all">Tous les membres</SelectItem>
               <SelectItem value="bureau">Bureau (mandat actif)</SelectItem>
             </SelectContent>

@@ -44,11 +44,27 @@ async function deleteUserAndRelatedData(
   await tx.user.delete({ where: { id } });
 }
 
+const memberUpdateSchema = z.object({
+  prenom: z.string().optional(),
+  nom: z.string().optional(),
+  telephone: z.string().optional().nullable(),
+  ville: z.string().optional().nullable(),
+  pays: z.string().optional().nullable(),
+  statutMembre: z.enum(['ACTIF', 'INACTIF', 'SUSPENDU', 'RADIE']).optional(),
+  genre: z.enum(['FEMME', 'HOMME', 'AUTRE', 'NE_PAS_DIRE']).optional().nullable(),
+  dateNaissance: z.string().optional().nullable(),
+  profession: z.string().optional().nullable(),
+  adresse: z.string().optional().nullable(),
+  bio: z.string().optional().nullable(),
+  photoUrl: z.string().optional().nullable(),
+});
+
 const userUpdateSchema = z.object({
   email: z.string().email().optional(),
   password: z.string().min(8).optional(),
   roleSysteme: z.enum(['SUPER_ADMIN', 'ADMIN', 'MEMBER']).optional(),
   isActive: z.boolean().optional(),
+  member: memberUpdateSchema.optional(),
 });
 
 export async function GET(
@@ -205,6 +221,20 @@ export async function PATCH(
     if (data.isActive !== undefined) updateData.isActive = data.isActive;
     if (data.password) {
       updateData.passwordHash = await bcrypt.hash(data.password, 10);
+    }
+
+    if (data.member) {
+      const memberData = { ...data.member };
+      if (memberData.dateNaissance) {
+        memberData.dateNaissance = new Date(memberData.dateNaissance) as any;
+      }
+      
+      updateData.member = {
+        upsert: {
+          create: memberData,
+          update: memberData,
+        },
+      };
     }
 
     const user = await prisma.user.update({

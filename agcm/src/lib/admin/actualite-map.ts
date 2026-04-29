@@ -36,8 +36,18 @@ export type ActualiteFormBody = Record<string, unknown>;
 /** Corps JSON du formulaire admin → données valides pour `Content` (sans relations). */
 export function mapBodyToContentFields(body: ActualiteFormBody) {
   const titre = typeof body.titre === 'string' ? body.titre.trim() : '';
-  const contenuRaw = body.contenu ?? body.content;
-  const contenu = typeof contenuRaw === 'string' ? contenuRaw : null;
+  const resume = typeof body.resume === 'string' ? body.resume.trim() : '';
+  const contentRaw = body.contenu ?? body.content;
+  let contenu = typeof contentRaw === 'string' ? contentRaw.trim() : '';
+
+  // Si on a un résumé mais qu'il n'est pas déjà dans le contenu, on l'ajoute au début
+  if (resume && !contenu.includes(resume)) {
+    contenu = `<p><strong>${resume}</strong></p>${contenu}`;
+  }
+
+  if (!contenu) {
+    contenu = null as any;
+  }
 
   const typeSource = body.type ?? body.categorie;
   const type = mapFormCategoryToContentType(typeSource);

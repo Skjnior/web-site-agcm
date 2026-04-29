@@ -111,10 +111,9 @@ export default function ActualiteModal({ actualite, isOpen, onClose }: Actualite
           {actualite.contenu && (
             <div className="prose prose-slate max-w-none mb-8">
               <div
-                className="text-slate-700 leading-relaxed whitespace-pre-line text-lg"
-              >
-                {actualite.contenu}
-              </div>
+                className="text-slate-700 leading-relaxed text-lg prose prose-slate max-w-none"
+                dangerouslySetInnerHTML={{ __html: actualite.contenu }}
+              />
             </div>
           )}
 

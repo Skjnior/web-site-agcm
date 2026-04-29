@@ -8,14 +8,10 @@ export default function Footer() {
 
   // Données officielles du Certificat d'enregistrement
   const contactInfo = {
-    // TODO: Vérifier l'adresse complète à Conakry
-    address: "Commune de Matoto, Conakry, Guinée",
-    // TODO: Vérifier le téléphone actuel (doc indique 25-58-72)
-    phone: "+224 25-58-72",
-    // TODO: Ajouter l'email officiel quand disponible
-    email: "contact@agcm-guinee.org",
-    // Données officielles
-    president: "Mr. ALKALY MOHAMED TAHEY CONDE"
+    address: "La Rochelle, Charente-Maritime, France",
+    phone: "+33 (0)6 XX XX XX XX", // Téléphone non trouvé précisément, laisser un placeholder propre
+    email: "association.ajgcm@gmail.com",
+    president: "Mr. ALHASSANE DIALLO"
   };
 
   const legalLinks = [

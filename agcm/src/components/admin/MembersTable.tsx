@@ -42,6 +42,7 @@ type MembersTableProps = {
 const getStatutLabel = (statut: string) => {
   const labels: Record<string, string> = {
     ACTIF: 'Actif',
+    INACTIF: 'Inactif',
     SUSPENDU: 'Suspendu',
     RADIE: 'Radié',
   };
@@ -158,6 +159,7 @@ export default function MembersTable({ members, currentUserRole, currentUserId, 
                       <Badge
                         variant={
                           member.statutMembre === 'ACTIF' ? 'approuve' :
+                          member.statutMembre === 'INACTIF' ? 'soumis' :
                           member.statutMembre === 'SUSPENDU' ? 'rejete' :
                           'soumis'
                         }

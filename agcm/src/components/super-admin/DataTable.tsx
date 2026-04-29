@@ -57,6 +57,7 @@ interface DataTableProps<T> {
   }[];
   emptyMessage?: string;
   loading?: boolean;
+  onRowClick?: (item: T) => void;
 }
 
 export function DataTable<T extends { id: string }>({
@@ -66,6 +67,7 @@ export function DataTable<T extends { id: string }>({
   actions,
   emptyMessage = 'Aucune donnée disponible',
   loading = false,
+  onRowClick,
 }: DataTableProps<T>) {
   if (loading) {
     return (
@@ -112,7 +114,14 @@ export function DataTable<T extends { id: string }>({
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white dark:divide-slate-700 dark:bg-slate-950/80">
               {data.map((item) => (
-                <tr key={item.id} className="transition-colors hover:bg-gray-50 dark:hover:bg-slate-800/60">
+                <tr
+                  key={item.id}
+                  onClick={() => onRowClick?.(item)}
+                  className={cn(
+                    'transition-colors hover:bg-gray-50 dark:hover:bg-slate-800/60',
+                    onRowClick && 'cursor-pointer'
+                  )}
+                >
                   {columns.map((column) => (
                     <td
                       key={column.key}
@@ -122,7 +131,10 @@ export function DataTable<T extends { id: string }>({
                     </td>
                   ))}
                   {actions && (
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <ActionMenu item={item} actions={actions(item)} />
                     </td>
                   )}

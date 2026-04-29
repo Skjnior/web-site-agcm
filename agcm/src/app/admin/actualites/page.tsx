@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Eye, Edit, Plus, FileText, Image as ImageIcon } from 'lucide-react';
 import AdminDeleteResourceButton from '@/components/admin/AdminDeleteResourceButton';
+import ActualitesFilters from '@/components/admin/ActualitesFilters';
+import { StatutWorkflow } from '@prisma/client';
 
 export const metadata: Metadata = {
   title: 'Gestion des actualités - Admin AGCM',
@@ -17,7 +19,11 @@ export const metadata: Metadata = {
 };
 
 type Props = {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ 
+    page?: string;
+    q?: string;
+    status?: string;
+  }>;
 };
 
 export default async function ActualitesAdminPage({ searchParams }: Props) {
@@ -36,12 +42,29 @@ export default async function ActualitesAdminPage({ searchParams }: Props) {
 
   const params = await searchParams;
   const page = parseInt(params.page || '1', 10);
+  const q = params.q || '';
+  const statusFilter = params.status || 'all';
+  const typeFilter = params.type || 'all';
   const pageSize = 10;
   const skip = (page - 1) * pageSize;
 
+  const where: any = {};
+  
+  if (q) {
+    where.titre = { contains: q, mode: 'insensitive' };
+  }
+  
+  if (statusFilter && statusFilter !== 'all') {
+    where.statutWorkflow = statusFilter as StatutWorkflow;
+  }
+
+  if (typeFilter && typeFilter !== 'all') {
+    where.type = typeFilter;
+  }
+
   const [actualites, total] = await Promise.all([
     prisma.content.findMany({
-      where: { type: 'ACTUALITE' },
+      where,
       orderBy: { createdAt: 'desc' },
       include: {
         auteurPoste: true,
@@ -50,7 +73,7 @@ export default async function ActualitesAdminPage({ searchParams }: Props) {
       take: pageSize,
     }),
     prisma.content.count({
-      where: { type: 'ACTUALITE' },
+      where,
     }),
   ]);
 
@@ -73,16 +96,28 @@ export default async function ActualitesAdminPage({ searchParams }: Props) {
         </Link>
       </div>
 
+      <ActualitesFilters />
+
       {actualites.length === 0 ? (
         <div className="admin-glass rounded-3xl p-16 text-center shadow-sm">
           <FileText className="h-16 w-16 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-slate-900 mb-2">Aucune actualité trouvée</h3>
-          <p className="text-slate-500 mb-6">Commencez par créer votre première actualité pour informer vos membres.</p>
-          <Link href="/admin/actualites/nouveau">
-            <Button variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50 transition-all rounded-xl">
-              Créer une actualité
-            </Button>
-          </Link>
+          <h3 className="text-lg font-medium text-slate-900 mb-2">
+            {q || (statusFilter && statusFilter !== 'all') 
+              ? 'Aucun résultat pour vos filtres' 
+              : 'Aucune actualité trouvée'}
+          </h3>
+          <p className="text-slate-500 mb-6">
+            {q || (statusFilter && statusFilter !== 'all')
+              ? 'Essayez de modifier vos termes de recherche ou vos filtres.'
+              : 'Commencez par créer votre première actualité pour informer vos membres.'}
+          </p>
+          {!q && (!statusFilter || statusFilter === 'all') && (
+            <Link href="/admin/actualites/nouveau">
+              <Button variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50 transition-all rounded-xl">
+                Créer une actualité
+              </Button>
+            </Link>
+          )}
         </div>
       ) : (
         <div className="admin-glass overflow-hidden rounded-3xl shadow-sm">
@@ -168,12 +203,12 @@ export default async function ActualitesAdminPage({ searchParams }: Props) {
               </div>
               <div className="flex gap-2">
                 {page > 1 && (
-                  <Link href={`/admin/actualites?page=${page - 1}`}>
+                  <Link href={`/admin/actualites?page=${page - 1}${q ? `&q=${q}` : ''}${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}${typeFilter !== 'all' ? `&type=${typeFilter}` : ''}`}>
                     <Button variant="outline" size="sm" className="rounded-xl border-slate-200 text-slate-600">Précédent</Button>
                   </Link>
                 )}
                 {page < totalPages && (
-                  <Link href={`/admin/actualites?page=${page + 1}`}>
+                  <Link href={`/admin/actualites?page=${page + 1}${q ? `&q=${q}` : ''}${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}${typeFilter !== 'all' ? `&type=${typeFilter}` : ''}`}>
                     <Button variant="outline" size="sm" className="rounded-xl border-slate-200 text-slate-600">Suivant</Button>
                   </Link>
                 )}

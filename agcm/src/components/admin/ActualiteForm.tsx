@@ -73,6 +73,12 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
     setIsSubmitting(true);
     setFeedback(null);
 
+    if (!formData.content && !formData.resume) {
+      setFeedback({ type: 'error', message: 'Veuillez remplir le contenu détaillé ou le résumé.' });
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const url = actualiteId
         ? `/api/admin/actualites/${actualiteId}`

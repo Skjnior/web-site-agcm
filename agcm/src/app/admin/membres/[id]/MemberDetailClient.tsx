@@ -95,6 +95,7 @@ export default function MemberDetailClient({
   const getStatutLabel = (statut: string) => {
     const labels: Record<string, string> = {
       ACTIF: 'Actif',
+      INACTIF: 'Inactif',
       SUSPENDU: 'Suspendu',
       RADIE: 'Radié',
     };
@@ -340,6 +341,7 @@ export default function MemberDetailClient({
                       <Badge
                         variant={
                           member.statutMembre === 'ACTIF' ? 'approuve' :
+                          member.statutMembre === 'INACTIF' ? 'soumis' :
                           member.statutMembre === 'SUSPENDU' ? 'rejete' :
                           'soumis'
                         }

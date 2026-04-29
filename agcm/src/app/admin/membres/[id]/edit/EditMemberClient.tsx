@@ -29,7 +29,7 @@ const memberUpdateSchema = z.object({
   pays: z.string().nullable().optional(),
   bio: z.string().nullable().optional(),
   photoUrl: z.string().nullable().optional(),
-  statutMembre: z.enum(['ACTIF', 'SUSPENDU', 'RADIE']),
+  statutMembre: z.enum(['ACTIF', 'INACTIF', 'SUSPENDU', 'RADIE']),
 });
 
 type MemberFormData = z.infer<typeof memberUpdateSchema>;
@@ -87,7 +87,7 @@ export default function EditMemberClient({ member: initialMember, currentUserRol
       pays: initialMember.pays || '',
       bio: initialMember.bio || '',
       photoUrl: initialMember.photoUrl || '',
-      statutMembre: initialMember.statutMembre as 'ACTIF' | 'SUSPENDU' | 'RADIE',
+      statutMembre: initialMember.statutMembre as 'ACTIF' | 'INACTIF' | 'SUSPENDU' | 'RADIE',
     },
   });
 
@@ -264,14 +264,15 @@ export default function EditMemberClient({ member: initialMember, currentUserRol
                   <Label htmlFor="statutMembre">Statut *</Label>
                   <Select
                     value={statutMembre}
-                    onValueChange={(value) => setValue('statutMembre', value as 'ACTIF' | 'SUSPENDU' | 'RADIE')}
+                    onValueChange={(value) => setValue('statutMembre', value as 'ACTIF' | 'INACTIF' | 'SUSPENDU' | 'RADIE')}
                   >
                     <SelectTrigger className="border-slate-200 bg-white text-gray-900 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="z-50 border-slate-700 bg-white dark:bg-slate-900 dark:text-slate-100">
+                    <SelectContent className="z-50 border-slate-700 bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100">
                       <SelectItem value="ACTIF">Actif</SelectItem>
-                      <SelectItem value="SUSPENDU">Suspendu</SelectItem>
+                      <SelectItem value="INACTIF">Inactif (Raisons personnelles)</SelectItem>
+                      <SelectItem value="SUSPENDU">Suspendu (Sanction)</SelectItem>
                       <SelectItem value="RADIE">Radié</SelectItem>
                     </SelectContent>
                   </Select>
