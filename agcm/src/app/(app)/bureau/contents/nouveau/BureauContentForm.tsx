@@ -102,11 +102,11 @@ export default function BureauContentForm() {
               <SelectTrigger id="type" className="bg-slate-900/50 border-slate-600 text-slate-100">
                 <SelectValue placeholder="Sélectionner un type" />
               </SelectTrigger>
-              <SelectContent className="z-50">
-                <SelectItem value="ACTIVITE" className="text-slate-900">Activité</SelectItem>
-                <SelectItem value="ACTUALITE" className="text-slate-900">Actualité</SelectItem>
-                <SelectItem value="PARTAGE" className="text-slate-900">Partage</SelectItem>
-                <SelectItem value="ANNONCE" className="text-slate-900">Annonce</SelectItem>
+              <SelectContent className="z-50 bg-slate-800 border-slate-700 text-slate-100">
+                <SelectItem value="ACTIVITE">Activité</SelectItem>
+                <SelectItem value="ACTUALITE">Actualité</SelectItem>
+                <SelectItem value="PARTAGE">Partage</SelectItem>
+                <SelectItem value="ANNONCE">Annonce</SelectItem>
               </SelectContent>
             </Select>
             {errors.type && <p className="text-red-400 text-sm mt-1">{errors.type.message}</p>}
@@ -163,9 +163,9 @@ export default function BureauContentForm() {
               <SelectTrigger id="visibiliteCible" className="bg-slate-900/50 border-slate-600 text-slate-100">
                 <SelectValue placeholder="Sélectionner la visibilité" />
               </SelectTrigger>
-              <SelectContent className="z-50">
-                <SelectItem value="PRIVE_BUREAU" className="text-slate-900">Privé Bureau (visible uniquement dans le salon bureau)</SelectItem>
-                <SelectItem value="PUBLIC_SITE" className="text-slate-900">Public Site (nécessite approbation du Président)</SelectItem>
+              <SelectContent className="z-50 bg-slate-800 border-slate-700 text-slate-100">
+                <SelectItem value="PRIVE_BUREAU">Privé Bureau (visible uniquement dans le salon bureau)</SelectItem>
+                <SelectItem value="PUBLIC_SITE">Public Site (nécessite approbation du Président)</SelectItem>
               </SelectContent>
             </Select>
             {errors.visibiliteCible && <p className="text-red-400 text-sm mt-1">{errors.visibiliteCible.message}</p>}

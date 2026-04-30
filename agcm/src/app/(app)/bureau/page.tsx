@@ -91,53 +91,61 @@ export default async function BureauDashboardPage() {
 
       {/* Statistiques du poste */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Mes activités</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{myContents}</p>
-            </div>
-            <div className="bg-blue-100 rounded-full p-3">
-              <FileText className="h-6 w-6 text-blue-600" />
+        <Link href="/bureau/contents" className="block transform transition-transform hover:scale-105">
+          <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Mes activités</p>
+                <p className="text-3xl font-bold text-gray-900 mt-2">{myContents}</p>
+              </div>
+              <div className="bg-blue-100 rounded-full p-3">
+                <FileText className="h-6 w-6 text-blue-600" />
+              </div>
             </div>
           </div>
-        </div>
+        </Link>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Publiées</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{publishedContents}</p>
-            </div>
-            <div className="bg-green-100 rounded-full p-3">
-              <FileText className="h-6 w-6 text-green-600" />
+        <Link href="/bureau/contents?status=PUBLIE" className="block transform transition-transform hover:scale-105">
+          <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Publiées</p>
+                <p className="text-3xl font-bold text-gray-900 mt-2">{publishedContents}</p>
+              </div>
+              <div className="bg-green-100 rounded-full p-3">
+                <FileText className="h-6 w-6 text-green-600" />
+              </div>
             </div>
           </div>
-        </div>
+        </Link>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">En attente</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{pendingContents}</p>
-            </div>
-            <div className="bg-yellow-100 rounded-full p-3">
-              <FileText className="h-6 w-6 text-yellow-600" />
+        <Link href="/bureau/contents?status=SOUMIS" className="block transform transition-transform hover:scale-105">
+          <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">En attente</p>
+                <p className="text-3xl font-bold text-gray-900 mt-2">{pendingContents}</p>
+              </div>
+              <div className="bg-yellow-100 rounded-full p-3">
+                <FileText className="h-6 w-6 text-yellow-600" />
+              </div>
             </div>
           </div>
-        </div>
+        </Link>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Projets</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{myProjets}</p>
-            </div>
-            <div className="bg-purple-100 rounded-full p-3">
-              <FolderOpen className="h-6 w-6 text-purple-600" />
+        <Link href="/bureau/projets" className="block transform transition-transform hover:scale-105">
+          <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Projets</p>
+                <p className="text-3xl font-bold text-gray-900 mt-2">{myProjets}</p>
+              </div>
+              <div className="bg-purple-100 rounded-full p-3">
+                <FolderOpen className="h-6 w-6 text-purple-600" />
+              </div>
             </div>
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* Actions rapides */}

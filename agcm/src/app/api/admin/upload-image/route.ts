@@ -1,6 +1,7 @@
 // app/api/admin/upload-image/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
+import { isAdmin, isBureauActif } from '@/lib/rbac';
 import { saveUploadedImage } from '@/lib/image-upload';
 
 export async function POST(req: NextRequest) {
@@ -11,9 +12,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Vérifier le rôle (support roleSysteme et role)
-    const userRole = (session.user as any).roleSysteme || session.user.role;
-    if (!['ADMIN', 'SUPER_ADMIN', 'ADMIN', 'SUPER_ADMIN'].includes(userRole)) {
+    // Autoriser les Admins OU les membres actifs du Bureau
+    const isAdministrator = isAdmin(session.user as any);
+    const isBureau = await isBureauActif(session.user.id);
+
+    if (!isAdministrator && !isBureau) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

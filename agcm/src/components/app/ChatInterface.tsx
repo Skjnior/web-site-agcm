@@ -7,6 +7,7 @@ import { Send, MessageCircle, Loader2, Trash2, Paperclip, FileText, Image, Video
 import { useSession } from 'next-auth/react';
 import { format, isToday, isYesterday } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import Script from 'next/script';
 
 interface Attachment {
   id?: string;
@@ -54,6 +55,9 @@ export default function ChatInterface({ scope, canModerate = false }: ChatInterf
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const jitsiContainerRef = useRef<HTMLDivElement>(null);
+  const [showVisio, setShowVisio] = useState(false);
+  const [jitsiApi, setJitsiApi] = useState<any>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -84,6 +88,55 @@ export default function ChatInterface({ scope, canModerate = false }: ChatInterf
     } finally {
       setLoading(false);
     }
+  };
+
+  const startVisio = () => {
+    setShowVisio(true);
+    const roomName = `AGCM-BUREAU-PRIVATE-${new Date().getFullYear()}`;
+    
+    // Attendre que le script Jitsi soit chargé et que le conteneur soit prêt
+    setTimeout(() => {
+      if ((window as any).JitsiMeetExternalAPI && jitsiContainerRef.current) {
+        const domain = "meet.jit.si";
+        const options = {
+          roomName: roomName,
+          width: '100%',
+          height: '100%',
+          parentNode: jitsiContainerRef.current,
+          lang: 'fr',
+          userInfo: {
+            displayName: session?.user?.name || "Membre Bureau",
+          },
+          configOverwrite: {
+            startWithAudioMuted: true,
+            disableDeepLinking: true,
+          },
+        };
+        const api = new (window as any).JitsiMeetExternalAPI(domain, options);
+        setJitsiApi(api);
+
+        api.addEventListener('videoConferenceLeft', () => {
+          setShowVisio(false);
+          setJitsiApi(null);
+        });
+      }
+    }, 500);
+
+    // Notification automatique
+    const announcement = `🚨 J'ai lancé une visioconférence JITSI.\n👉 Cliquez sur "Lancer la Visio" (en haut) ou sur ce lien : https://meet.jit.si/${roomName}`;
+    fetch('/api/app/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ texte: announcement, attachments: [] }),
+    }).then(() => loadMessages());
+  };
+
+  const stopVisio = () => {
+    if (jitsiApi) {
+      jitsiApi.dispose();
+      setJitsiApi(null);
+    }
+    setShowVisio(false);
   };
 
   const handleDelete = async (messageId: string) => {
@@ -263,15 +316,45 @@ export default function ChatInterface({ scope, canModerate = false }: ChatInterf
               Mode modération
             </div>
           )}
+          {!showVisio ? (
+            <Button
+              onClick={startVisio}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 border-purple-500/50 bg-purple-500/10 text-purple-200 hover:bg-purple-500/20 hover:text-white"
+            >
+              <Video className="h-4 w-4" />
+              Lancer une Visio
+            </Button>
+          ) : (
+            <Button
+              onClick={stopVisio}
+              variant="destructive"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <X className="h-4 w-4" />
+              Quitter la Visio
+            </Button>
+          )}
         </div>
       </div>
 
-      {/* Zone des messages */}
-      <div
-        ref={messagesContainerRef}
-        className="flex-1 space-y-4 overflow-y-auto bg-slate-950/40 px-6 py-4 scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-slate-600"
-      >
-        {loading && messages.length === 0 ? (
+      <div className={`flex flex-1 overflow-hidden ${showVisio ? 'flex-col lg:flex-row' : ''}`}>
+        {/* Zone Vidéo Jitsi */}
+        {showVisio && (
+          <div className="flex-1 min-h-[400px] lg:min-h-0 border-b lg:border-b-0 lg:border-r border-slate-700 bg-black">
+            <div ref={jitsiContainerRef} className="w-full h-full" />
+          </div>
+        )}
+
+        {/* Zone des messages */}
+        <div className={`flex flex-col flex-1 overflow-hidden ${showVisio ? 'lg:max-w-[400px]' : ''}`}>
+          <div
+            ref={messagesContainerRef}
+            className="flex-1 space-y-4 overflow-y-auto bg-slate-950/40 px-6 py-4 scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-slate-600"
+          >
+            {loading && messages.length === 0 ? (
           <div className="flex h-full items-center justify-center">
             <div className="flex flex-col items-center gap-3">
               <Loader2 className="h-8 w-8 animate-spin text-guinea-red" />
@@ -289,6 +372,12 @@ export default function ChatInterface({ scope, canModerate = false }: ChatInterf
         ) : (
           messages.map((message, index) => {
             const isOwn = message.auteur.id === session?.user?.id;
+            
+            // MASQUER LE MESSAGE DE VISIO POUR L'AUTEUR
+            if (isOwn && message.texte.includes("J'ai lancé une visioconférence JITSI")) {
+              return null;
+            }
+
             const showAuthor = shouldShowAuthor(index);
             const showDateSeparator = shouldShowDateSeparator(index);
 
@@ -352,7 +441,19 @@ export default function ChatInterface({ scope, canModerate = false }: ChatInterf
                       )}
                       {message.texte && (
                         <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                          {message.texte}
+                          {message.texte.split(/(https?:\/\/[^\s]+)/g).map((part, i) => 
+                            part.match(/^https?:\/\//) ? (
+                              <a 
+                                key={i} 
+                                href={part} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="underline decoration-2 underline-offset-2 hover:opacity-80"
+                              >
+                                {part}
+                              </a>
+                            ) : part
+                          )}
                         </p>
                       )}
                       {message.attachments && message.attachments.length > 0 && (
@@ -524,6 +625,12 @@ export default function ChatInterface({ scope, canModerate = false }: ChatInterf
           </Button>
         </form>
       </div>
+      </div>
+      </div>
+      <Script 
+        src="https://meet.jit.si/external_api.js" 
+        strategy="lazyOnload"
+      />
     </div>
   );
 }
