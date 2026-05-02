@@ -185,7 +185,7 @@ export default function Navbar() {
       </div>
 
       {isMenuOpen && (
-        <div className="animate-in border-t border-slate-700/50 bg-slate-900/98 backdrop-blur-xl slide-in-from-top-2 duration-200 lg:hidden">
+        <div className="animate-in border-t border-slate-700/50 bg-slate-900/98 slide-in-from-top-2 duration-200 lg:hidden">
           <div className="mx-auto max-w-7xl space-y-1 px-4 py-4">
             {publicNavForHeader.map((link) => {
               const active = isNavActive(pathname, link.href);
