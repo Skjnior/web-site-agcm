@@ -11,6 +11,7 @@
 html {
   scroll-behavior: smooth;
   background: #0f2417;
+  overflow-x: hidden;
 }
 
 /* Offset pour les sections avec ancres - évite que la navbar masque le contenu */
