@@ -82,11 +82,11 @@ export default function Navbar() {
           : 'bg-slate-900/90'
       }`}
     >
-      <div className="h-1 flex">
-        <div className="flex-1 bg-[#dc2626]" />
-        <div className="flex-1 bg-[#eab308]" />
-        <div className="flex-1 bg-[#16a34a]" />
-      </div>
+      {/*<div className="h-1 flex">*/}
+      {/*  <div className="flex-1 bg-[#dc2626]" />*/}
+      {/*  <div className="flex-1 bg-[#eab308]" />*/}
+      {/*  <div className="flex-1 bg-[#16a34a]" />*/}
+      {/*</div>*/}
 
       <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-6">
         <div className="flex h-16 min-h-0 items-center gap-2 lg:h-[68px] lg:gap-3">
