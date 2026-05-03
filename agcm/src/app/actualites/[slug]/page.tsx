@@ -5,7 +5,7 @@ import { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, User, Tag, Clock, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Clock, User } from 'lucide-react';
 import Footer from '@/components/layout/Footer';
 import ShareButtons from '@/components/app/ShareButtons';
 
@@ -20,14 +20,6 @@ const TYPE_LABELS: Record<string, string> = {
   ANNONCE: 'Annonce',
 };
 
-function formatDateFull(date: Date): string {
-  return new Intl.DateTimeFormat('fr-FR', {
-    weekday: 'long',
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  }).format(date);
-}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
