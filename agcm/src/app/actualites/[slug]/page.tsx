@@ -5,7 +5,7 @@ import { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Clock, User } from 'lucide-react';
+import { ArrowLeft, Clock, User, Tag } from 'lucide-react';
 import Footer from '@/components/layout/Footer';
 import ShareButtons from '@/components/app/ShareButtons';
 
