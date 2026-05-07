@@ -20,8 +20,12 @@ export class FacebookService {
      */
     static async getLatestPosts(limit = 5): Promise<FacebookPost[]> {
         if (!this.PAGE_ID || !this.ACCESS_TOKEN) {
-            console.warn('Facebook Page ID ou Access Token manquant. Mode simulation activé.');
-            return this.simulateFetch(limit);
+            console.warn('Facebook Page ID ou Access Token manquant.');
+            if (process.env.NODE_ENV === 'development') {
+                console.log('Mode simulation activé pour le développement.');
+                return this.simulateFetch(limit);
+            }
+            return []; // En production, on retourne vide au lieu de créer des fausses actualités
         }
 
         try {
