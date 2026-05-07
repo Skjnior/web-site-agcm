@@ -41,6 +41,11 @@
       "source": "/uploads/:path*",
       "destination": "/api/uploads/:path*"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/admin/facebook/sync",
+      "schedule": "0 * * * *"
+    }
   ]
 }
-
