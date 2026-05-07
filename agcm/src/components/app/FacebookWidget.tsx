@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { Facebook } from 'lucide-react';
+import { Facebook, Loader2 } from 'lucide-react';
 
 interface FacebookWidgetProps {
   pageId?: string;
@@ -10,13 +10,17 @@ interface FacebookWidgetProps {
 
 export default function FacebookWidget({ pageId = '100093300071406' }: FacebookWidgetProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const initFB = () => {
       // @ts-expect-error Facebook SDK adds FB to window
       if (window.FB && containerRef.current) {
         // @ts-expect-error Facebook SDK adds FB to window
-        window.FB.XFBML.parse(containerRef.current);
+        window.FB.XFBML.parse(containerRef.current, () => {
+          // Callback exécuté quand le widget a fini de charger
+          setIsLoading(false);
+        });
       }
     };
 
@@ -47,9 +51,18 @@ export default function FacebookWidget({ pageId = '100093300071406' }: FacebookW
       </div>
 
       <div className="p-4 flex-1 bg-slate-50 relative min-h-[600px]" ref={containerRef}>
+        
+        {/* Loader visuel */}
+        {isLoading && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-50 z-10 text-slate-400">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-2" />
+            <span className="text-sm">Chargement de Facebook...</span>
+          </div>
+        )}
+
         {/* Le Widget Facebook */}
         <div
-          className="fb-page w-full h-full"
+          className={`fb-page w-full h-full transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
           data-href={`https://www.facebook.com/profile.php?id=${pageId}`}
           data-tabs="timeline"
           data-width="500" // Utilise adapt-container-width pour s'ajuster
