@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, Clock, ChevronLeft, ChevronRight, Filter, Newspaper } from 'lucide-react';
 import Footer from '@/components/layout/Footer';
-
+import FacebookWidget from '@/components/app/FacebookWidget';
 export const metadata: Metadata = {
   title: 'Actualités - AGCM',
   description: "Toutes les actualités de l'Association des Guinéens de La Charente-Maritime.",
@@ -126,87 +126,99 @@ export default async function ActualitesPage({ searchParams }: PageProps) {
         </div>
       </section>
 
-      {/* Grille */}
+      {/* Grille Principale */}
       <section className="py-12 bg-slate-50 min-h-[60vh]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {contents.length === 0 ? (
-            <div className="text-center py-20">
-              <Newspaper className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-500 text-lg">Aucune publication disponible pour le moment.</p>
-            </div>
-          ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {contents.map((actu) => {
-                const typeInfo = TYPE_LABELS[actu.type] || { label: actu.type, color: 'bg-slate-100 text-slate-600' };
-                return (
-                  <Link
-                    key={actu.id}
-                    href={`/actualites/${actu.id}`}
-                    className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col"
-                  >
-                    {/* Image */}
-                    <div className="relative h-44 overflow-hidden">
-                      <Image
-                        src={actu.imagePrincipale || 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=600&q=80'}
-                        alt={actu.titre}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <span className={`absolute top-3 left-3 px-2.5 py-1 text-xs font-bold rounded-full ${typeInfo.color}`}>
-                        {typeInfo.label}
-                      </span>
-                    </div>
-                    {/* Content */}
-                    <div className="p-5 flex flex-col flex-1">
-                      <h2 className="font-bold text-agcm-900 text-base leading-tight mb-2 line-clamp-2 group-hover:text-red-600 transition-colors">
-                        {actu.titre}
-                      </h2>
-                      {actu.contenu && (
-                        <p className="text-slate-500 text-sm line-clamp-3 flex-1">
-                          {actu.contenu.replace(/<[^>]*>?/gm, '')}
-                        </p>
-                      )}
-                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 text-xs text-slate-400">
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {timeAgo(actu.createdAt)}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {formatDateFull(actu.createdAt)}
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
+          <div className="grid lg:grid-cols-12 gap-8">
+            {/* Colonne de gauche : Actualités */}
+            <div className="lg:col-span-8">
+              {contents.length === 0 ? (
+                <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
+                  <Newspaper className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                  <p className="text-slate-500 text-lg">Aucune publication disponible pour le moment.</p>
+                </div>
+              ) : (
+                <div className="grid sm:grid-cols-2 gap-6">
+                  {contents.map((actu) => {
+                    const typeInfo = TYPE_LABELS[actu.type] || { label: actu.type, color: 'bg-slate-100 text-slate-600' };
+                    return (
+                      <Link
+                        key={actu.id}
+                        href={`/actualites/${actu.id}`}
+                        className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col"
+                      >
+                        {/* Image */}
+                        <div className="relative h-44 overflow-hidden">
+                          <Image
+                            src={actu.imagePrincipale || 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=600&q=80'}
+                            alt={actu.titre}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          <span className={`absolute top-3 left-3 px-2.5 py-1 text-xs font-bold rounded-full ${typeInfo.color}`}>
+                            {typeInfo.label}
+                          </span>
+                        </div>
+                        {/* Content */}
+                        <div className="p-5 flex flex-col flex-1">
+                          <h2 className="font-bold text-agcm-900 text-base leading-tight mb-2 line-clamp-2 group-hover:text-red-600 transition-colors">
+                            {actu.titre}
+                          </h2>
+                          {actu.contenu && (
+                            <p className="text-slate-500 text-sm line-clamp-3 flex-1">
+                              {actu.contenu.replace(/<[^>]*>?/gm, '')}
+                            </p>
+                          )}
+                          <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 text-xs text-slate-400">
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {timeAgo(actu.createdAt)}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              {formatDateFull(actu.createdAt)}
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2 mt-10">
-              {page > 1 && (
-                <Link
-                  href={`/actualites?page=${page - 1}${type ? `&type=${type}` : ''}`}
-                  className="flex items-center gap-1 px-4 py-2 rounded-full bg-white border text-sm text-slate-600 hover:bg-slate-50 shadow-sm"
-                >
-                  <ChevronLeft className="w-4 h-4" /> Précédent
-                </Link>
-              )}
-              <span className="text-sm text-slate-500 px-3">
-                Page {page} / {totalPages}
-              </span>
-              {page < totalPages && (
-                <Link
-                  href={`/actualites?page=${page + 1}${type ? `&type=${type}` : ''}`}
-                  className="flex items-center gap-1 px-4 py-2 rounded-full bg-red-600 text-white text-sm hover:bg-red-700 shadow-sm"
-                >
-                  Suivant <ChevronRight className="w-4 h-4" />
-                </Link>
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-10">
+                  {page > 1 && (
+                    <Link
+                      href={`/actualites?page=${page - 1}${type ? `&type=${type}` : ''}`}
+                      className="flex items-center gap-1 px-4 py-2 rounded-full bg-white border text-sm text-slate-600 hover:bg-slate-50 shadow-sm"
+                    >
+                      <ChevronLeft className="w-4 h-4" /> Précédent
+                    </Link>
+                  )}
+                  <span className="text-sm text-slate-500 px-3">
+                    Page {page} / {totalPages}
+                  </span>
+                  {page < totalPages && (
+                    <Link
+                      href={`/actualites?page=${page + 1}${type ? `&type=${type}` : ''}`}
+                      className="flex items-center gap-1 px-4 py-2 rounded-full bg-red-600 text-white text-sm hover:bg-red-700 shadow-sm"
+                    >
+                      Suivant <ChevronRight className="w-4 h-4" />
+                    </Link>
+                  )}
+                </div>
               )}
             </div>
-          )}
+
+            {/* Colonne de droite : Widget Facebook */}
+            <div className="lg:col-span-4">
+              <div className="sticky top-24">
+                <FacebookWidget />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
