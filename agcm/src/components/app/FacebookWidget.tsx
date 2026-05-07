@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import Script from 'next/script';
+
 import { Facebook } from 'lucide-react';
 
 interface FacebookWidgetProps {
@@ -12,25 +12,31 @@ export default function FacebookWidget({ pageId = '100093300071406' }: FacebookW
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Re-parse the Facebook widget when it mounts or updates (useful for SPA navigation)
-    // @ts-expect-error Facebook SDK adds FB to window
-    if (window.FB) {
+    const initFB = () => {
       // @ts-expect-error Facebook SDK adds FB to window
-      window.FB.XFBML.parse(containerRef.current);
+      if (window.FB && containerRef.current) {
+        // @ts-expect-error Facebook SDK adds FB to window
+        window.FB.XFBML.parse(containerRef.current);
+      }
+    };
+
+    if (!document.getElementById('facebook-jssdk')) {
+      const script = document.createElement('script');
+      script.id = 'facebook-jssdk';
+      script.src = 'https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v25.0';
+      script.async = true;
+      script.defer = true;
+      script.crossOrigin = 'anonymous';
+      script.onload = initFB;
+      document.body.appendChild(script);
+    } else {
+      initFB();
     }
   }, []);
 
   return (
     <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col h-full">
-      {/* Script Facebook SDK */}
       <div id="fb-root"></div>
-      <Script
-        async
-        defer
-        crossOrigin="anonymous"
-        src="https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v25.0"
-        strategy="lazyOnload"
-      />
 
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-4 text-white flex items-center gap-3 shrink-0">
         <Facebook className="w-6 h-6" />
