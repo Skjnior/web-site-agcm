@@ -48,6 +48,7 @@ export default async function ChatPage() {
 
       <ChatInterface
         scope="PRIVE_BUREAU"
+        mandatId={mandatActif?.id ?? ''}
         canModerate={session.user.roleSysteme === 'SUPER_ADMIN'}
       />
     </div>

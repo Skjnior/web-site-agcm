@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { donationIntentSchema } from '@/lib/validators/demandes';
-import { sendEmail } from '@/lib/email';
+import { notifyPublicDonForm } from '@/lib/emailjs-notify';
 
 
 export async function POST(request: NextRequest) {
@@ -38,31 +38,17 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Notifier les admins et le trésorier
     try {
-      await sendEmail({
-        to: 'diouldekader@gmail.com',
-        subject: `Nouvelle intention de don : ${data.type}`,
-        html: `
-          <div style="font-family: sans-serif; padding: 20px; color: #333;">
-            <h2 style="color: #059669;">Nouvelle intention de don</h2>
-            <p><strong>De :</strong> ${data.nom} (${data.email || 'Non fourni'})</p>
-            <p><strong>Téléphone :</strong> ${data.telephone || 'Non fourni'}</p>
-            <p><strong>Type de don :</strong> ${data.type}</p>
-            ${data.montantEstime ? `<p><strong>Montant estimé :</strong> ${data.montantEstime} €</p>` : ''}
-            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-            <p><strong>Description / Message :</strong></p>
-            <div style="background: #f0fdf4; padding: 15px; border-radius: 8px;">
-              ${data.description ? data.description.replace(/\n/g, '<br>') : 'Aucune description fournie.'}
-            </div>
-            <p style="font-size: 12px; color: #666; margin-top: 30px;">
-              Cette intention de don a été envoyée depuis le site AGCM.
-            </p>
-          </div>
-        `
+      await notifyPublicDonForm({
+        type: data.type,
+        montantEstime: data.montantEstime,
+        description: data.description,
+        nom: data.nom,
+        email: data.email,
+        telephone: data.telephone,
       });
     } catch (emailError) {
-      console.error('Erreur lors de l\'envoi de l\'email de notification (don):', emailError);
+      console.error("Erreur lors de l'envoi de la notification (EmailJS / Resend):", emailError);
     }
 
     return NextResponse.json(

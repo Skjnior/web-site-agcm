@@ -196,8 +196,13 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
   // ============================================
   if (path.startsWith('/admin')) {
     if (!['ADMIN', 'SUPER_ADMIN'].includes(userRole)) {
-      const redirectResponse = NextResponse.redirect(new URL('/dashboard', req.url));
-      return addSecurityHeaders(redirectResponse);
+      const profilMembreBureau =
+        userRole === 'MEMBER' &&
+        (path === '/admin/profil' || path.startsWith('/admin/profil/'));
+      if (!profilMembreBureau) {
+        const redirectResponse = NextResponse.redirect(new URL('/dashboard', req.url));
+        return addSecurityHeaders(redirectResponse);
+      }
     }
   }
 

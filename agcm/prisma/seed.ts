@@ -130,6 +130,11 @@ async function main() {
   }
   console.log(`✅ ${mandats.length} mandats créés\n`);
 
+  /** Même mandat que `getMandatActif()` (ACTIF, dateDebut la plus récente) — affectations bureau + données visibles au tableau de bord par poste */
+  const mandatActifLatest =
+    mandats.filter((m) => m.statut === 'ACTIF').sort((a, b) => b.dateDebut.getTime() - a.dateDebut.getTime())[0] ||
+    mandats[0];
+
   // ============================================
   // 2. CRÉER POSTES (9 bureau règlement + postes démo hors bureau)
   // ============================================
@@ -262,9 +267,6 @@ async function main() {
   // 5. CRÉER AFFECTATIONS — exactement 9 actives sur le mandat actif (bureau exécutif)
   // ============================================
   console.log('🔗 Création de 600 affectations...');
-  const mandatActifLatest =
-    mandats.filter((m) => m.statut === 'ACTIF').sort((a, b) => b.dateDebut.getTime() - a.dateDebut.getTime())[0] ||
-    mandats[0];
 
   for (let b = 0; b < NOMBRE_POSTES_BUREAU; b++) {
     await prisma.affectationPoste.create({
@@ -315,7 +317,6 @@ async function main() {
   const contents = [];
   for (let i = 0; i < TARGET_COUNT; i++) {
     const poste = postes[i % postes.length];
-    const mandat = mandats[i % mandats.length];
     const type = contentTypes[i % contentTypes.length];
     const visibilite = visibilites[i % visibilites.length];
     const statut = statuts[i % statuts.length];
@@ -331,7 +332,7 @@ async function main() {
         visibiliteCible: visibilite as any,
         statutWorkflow: statut as any,
         auteurPosteId: poste.id,
-        mandatId: mandat.id,
+        mandatId: mandatActifLatest.id,
         approvedById: statut === 'APPROUVE' || statut === 'PUBLIE' ? users[0].id : null,
         approvedAt: statut === 'APPROUVE' || statut === 'PUBLIE' ? new Date() : null,
         rejectionReason: statut === 'REJETE' ? `Raison de rejet ${i}` : null,
@@ -377,7 +378,6 @@ async function main() {
 
   for (let i = 0; i < TARGET_COUNT; i++) {
     const poste = postes[i % postes.length];
-    const mandat = mandats[i % mandats.length];
     const statut = projetStatuts[i % projetStatuts.length];
 
     const projet = await prisma.projet.create({
@@ -390,7 +390,7 @@ async function main() {
         statut: statut as any,
         visibiliteSite: i % 2 === 0,
         responsablePosteId: poste.id,
-        mandatId: mandat.id,
+        mandatId: mandatActifLatest.id,
       },
     });
     projets.push(projet);
@@ -482,7 +482,6 @@ async function main() {
 
   for (let i = 0; i < TARGET_COUNT; i++) {
     const poste = postes[i % postes.length];
-    const mandat = mandats[i % mandats.length];
     const dateDebut = new Date(2020 + (i % 5), i % 12, (i % 28) + 1);
     const dateFin = new Date(dateDebut);
     dateFin.setDate(dateFin.getDate() + (i % 7));
@@ -504,7 +503,7 @@ async function main() {
         statut,
         afficheSite: i % 2 === 0,
         createdByPosteId: poste.id,
-        mandatId: mandat.id,
+        mandatId: mandatActifLatest.id,
       },
     });
     events.push(event);
@@ -542,7 +541,6 @@ async function main() {
   // 13b. CRÉER ÉVÉNEMENTS VISIBLES SUR LE SITE (minimum 10 à venir)
   // ============================================
   console.log('📅 Création des événements affichés sur le site (min 10)...');
-  const mandatActifEvents = mandats.find((m) => m.statut === 'ACTIF') || mandats[0];
   const postePresident = postes.find((p) => p.nom === 'Président') || postes[0];
 
   const realEvents = [
@@ -650,7 +648,7 @@ async function main() {
         statut: 'A_VENIR',
         afficheSite: true,
         createdByPosteId: postePresident.id,
-        mandatId: mandatActifEvents.id,
+        mandatId: mandatActifLatest.id,
       },
     });
     await prisma.eventMedia.create({
@@ -784,7 +782,6 @@ async function main() {
   // ============================================
   console.log('💬 Création de 600 messages bureau...');
   const scopes = ['PRIVE_BUREAU', 'PUBLIC_MEMBRES'];
-  const mandatActif = mandats.find(m => m.statut === 'ACTIF') || mandats[0];
 
   for (let i = 0; i < TARGET_COUNT; i++) {
     const user = users[i % users.length];
@@ -793,7 +790,7 @@ async function main() {
     await prisma.bureauMessage.create({
       data: {
         auteurUserId: user.id,
-        mandatId: i % 2 === 0 ? mandatActif.id : null,
+        mandatId: i % 2 === 0 ? mandatActifLatest.id : null,
         texte: `Message ${i + 1} dans le bureau`,
       },
     });
@@ -861,7 +858,6 @@ async function main() {
   // 26. CRÉER ACTUALITÉS PUBLIÉES (minimum 10 pour le site public)
   // ============================================
   console.log('📰 Création des actualités publiées (min 10)...');
-  const mandatActifContent = mandats.find(m => m.statut === 'ACTIF') || mandats[0];
   const realNews = [
     {
       titre: 'Grande Assemblée Générale Annuelle de l\'AGCM',
@@ -946,7 +942,7 @@ async function main() {
         statutWorkflow: 'PUBLIE',
         visibiliteCible: 'PUBLIC_SITE',
         auteurPosteId: postes[0].id,
-        mandatId: mandatActifContent.id,
+        mandatId: mandatActifLatest.id,
         approvedById: users[0].id,
         approvedAt: new Date(),
       },

@@ -2,18 +2,18 @@
 // Traces (audit) pour les contenus/projets/événements du membre bureau
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireBureau } from '@/lib/require-auth';
+import { requireBureauModule } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
-import { getAffectationActive } from '@/lib/rbac';
+import { getBureauMandatContext } from '@/lib/rbac';
 import { parsePagination, createPaginatedResponse } from '@/lib/pagination';
 
 export async function GET(request: NextRequest) {
-  const { error, session } = await requireBureau();
+  const { error, session } = await requireBureauModule('traces');
   if (error) return error;
 
-  const affectation = await getAffectationActive(session!.user!.id!);
-  if (!affectation) {
-    return NextResponse.json({ error: 'Aucun poste bureau actif' }, { status: 403 });
+  const ctx = await getBureauMandatContext(session!.user!.id!);
+  if (!ctx) {
+    return NextResponse.json({ error: 'Aucun poste actif sur le mandat en cours' }, { status: 403 });
   }
 
   const searchParams = request.nextUrl.searchParams;
@@ -22,21 +22,39 @@ export async function GET(request: NextRequest) {
   const { page, limit, offset } = parsePagination(request);
 
   try {
-    // Récupérer les IDs des entités qui appartiennent au membre (son poste)
+    // Récupérer les IDs des entités qui appartiennent au membre (ses postes sur le mandat actif)
     let entityIds: string[] = [];
 
     if (entityId) {
       const [c, p, e] = await Promise.all([
-        prisma.content.findFirst({ where: { id: entityId, auteurPosteId: affectation.posteId }, select: { id: true } }),
-        prisma.projet.findFirst({ where: { id: entityId, responsablePosteId: affectation.posteId }, select: { id: true } }),
-        prisma.event.findFirst({ where: { id: entityId, createdByPosteId: affectation.posteId }, select: { id: true } }),
+        prisma.content.findFirst({
+          where: { id: entityId, auteurPosteId: { in: ctx.posteIds }, mandatId: ctx.mandatId },
+          select: { id: true },
+        }),
+        prisma.projet.findFirst({
+          where: { id: entityId, responsablePosteId: { in: ctx.posteIds }, mandatId: ctx.mandatId },
+          select: { id: true },
+        }),
+        prisma.event.findFirst({
+          where: { id: entityId, createdByPosteId: { in: ctx.posteIds }, mandatId: ctx.mandatId },
+          select: { id: true },
+        }),
       ]);
       if (c || p || e) entityIds = [entityId];
     } else {
       const [contents, projets, events] = await Promise.all([
-        prisma.content.findMany({ where: { auteurPosteId: affectation.posteId }, select: { id: true } }),
-        prisma.projet.findMany({ where: { responsablePosteId: affectation.posteId }, select: { id: true } }),
-        prisma.event.findMany({ where: { createdByPosteId: affectation.posteId }, select: { id: true } }),
+        prisma.content.findMany({
+          where: { auteurPosteId: { in: ctx.posteIds }, mandatId: ctx.mandatId },
+          select: { id: true },
+        }),
+        prisma.projet.findMany({
+          where: { responsablePosteId: { in: ctx.posteIds }, mandatId: ctx.mandatId },
+          select: { id: true },
+        }),
+        prisma.event.findMany({
+          where: { createdByPosteId: { in: ctx.posteIds }, mandatId: ctx.mandatId },
+          select: { id: true },
+        }),
       ]);
       entityIds = [
         ...contents.map((c) => c.id),

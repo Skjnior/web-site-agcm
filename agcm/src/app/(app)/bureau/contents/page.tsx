@@ -1,9 +1,7 @@
 import { Metadata } from 'next';
-import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { isBureauActif, getAffectationActive } from '@/lib/rbac';
-import { getMandatActif } from '@/lib/mandat';
+import { canDeleteContent } from '@/lib/rbac';
+import { assertBureauModuleOrRedirect } from '@/lib/bureau-page-guard';
 import BureauContentsClient from './BureauContentsClient';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -19,31 +17,9 @@ export default async function BureauContentsPage({
 }: {
   searchParams: Promise<{ status?: string; page?: string; search?: string }>;
 }) {
-  const session = await auth();
   const params = await searchParams;
 
-  if (!session?.user) {
-    redirect('/connexion');
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-  });
-
-  if (!user) {
-    redirect('/connexion');
-  }
-
-  const bureauActif = await isBureauActif(user.id);
-  if (!bureauActif) {
-    redirect('/');
-  }
-
-  const affectation = await getAffectationActive(user.id);
-  const mandatActif = await getMandatActif();
-  if (!affectation || !mandatActif) {
-    redirect('/');
-  }
+  const { user, ctx } = await assertBureauModuleOrRedirect('contents');
 
   const status = params.status || 'ALL';
   const page = parseInt(params.page || '1');
@@ -52,8 +28,8 @@ export default async function BureauContentsPage({
   const search = params.search || '';
 
   const where: Record<string, unknown> = {
-    auteurPosteId: affectation.posteId,
-    mandatId: mandatActif.id,
+    auteurPosteId: { in: ctx.posteIds },
+    mandatId: ctx.mandatId,
   };
 
   if (status !== 'ALL') {
@@ -90,20 +66,27 @@ export default async function BureauContentsPage({
 
   const totalPages = Math.ceil(total / limit);
 
+  const contentsWithPerms = await Promise.all(
+    contents.map(async (c) => ({
+      ...c,
+      canDelete: await canDeleteContent(user.id, c.id),
+    })),
+  );
+
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-100 flex items-center gap-2">
-            <FileText className="h-8 w-8" />
+    <div className="mx-auto max-w-7xl space-y-6 px-4 pb-8 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="flex items-center gap-2 text-2xl font-bold text-slate-100 sm:text-3xl">
+            <FileText className="h-7 w-7 shrink-0 sm:h-8 sm:w-8" />
             Mes activités
           </h1>
-          <p className="text-slate-400 mt-1">
+          <p className="mt-1 text-slate-400">
             Gérez vos contenus et activités pour le mandat en cours
           </p>
         </div>
-        <Link href="/bureau/contents/nouveau">
-          <Button variant="add">
+        <Link href="/bureau/contents/nouveau" className="shrink-0 sm:self-start">
+          <Button variant="add" className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             Nouveau contenu
           </Button>
@@ -111,7 +94,7 @@ export default async function BureauContentsPage({
       </div>
 
       <BureauContentsClient
-        initialContents={contents}
+        initialContents={contentsWithPerms}
         initialTotal={total}
         initialPage={page}
         initialTotalPages={totalPages}

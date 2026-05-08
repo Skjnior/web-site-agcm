@@ -239,6 +239,7 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
                 value={formData.imageUrl}
                 onChange={(url) => setFormData((prev) => ({ ...prev, imageUrl: url }))}
                 label="Cliquez ou glissez une image ici"
+                hideUrlOption
               />
             </div>
           </div>

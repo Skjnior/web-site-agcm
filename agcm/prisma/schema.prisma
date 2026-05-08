@@ -26,6 +26,8 @@ model User {
   member                       Member?
   notifications                Notification[]
   pageViews                    PageView[]
+  dmPeerForBureauMessages      BureauMessage[]      @relation("BureauMessageDmPeer")
+  bureauMessagesDeletedAsActor BureauMessage[]      @relation("BureauMessageDeletedBy")
 
   @@map("users")
 }
@@ -362,16 +364,26 @@ model BureauMessage {
   id           String                    @id @default(cuid())
   auteurUserId String                    @map("auteur_user_id")
   mandatId     String?                   @map("mandat_id")
+  /// Salon général ou discussion 1:1 entre deux membres du bureau
+  threadKind   BureauThreadKind          @default(SALON) @map("thread_kind")
+  /// Message utilisateur ou annonce système (ex. lien visioconférence)
+  messageKind  BureauMessageKind         @default(USER) @map("message_kind")
+  /// Destinataire d’un message DIRECT (l’interlocuteur 1:1, pas l’auteur)
+  dmPeerUserId String?                   @map("dm_peer_user_id")
   texte        String
   createdAt    DateTime                  @default(now()) @map("created_at")
+  editedAt     DateTime?                 @map("edited_at")
   deletedAt    DateTime?                 @map("deleted_at")
   deletedBy    String?                   @map("deleted_by")
   attachments  BureauMessageAttachment[]
   auteur       User                      @relation(fields: [auteurUserId], references: [id])
   mandat       Mandat?                   @relation(fields: [mandatId], references: [id])
+  dmPeer       User?                     @relation("BureauMessageDmPeer", fields: [dmPeerUserId], references: [id], onDelete: SetNull)
+  deletedByUser User?                   @relation("BureauMessageDeletedBy", fields: [deletedBy], references: [id], onDelete: SetNull)
 
   @@index([createdAt])
   @@index([mandatId])
+  @@index([mandatId, threadKind, createdAt])
   @@map("bureau_messages")
 }
 
@@ -555,4 +567,14 @@ enum AuditAction {
   ASSIGN
   INACTIVATE
   ARCHIVE
+}
+
+enum BureauThreadKind {
+  SALON
+  DIRECT
+}
+
+enum BureauMessageKind {
+  USER
+  SYSTEM
 }

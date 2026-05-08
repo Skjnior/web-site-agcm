@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import AppLayoutClient from '@/components/layout/AppLayoutClient';
+import { ALL_BUREAU_MODULES, getBureauPerimetreForPostes, type BureauModule } from '@/lib/bureau-poste-perimetre';
 
 export default async function AppLayout({
   children,
@@ -38,7 +39,7 @@ export default async function AppLayout({
     redirect('/connexion');
   }
 
-  const { getAffectationActive, isBureauActif } = await import('@/lib/rbac');
+  const { getAffectationActive, isBureauActif, getBureauMandatContext } = await import('@/lib/rbac');
 
   // Adhérents simples : pas d'intranet sur le site (vie associative hors ligne / WhatsApp, etc.)
   if (user.roleSysteme === 'MEMBER' && !(await isBureauActif(user.id))) {
@@ -61,11 +62,24 @@ export default async function AppLayout({
       : undefined,
   };
 
+  let allowedBureauModules: BureauModule[] | undefined;
+  if (isBureau) {
+    if (userRole === 'SUPER_ADMIN' || userRole === 'ADMIN') {
+      allowedBureauModules = ALL_BUREAU_MODULES;
+    } else {
+      const ctxMandat = await getBureauMandatContext(user.id);
+      allowedBureauModules = ctxMandat
+        ? Array.from(getBureauPerimetreForPostes(ctxMandat.affectations.map((a) => a.poste.nom)).modules)
+        : ALL_BUREAU_MODULES;
+    }
+  }
+
   return (
     <AppLayoutClient
       userRole={userRole}
       isBureau={isBureau}
       posteNom={affectation?.poste.nom}
+      allowedBureauModules={allowedBureauModules}
       userInfo={userInfo}
     >
       {children}

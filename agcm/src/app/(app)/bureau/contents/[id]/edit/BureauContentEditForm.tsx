@@ -166,6 +166,7 @@ export default function BureauContentEditForm({ contentId, initialContent }: Bur
               value={watch('imagePrincipale') || ''}
               onChange={(url) => setValue('imagePrincipale', url)}
               label="Image principale"
+              hideUrlOption
             />
           </div>
 

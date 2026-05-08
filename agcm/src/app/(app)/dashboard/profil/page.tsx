@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import ProfilForm from '@/components/app/ProfilForm';
+import { memberContactEmail } from '@/lib/member-contact';
 import { isBureauActif } from '@/lib/rbac';
 
 export const metadata: Metadata = {
@@ -58,7 +59,12 @@ export default async function ProfilPage() {
 
       <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-8 shadow-[0_8px_32px_-12px_rgba(0,0,0,0.5)] relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -z-10" />
-        <ProfilForm member={member} dark />
+        <ProfilForm
+          member={member}
+          dark
+          userEmail={memberContactEmail(member)}
+          allowEmailEdit={Boolean(member.userId)}
+        />
       </div>
     </div>
   );

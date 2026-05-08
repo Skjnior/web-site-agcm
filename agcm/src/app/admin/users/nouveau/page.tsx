@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Info, Save } from 'lucide-react';
@@ -194,9 +195,8 @@ export default function NouvelUtilisateurPage() {
               <Label htmlFor="password" className="text-slate-700 dark:text-slate-300">
                 Mot de passe *
               </Label>
-              <Input
+              <PasswordInput
                 id="password"
-                type="password"
                 {...register('password')}
                 className={cn(errors.password && 'border-red-500 dark:border-red-500')}
               />

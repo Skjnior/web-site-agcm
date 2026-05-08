@@ -7,7 +7,6 @@ import {
   MessageSquare,
   FileText,
   Calendar,
-  Vote,
   FolderOpen,
   Users,
   User,
@@ -29,6 +28,11 @@ import {
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  ALL_BUREAU_MODULES,
+  isBureauSidebarHrefAllowed,
+  type BureauModule,
+} from '@/lib/bureau-poste-perimetre';
 
 interface SidebarItem {
   label: string;
@@ -43,11 +47,20 @@ interface AppSidebarProps {
   userRole: 'SUPER_ADMIN' | 'ADMIN' | 'MEMBER';
   isBureau?: boolean;
   posteNom?: string;
+  /** Modules bureau autorisés (membres du bureau) ; absent = tout */
+  allowedBureauModules?: BureauModule[];
   mobileOpen?: boolean;
   onMobileClose?: () => void;
 }
 
-export default function AppSidebar({ userRole, isBureau, posteNom, mobileOpen, onMobileClose }: AppSidebarProps) {
+export default function AppSidebar({
+  userRole,
+  isBureau,
+  posteNom,
+  allowedBureauModules,
+  mobileOpen,
+  onMobileClose,
+}: AppSidebarProps) {
   const pathname = usePathname();
 
   const isActive = (href: string) => {
@@ -110,11 +123,6 @@ export default function AppSidebar({ userRole, isBureau, posteNom, mobileOpen, o
       href: '/app/notifications',
       icon: Bell,
     },
-    {
-      label: 'Votes',
-      href: '/app/votes',
-      icon: Vote,
-    },
   ];
 
   // Menu Super Admin - TOUTES les options disponibles avec CRUD complet
@@ -175,6 +183,11 @@ export default function AppSidebar({ userRole, isBureau, posteNom, mobileOpen, o
       label: 'Salon privé bureau',
       href: '/app/chat',
       icon: MessageSquare,
+    },
+    {
+      label: 'Mon profil',
+      href: '/admin/profil',
+      icon: User,
     },
     {
       label: 'Mes activités',
@@ -248,9 +261,14 @@ export default function AppSidebar({ userRole, isBureau, posteNom, mobileOpen, o
   } else if (userRole === 'ADMIN') {
     menuItems = [...commonMenu, ...adminMenu];
   } else if (isBureau) {
-    // Pour Bureau, remplacer "Salon public" par "Salon privé bureau" dans le menu
-    const commonMenuForBureau = commonMenu.filter(item => item.href !== '/app/chat');
-    menuItems = [...commonMenuForBureau, ...bureauMenu];
+    const modSet = new Set(allowedBureauModules ?? ALL_BUREAU_MODULES);
+    const commonMenuForBureau = commonMenu
+      .filter((item) => item.href !== '/app/chat')
+      .filter((item) => isBureauSidebarHrefAllowed(item.href, modSet));
+    const bureauMenuFiltered = bureauMenu.filter((item) =>
+      isBureauSidebarHrefAllowed(item.href, modSet),
+    );
+    menuItems = [...commonMenuForBureau, ...bureauMenuFiltered];
   } else {
     menuItems = [...commonMenu, ...memberMenu];
   }

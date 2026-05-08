@@ -2,9 +2,11 @@ import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { getAdminDashboardChartData } from '@/lib/admin/dashboard-stats';
+import AdminDashboardCharts from '@/components/admin/AdminDashboardCharts';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ClipboardList, Users, Calendar, AlertCircle } from 'lucide-react';
+import { CheckCircle, ClipboardList, Users, Calendar, AlertCircle, Mail, HandHeart, Building2 } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Administration - AGCM',
@@ -31,9 +33,11 @@ export default async function AdminDashboardPage() {
     pendingAdhesions,
     pendingPartenariats,
     pendingDons,
+    pendingContactMessages,
     totalMembers,
     activeMembers,
     totalEvents,
+    dashboardCharts,
   ] = await Promise.all([
     prisma.demandeAdhesion.count({
       where: { statut: 'EN_ATTENTE' },
@@ -44,11 +48,15 @@ export default async function AdminDashboardPage() {
     prisma.donationIntent.count({
       where: { statut: 'NOUVEAU' },
     }),
+    prisma.messageContact.count({
+      where: { statut: 'NOUVEAU' },
+    }),
     prisma.member.count(),
     prisma.member.count({
       where: { statutMembre: 'ACTIF' },
     }),
     prisma.event.count(),
+    getAdminDashboardChartData(),
   ]);
 
   return (
@@ -60,28 +68,113 @@ export default async function AdminDashboardPage() {
         <p className="mt-1 text-slate-400">Vue d&apos;ensemble de l&apos;activité de l&apos;AGCM</p>
       </div>
 
-      {/* Alertes importantes */}
-      {pendingAdhesions > 0 && (
-        <div className="relative overflow-hidden bg-gradient-to-br from-yellow-900/40 to-orange-900/20 border border-yellow-500/20 rounded-3xl p-6 shadow-lg group backdrop-blur-md">
-          <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-12">
-            <AlertCircle className="w-48 h-48 text-yellow-500" />
+      {/* Alertes : demandes à traiter (visible dès l'arrivée sur le tableau de bord) */}
+      {pendingAdhesions + pendingPartenariats + pendingDons + pendingContactMessages > 0 && (
+        <div className="relative overflow-hidden rounded-3xl border border-amber-500/25 bg-gradient-to-br from-amber-950/50 via-orange-950/30 to-slate-900/40 p-6 shadow-lg backdrop-blur-md">
+          <div className="pointer-events-none absolute -right-8 -top-8 opacity-[0.07]">
+            <AlertCircle className="h-44 w-44 text-amber-400" />
           </div>
-          <div className="relative z-10 flex items-start gap-5">
-            <div className="p-4 bg-yellow-500/20 backdrop-blur-sm rounded-2xl text-yellow-400 shadow-[0_0_15px_rgba(234,179,8,0.2)] border border-yellow-500/30">
-              <AlertCircle className="h-7 w-7" />
+          <div className="relative z-10 flex flex-col gap-5 md:flex-row md:items-start">
+            <div className="shrink-0 rounded-2xl border border-amber-500/35 bg-amber-500/15 p-4 text-amber-400">
+              <AlertCircle className="h-7 w-7" aria-hidden />
             </div>
-            <div>
-              <h3 className="text-xl font-semibold text-yellow-500">Actions requises</h3>
-              <p className="text-yellow-200 mt-1 text-sm md:text-base">
-                {`${pendingAdhesions} demande${pendingAdhesions > 1 ? 's' : ''} d'adhésion en attente`}
+            <div className="min-w-0 flex-1">
+              <h3 className="text-xl font-semibold text-amber-200">Actions requises</h3>
+              <p className="mt-1 text-sm text-amber-100/80">
+                Des éléments nécessitent votre attention. Accédez directement aux listes concernées.
               </p>
-              <div className="flex flex-wrap gap-3 mt-5">
-                <Link href="/admin/demandes/adhesions">
-                  <Button size="default" variant="outline" className="border-yellow-500/50 text-yellow-400 bg-yellow-950/50 hover:bg-yellow-500 hover:text-yellow-950 transition-all hover:scale-105 rounded-xl font-medium backdrop-blur-sm shadow-[0_0_10px_rgba(234,179,8,0.1)]">
-                    Voir les demandes
-                  </Button>
-                </Link>
-              </div>
+              <ul className="mt-5 space-y-3">
+                {pendingAdhesions > 0 && (
+                  <li className="flex flex-col gap-2 rounded-2xl border border-slate-700/60 bg-slate-900/40 p-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-start gap-3">
+                      <Users className="mt-0.5 h-5 w-5 shrink-0 text-blue-400" aria-hidden />
+                      <div>
+                        <p className="font-medium text-slate-100">Adhésions en attente</p>
+                        <p className="text-sm text-slate-400">
+                          {pendingAdhesions} demande{pendingAdhesions > 1 ? 's' : ''} à traiter
+                        </p>
+                      </div>
+                    </div>
+                    <Link href="/admin/demandes/adhesions" className="shrink-0">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-full border-blue-500/40 text-blue-300 hover:bg-blue-500/15 sm:w-auto"
+                      >
+                        Voir les adhésions
+                      </Button>
+                    </Link>
+                  </li>
+                )}
+                {pendingDons > 0 && (
+                  <li className="flex flex-col gap-2 rounded-2xl border border-slate-700/60 bg-slate-900/40 p-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-start gap-3">
+                      <HandHeart className="mt-0.5 h-5 w-5 shrink-0 text-purple-400" aria-hidden />
+                      <div>
+                        <p className="font-medium text-slate-100">Intentions de don</p>
+                        <p className="text-sm text-slate-400">
+                          {pendingDons} signalement{pendingDons > 1 ? 's' : ''} non pris en charge
+                        </p>
+                      </div>
+                    </div>
+                    <Link href="/admin/demandes/dons" className="shrink-0">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-full border-purple-500/40 text-purple-300 hover:bg-purple-500/15 sm:w-auto"
+                      >
+                        Voir les dons
+                      </Button>
+                    </Link>
+                  </li>
+                )}
+                {pendingContactMessages > 0 && (
+                  <li className="flex flex-col gap-2 rounded-2xl border border-slate-700/60 bg-slate-900/40 p-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-start gap-3">
+                      <Mail className="mt-0.5 h-5 w-5 shrink-0 text-cyan-400" aria-hidden />
+                      <div>
+                        <p className="font-medium text-slate-100">Messages contact</p>
+        <p className="mt-1 text-slate-400">
+                          {pendingContactMessages} nouveau
+                          {pendingContactMessages > 1 ? 'x' : ''} message
+                          {pendingContactMessages > 1 ? 's' : ''} via le formulaire contact
+                        </p>
+                      </div>
+                    </div>
+                    <Link href="/admin/messages-contact" className="shrink-0">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-full border-cyan-500/40 text-cyan-300 hover:bg-cyan-500/15 sm:w-auto"
+                      >
+                        Ouvrir les messages
+                      </Button>
+                    </Link>
+                  </li>
+                )}
+                {pendingPartenariats > 0 && (
+                  <li className="flex flex-col gap-2 rounded-2xl border border-slate-700/60 bg-slate-900/40 p-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-start gap-3">
+                      <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" aria-hidden />
+                      <div>
+                        <p className="font-medium text-slate-100">Partenariats en attente</p>
+                        <p className="text-sm text-slate-400">
+                          {pendingPartenariats} demande{pendingPartenariats > 1 ? 's' : ''} à examiner
+                        </p>
+                      </div>
+                    </div>
+                    <Link href="/admin/demandes/partenariats" className="shrink-0">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-full border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/15 sm:w-auto"
+                      >
+                        Voir les partenariats
+                      </Button>
+                    </Link>
+                  </li>
+                )}
+              </ul>
             </div>
           </div>
         </div>
@@ -92,7 +185,7 @@ export default async function AdminDashboardPage() {
         <StatCard
           href="/admin/demandes"
           title="Demandes"
-          value={pendingAdhesions + pendingPartenariats + pendingDons}
+          value={pendingAdhesions + pendingPartenariats + pendingDons + pendingContactMessages}
           icon={ClipboardList}
           colorClass="text-blue-400"
           bgClass="bg-blue-500/10"
@@ -121,6 +214,8 @@ export default async function AdminDashboardPage() {
           glowClass="bg-purple-500"
         />
       </div>
+
+      <AdminDashboardCharts data={dashboardCharts} />
 
       {/* Actions rapides */}
       <div className="admin-glass relative overflow-hidden rounded-3xl p-8 shadow-[0_8px_32px_-12px_rgba(0,0,0,0.5)]">

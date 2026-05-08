@@ -3,11 +3,11 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { Users, HandHeart, Building2 } from 'lucide-react';
+import { Users, HandHeart, Building2, Mail } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Demandes - Administration',
-  description: 'Gérer les demandes d\'adhésion, partenariat et dons',
+  description: 'Gérer les demandes d\'adhésion, partenariat, dons et messages contact',
 };
 
 export default async function AdminDemandesPage() {
@@ -26,10 +26,11 @@ export default async function AdminDemandesPage() {
   }
 
   // Compter les demandes en attente
-  const [pendingAdhesions, pendingPartenariats, pendingDons] = await Promise.all([
+  const [pendingAdhesions, pendingPartenariats, pendingDons, pendingContactMessages] = await Promise.all([
     prisma.demandeAdhesion.count({ where: { statut: 'EN_ATTENTE' } }),
     prisma.demandePartenariat.count({ where: { statut: 'EN_ATTENTE' } }),
     prisma.donationIntent.count({ where: { statut: 'NOUVEAU' } }),
+    prisma.messageContact.count({ where: { statut: 'NOUVEAU' } }),
   ]);
 
   return (
@@ -42,12 +43,12 @@ export default async function AdminDemandesPage() {
                 Gestion des demandes
               </h1>
               <p className="mt-1 text-slate-500 dark:text-slate-400">
-                Traiter les demandes d&apos;adhésion, partenariat et intentions de dons
+                Adhésions, partenariats, intentions de don et messages du formulaire contact
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
             <Link href="/admin/demandes/adhesions" className="group">
               <div className="admin-glass relative h-full overflow-hidden rounded-3xl p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
                 <div className="relative z-10 mb-4 flex items-start justify-between">
@@ -111,6 +112,28 @@ export default async function AdminDemandesPage() {
                   </p>
                 </div>
                 <div className="absolute -right-6 -bottom-6 h-24 w-24 rounded-full bg-purple-50 opacity-50 blur-2xl transition-transform duration-700 group-hover:scale-150 dark:bg-purple-900/20" />
+              </div>
+            </Link>
+
+            <Link href="/admin/messages-contact" className="group">
+              <div className="admin-glass relative h-full overflow-hidden rounded-3xl p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+                <div className="relative z-10 mb-4 flex items-start justify-between">
+                  <div className="rounded-2xl border border-cyan-100 bg-cyan-50 p-4 shadow-sm transition-transform duration-300 group-hover:rotate-6 dark:border-cyan-500/20 dark:bg-cyan-950/40">
+                    <Mail className="h-8 w-8 text-cyan-600 dark:text-cyan-400" />
+                  </div>
+                  {pendingContactMessages > 0 && (
+                    <span className="animate-pulse rounded-full border border-red-200 bg-red-100 px-3 py-1 text-sm font-semibold text-red-700 dark:border-red-800/50 dark:bg-red-950/50 dark:text-red-300">
+                      {pendingContactMessages} nouveau{pendingContactMessages > 1 ? 'x' : ''}
+                    </span>
+                  )}
+                </div>
+                <div className="relative z-10">
+                  <h3 className="mb-2 text-xl font-bold text-slate-900 dark:text-slate-100">Contact site</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Lire et traiter les messages envoyés depuis la page publique.
+                  </p>
+                </div>
+                <div className="absolute -right-6 -bottom-6 h-24 w-24 rounded-full bg-cyan-50 opacity-50 blur-2xl transition-transform duration-700 group-hover:scale-150 dark:bg-cyan-900/20" />
               </div>
             </Link>
           </div>

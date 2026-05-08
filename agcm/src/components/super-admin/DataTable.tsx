@@ -1,31 +1,9 @@
 'use client';
 
-import { ReactNode, useState, useEffect, useRef } from 'react';
-import { Button } from '@/components/ui/button';
+import { ReactNode } from 'react';
 import { Pagination } from '@/components/ui/pagination';
-import { MoreVertical } from 'lucide-react';
+import { TableRowActionsMenu } from '@/components/ui/table-row-actions-menu';
 import { cn } from '@/lib/utils';
-
-function actionMenuItemClass(
-  variant?: 'default' | 'destructive' | 'outline' | 'edit' | 'add' | 'delete' | 'view'
-) {
-  switch (variant) {
-    case 'delete':
-    case 'destructive':
-      return 'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40';
-    case 'edit':
-      return 'text-blue-700 hover:bg-blue-50 dark:text-blue-300 dark:hover:bg-blue-950/40';
-    case 'view':
-      return 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800';
-    case 'add':
-      return 'text-emerald-700 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/30';
-    case 'default':
-      return 'text-primary hover:bg-primary/10 dark:text-primary dark:hover:bg-primary/15';
-    case 'outline':
-    default:
-      return 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800';
-  }
-}
 
 interface Column<T> {
   key: string;
@@ -135,7 +113,7 @@ export function DataTable<T extends { id: string }>({
                       className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <ActionMenu item={item} actions={actions(item)} />
+                      <TableRowActionsMenu actions={actions(item)} />
                     </td>
                   )}
                 </tr>
@@ -156,96 +134,6 @@ export function DataTable<T extends { id: string }>({
           onPageChange={pagination.onPageChange}
           className="admin-glass rounded-2xl border border-slate-200/80 p-4 dark:border-slate-700/80"
         />
-      )}
-    </div>
-  );
-}
-
-function ActionMenu<T>({
-  item,
-  actions,
-}: {
-  item: T;
-  actions: {
-    label: string;
-    onClick: () => void;
-    variant?: 'default' | 'destructive' | 'outline' | 'edit' | 'add' | 'delete' | 'view';
-    icon?: ReactNode;
-    disabled?: boolean;
-    className?: string;
-  }[];
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen]);
-
-  if (actions.length === 0) return null;
-
-  if (actions.length === 1) {
-    const isProcessing = actions[0].label.includes('...');
-    return (
-      <Button
-        variant={actions[0].variant || 'outline'}
-        size="sm"
-        onClick={actions[0].onClick}
-        disabled={isProcessing}
-        className={actions[0].className}
-      >
-        {actions[0].icon}
-        {actions[0].label}
-      </Button>
-    );
-  }
-
-  return (
-    <div className="relative" ref={menuRef}>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setIsOpen(!isOpen)}
-        className="border-slate-300 dark:border-slate-600 dark:hover:bg-slate-800"
-      >
-        <MoreVertical className="h-4 w-4" />
-      </Button>
-      {isOpen && (
-        <div className="absolute right-0 z-50 mt-2 w-48 rounded-md border border-slate-200 bg-white shadow-lg ring-1 ring-black/5 dark:border-slate-700 dark:bg-slate-900 dark:ring-white/10">
-          <div className="py-1">
-            {actions.map((action, index) => (
-              <button
-                key={index}
-                type="button"
-                onClick={() => {
-                  action.onClick();
-                  setIsOpen(false);
-                }}
-                disabled={action.label.includes('...')}
-                className={cn(
-                  'flex w-full items-center gap-2 px-4 py-2 text-left text-sm disabled:cursor-not-allowed disabled:opacity-50',
-                  actionMenuItemClass(action.variant),
-                  action.className
-                )}
-              >
-                {action.icon}
-                <span>{action.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
       )}
     </div>
   );

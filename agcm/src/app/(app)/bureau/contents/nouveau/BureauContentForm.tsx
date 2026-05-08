@@ -151,6 +151,7 @@ export default function BureauContentForm() {
               value={watch('imagePrincipale') || ''}
               onChange={(url) => setValue('imagePrincipale', url)}
               label="Image principale"
+              hideUrlOption
             />
           </div>
 

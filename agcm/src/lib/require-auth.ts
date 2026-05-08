@@ -4,6 +4,9 @@
 import { auth } from '@/lib/auth';
 import { NextResponse } from 'next/server';
 import type { RoleSysteme } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
+import { getBureauMandatContext } from '@/lib/rbac';
+import { bureauMemberHasModule, type BureauModule } from '@/lib/bureau-poste-perimetre';
 
 /**
  * Vérifie que l'utilisateur est authentifié
@@ -88,6 +91,38 @@ export async function requireBureau() {
       session: null,
     };
   }
+  return { error: null, session };
+}
+
+/**
+ * Bureau + module fonctionnel autorisé pour le(s) poste(s) (hors ADMIN / SUPER_ADMIN = tout).
+ */
+export async function requireBureauModule(module: BureauModule) {
+  const { error, session } = await requireBureau();
+  if (error) return { error, session: null };
+
+  const user = await prisma.user.findUnique({
+    where: { id: session!.user!.id! },
+  });
+  if (!user) {
+    return {
+      error: NextResponse.json({ error: 'Utilisateur introuvable' }, { status: 401 }),
+      session: null,
+    };
+  }
+
+  const ctx = await getBureauMandatContext(session!.user!.id!);
+  const posteNoms = ctx?.affectations.map((a) => a.poste.nom) ?? [];
+  if (!bureauMemberHasModule(user.roleSysteme, posteNoms, module)) {
+    return {
+      error: NextResponse.json(
+        { error: 'Accès refusé : cette fonction n’est pas dans le périmètre de votre poste' },
+        { status: 403 }
+      ),
+      session: null,
+    };
+  }
+
   return { error: null, session };
 }
 

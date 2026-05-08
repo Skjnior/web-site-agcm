@@ -1,11 +1,12 @@
 import { Metadata } from 'next';
-import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { isBureauActif } from '@/lib/rbac';
-import { Calendar, Plus } from 'lucide-react';
+import { assertBureauModuleOrRedirect } from '@/lib/bureau-page-guard';
+import { Calendar, Plus, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import { Badge } from '@/components/ui/badge';
 
 export const metadata: Metadata = {
   title: 'Événements - Bureau',
@@ -13,71 +14,114 @@ export const metadata: Metadata = {
 };
 
 export default async function BureauEvenementsPage() {
-  const session = await auth();
-
-  if (!session?.user) {
-    redirect('/connexion');
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-  });
-
-  if (!user) {
-    redirect('/connexion');
-  }
-
-  const bureauActif = await isBureauActif(user.id);
-  if (!bureauActif) {
-    redirect('/');
-  }
+  const { ctx } = await assertBureauModuleOrRedirect('evenements');
 
   const evenements = await prisma.event.findMany({
-    orderBy: {
-      dateDebut: 'desc',
+    where: {
+      createdByPosteId: { in: ctx.posteIds },
+      mandatId: ctx.mandatId,
     },
-    take: 20,
+    orderBy: { dateDebut: 'desc' },
+    take: 50,
   });
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="mx-auto max-w-7xl space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-100">Événements</h1>
-          <p className="text-slate-400 mt-1">{evenements.length} événement(s)</p>
+          <h1 className="text-3xl font-bold text-slate-100">Mes événements</h1>
+          <p className="mt-1 text-slate-400">
+            Événements créés depuis votre poste sur le mandat en cours ({evenements.length})
+          </p>
         </div>
         <Link href="/bureau/evenements/nouveau">
           <Button>
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="mr-2 h-4 w-4" />
             Nouvel événement
           </Button>
         </Link>
       </div>
 
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 overflow-hidden">
+      <div className="overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/50">
         {evenements.length === 0 ? (
           <div className="p-12 text-center">
-            <Calendar className="h-12 w-12 text-slate-500 mx-auto mb-4" />
-            <p className="text-slate-400">Aucun événement pour le moment</p>
+            <Calendar className="mx-auto mb-4 h-12 w-12 text-slate-500" />
+            <p className="text-slate-400">Aucun événement créé par votre poste pour ce mandat</p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-700/50">
-            {evenements.map((event) => (
-              <div key={event.id} className="p-6 hover:bg-slate-700/30 transition-colors">
-                <h3 className="text-lg font-semibold text-slate-100">{event.titre}</h3>
-                <p className="text-sm text-slate-400 mt-1">{event.description || 'Aucune description'}</p>
-                <div className="mt-2 flex items-center gap-4 text-xs text-slate-500">
-                  <span>Date: {new Date(event.dateDebut).toLocaleDateString('fr-FR')}</span>
-                  <span>Lieu: {event.lieu || 'Non spécifié'}</span>
-                  <span>Afficher sur le site: {event.afficheSite ? 'Oui' : 'Non'}</span>
-                </div>
-              </div>
-            ))}
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[720px]">
+              <thead className="border-b border-slate-700/50 bg-slate-800/90">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-400">
+                    Titre & lieu
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-400">
+                    Date
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-400">
+                    Statut
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-400">
+                    Site public
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-400">
+                    Voir
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-700/50">
+                {evenements.map((event) => (
+                  <tr key={event.id} className="hover:bg-slate-700/20">
+                    <td className="px-4 py-4 align-top">
+                      <span className="font-medium text-slate-100">{event.titre}</span>
+                      {event.lieu ? (
+                        <p className="mt-1 flex items-center gap-1 text-sm text-slate-400">
+                          <MapPin className="h-3.5 w-3.5 shrink-0" />
+                          {event.lieu}
+                        </p>
+                      ) : null}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-4 align-top text-sm text-slate-300">
+                      {format(new Date(event.dateDebut), 'dd MMM yyyy', { locale: fr })}
+                    </td>
+                    <td className="px-4 py-4 align-top">
+                      <Badge
+                        variant={
+                          event.statut === 'PASSE' ? 'default' : event.statut === 'EN_COURS' ? 'soumis' : 'approuve'
+                        }
+                      >
+                        {event.statut === 'PASSE'
+                          ? 'Terminé'
+                          : event.statut === 'EN_COURS'
+                            ? 'En cours'
+                            : 'À venir'}
+                      </Badge>
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-4 align-top text-sm text-slate-400">
+                      {event.afficheSite ? 'Oui' : 'Non'}
+                    </td>
+                    <td className="px-4 py-4 align-top text-right">
+                      {event.afficheSite ? (
+                        <Link
+                          href={`/evenements/${event.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-blue-400 hover:text-blue-300 hover:underline"
+                        >
+                          Page publique
+                        </Link>
+                      ) : (
+                        <span className="text-slate-600">—</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
     </div>
   );
 }
-
-

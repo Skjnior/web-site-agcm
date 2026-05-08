@@ -2,7 +2,7 @@
 // Soumettre un événement pour affichage sur le site (nécessite approbation président)
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/require-auth';
+import { requireBureauModule } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
 import { getAffectationActive } from '@/lib/rbac';
 import { logAction } from '@/lib/audit';
@@ -11,7 +11,7 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { error, session } = await requireAuth();
+  const { error, session } = await requireBureauModule('evenements');
   if (error) return error;
 
   const { id } = await params;

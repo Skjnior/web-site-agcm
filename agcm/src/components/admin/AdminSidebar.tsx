@@ -15,17 +15,37 @@ import {
     CheckSquare,
     CircleUser,
     Activity,
+    Mail,
+    Bell,
+    MessageSquare,
+    XCircle,
+    History,
+    Settings,
 } from 'lucide-react';
 import { signOutWithConfirmation } from '@/lib/sign-out-confirm';
+import {
+    ALL_BUREAU_MODULES,
+    isBureauSidebarHrefAllowed,
+    type BureauModule,
+} from '@/lib/bureau-poste-perimetre';
 
 interface SidebarProps {
     role: string | undefined;
+    allowedBureauModules?: BureauModule[];
 }
 
-export default function AdminSidebar({ role }: SidebarProps) {
+function navItemIsActive(pathname: string, href: string) {
+    const hrefPath = href.split('?')[0];
+    if (hrefPath === '/bureau') return pathname === '/bureau';
+    if (hrefPath === '/admin') return pathname === '/admin';
+    if (pathname === hrefPath) return true;
+    return pathname.startsWith(`${hrefPath}/`);
+}
+
+export default function AdminSidebar({ role, allowedBureauModules }: SidebarProps) {
     const pathname = usePathname();
 
-    const navigation = [
+    const fullNavigation = [
         { name: 'Tableau de bord', href: '/admin', icon: LayoutDashboard },
         { name: 'Mon profil', href: '/admin/profil', icon: CircleUser },
         { name: 'Approbations', href: '/admin/approbations', icon: CheckSquare },
@@ -33,19 +53,43 @@ export default function AdminSidebar({ role }: SidebarProps) {
         { name: 'Événements', href: '/admin/evenements', icon: Calendar },
         { name: 'Membres', href: '/admin/membres', icon: Users },
         { name: 'Demandes', href: '/admin/demandes', icon: ClipboardList },
+        { name: 'Messages contact', href: '/admin/messages-contact', icon: Mail },
     ];
 
-    if (role === 'SUPER_ADMIN') {
-        navigation.push(
-            { name: 'Utilisateurs', href: '/admin/users', icon: Users },
-            { name: 'Mandats', href: '/admin/mandats', icon: GraduationCap },
-            { name: 'Postes', href: '/admin/postes', icon: FolderOpen },
-            { name: 'Affectations', href: '/admin/affectations', icon: ClipboardList },
-            { name: 'Logs système', href: '/admin/logs', icon: ShieldAlert },
-            { name: 'Visites', href: '/admin/logs/visits', icon: Activity }
-        );
-    }
+    /** Même menu que AppSidebar (branche bureau) pour les MEMBER actifs au bureau — y compris sur /admin/* */
+    const memberBureauNavigation = [
+        { name: 'Accueil', href: '/bureau', icon: LayoutDashboard },
+        { name: 'Notifications', href: '/app/notifications', icon: Bell },
+        { name: 'Salon privé bureau', href: '/app/chat', icon: MessageSquare },
+        { name: 'Mon profil', href: '/admin/profil', icon: CircleUser },
+        { name: 'Mes activités', href: '/bureau/contents', icon: FileText },
+        { name: 'Contenus rejetés', href: '/bureau/contents/rejetes', icon: XCircle },
+        { name: 'Projets', href: '/bureau/projets', icon: FolderOpen },
+        { name: 'Événements', href: '/bureau/evenements', icon: Calendar },
+        { name: 'Historique des actions', href: '/bureau/traces', icon: History },
+        { name: 'Paiements', href: '/dashboard/paiements', icon: Settings },
+    ];
 
+    const superAdminExtras = [
+        { name: 'Utilisateurs', href: '/admin/users', icon: Users },
+        { name: 'Mandats', href: '/admin/mandats', icon: GraduationCap },
+        { name: 'Postes', href: '/admin/postes', icon: FolderOpen },
+        { name: 'Affectations', href: '/admin/affectations', icon: ClipboardList },
+        { name: 'Logs système', href: '/admin/logs', icon: ShieldAlert },
+        { name: 'Visites', href: '/admin/logs/visits', icon: Activity },
+    ];
+
+    let navigation =
+        role === 'MEMBER'
+            ? memberBureauNavigation.filter((item) =>
+                  isBureauSidebarHrefAllowed(
+                      item.href,
+                      new Set(allowedBureauModules ?? ALL_BUREAU_MODULES),
+                  ),
+              )
+            : role === 'SUPER_ADMIN'
+              ? [...fullNavigation, ...superAdminExtras]
+              : fullNavigation;
     return (
         <aside className="z-20 hidden h-full w-64 flex-col border-r border-slate-800/50 bg-slate-900/40 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.5)] backdrop-blur-xl transition-all duration-300 md:flex">
             <div className="flex h-16 shrink-0 items-center border-b border-slate-800/50 bg-slate-900/30 px-6">
@@ -62,11 +106,14 @@ export default function AdminSidebar({ role }: SidebarProps) {
             <div className="flex flex-1 flex-col overflow-y-auto pt-6 pb-4 px-4 custom-scrollbar">
                 <nav className="flex-1 space-y-1">
                     {navigation.map((item) => {
-                        const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
+                        const isActive =
+                            role === 'MEMBER'
+                                ? navItemIsActive(pathname, item.href)
+                                : pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
 
                         return (
                             <Link
-                                key={item.name}
+                                key={`${item.href}-${item.name}`}
                                 href={item.href}
                                 className={`
                   group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200

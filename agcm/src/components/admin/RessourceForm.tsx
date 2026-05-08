@@ -173,6 +173,7 @@ export default function RessourceForm({ ressourceId, initialData }: RessourceFor
               value={formData.imageUrl}
               onChange={(url) => setFormData((prev) => ({ ...prev, imageUrl: url }))}
               label="Image de la ressource (flyer, couverture, etc.)"
+              hideUrlOption
             />
           </div>
           <div>

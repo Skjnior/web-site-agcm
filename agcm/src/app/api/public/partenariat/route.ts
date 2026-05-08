@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { partenariatSchema } from '@/lib/validators/demandes';
+import { notifyPublicPartenariatForm } from '@/lib/emailjs-notify';
 
 
 export async function POST(request: NextRequest) {
@@ -24,7 +25,18 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Notifier les admins
+    try {
+      await notifyPublicPartenariatForm({
+        organisation: data.organisation,
+        contactNom: data.contactNom,
+        email: data.email,
+        telephone: data.telephone,
+        typePartenariat: data.typePartenariat,
+        message: data.message,
+      });
+    } catch (emailError) {
+      console.error("Erreur lors de l'envoi de la notification (EmailJS / Resend):", emailError);
+    }
 
     return NextResponse.json(
       {

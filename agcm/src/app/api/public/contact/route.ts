@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { contactSchema } from '@/lib/validators/demandes';
-import { sendEmail } from '@/lib/email';
+import { notifyPublicContactForm } from '@/lib/emailjs-notify';
 
 
 export async function POST(request: NextRequest) {
@@ -24,30 +24,15 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Notifier les admins
     try {
-      await sendEmail({
-        to: 'diouldekader@gmail.com',
-        subject: `Nouveau message de contact : ${data.sujet}`,
-        html: `
-          <div style="font-family: sans-serif; padding: 20px; color: #333;">
-            <h2 style="color: #2563eb;">Nouveau message de contact</h2>
-            <p><strong>De :</strong> ${data.nom} (${data.email})</p>
-            <p><strong>Sujet :</strong> ${data.sujet}</p>
-            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-            <p><strong>Message :</strong></p>
-            <div style="background: #f9fafb; padding: 15px; border-radius: 8px;">
-              ${data.message.replace(/\n/g, '<br>')}
-            </div>
-            <p style="font-size: 12px; color: #666; margin-top: 30px;">
-              Ce message a été envoyé depuis le formulaire de contact du site AGCM.
-            </p>
-          </div>
-        `
+      await notifyPublicContactForm({
+        nom: data.nom,
+        email: data.email,
+        sujet: data.sujet,
+        message: data.message,
       });
     } catch (emailError) {
-      console.error('Erreur lors de l\'envoi de l\'email de notification:', emailError);
-      // On ne bloque pas la réponse car le message est déjà en base
+      console.error("Erreur lors de l'envoi de la notification (EmailJS / Resend):", emailError);
     }
 
     return NextResponse.json(

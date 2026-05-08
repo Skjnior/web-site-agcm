@@ -164,8 +164,8 @@ export default async function ActualiteDetailPage({ params }: PageProps) {
                 <div className="p-8 md:p-12">
                   {/* Contenu */}
                   {content.contenu ? (
-                    <div 
-                      className="prose prose-slate dark:prose-invert max-w-none text-base leading-relaxed"
+                    <div
+                      className="prose prose-slate max-w-none text-base leading-relaxed text-slate-900 prose-headings:text-slate-900 prose-p:text-slate-800 prose-li:text-slate-800 prose-strong:text-slate-900"
                       dangerouslySetInnerHTML={{ __html: content.contenu }}
                     />
                   ) : (

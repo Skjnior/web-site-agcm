@@ -39,10 +39,19 @@ export default function EditAffectationPage() {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
+    reset,
     control,
   } = useForm<AffectationFormData>({
     resolver: zodResolver(affectationUpdateSchema),
+    defaultValues: {
+      mandatId: '',
+      posteId: '',
+      memberId: '',
+      dateDebut: '',
+      dateFin: '',
+      statut: 'ACTIF',
+      raisonInactivation: '',
+    },
   });
 
   useEffect(() => {
@@ -71,18 +80,23 @@ export default function EditAffectationPage() {
       ]);
 
       const affectation = affectationData.affectation;
+      if (!affectation) {
+        throw new Error('Affectation introuvable');
+      }
 
-      // Pré-remplir le formulaire
-      setValue('mandatId', affectation.mandatId);
-      setValue('posteId', affectation.posteId);
-      setValue('memberId', affectation.memberId);
-      setValue('dateDebut', new Date(affectation.dateDebut).toISOString().split('T')[0]);
-      setValue('dateFin', affectation.dateFin ? new Date(affectation.dateFin).toISOString().split('T')[0] : '');
-      setValue('statut', affectation.statut);
-      setValue('raisonInactivation', affectation.raisonInactivation || '');
+      let mandatList = mandatsData.data ?? [];
+      let posteList = postesData.data ?? [];
 
-      setMandats(mandatsData.data || []);
-      setPostes(postesData.data || []);
+      /** L'API postes/mandats est paginée (max 100) : inclure l'entité courante si absente des résultats. */
+      if (affectation.mandatId && !mandatList.some((m: { id: string }) => m.id === affectation.mandatId) && affectation.mandat) {
+        mandatList = [affectation.mandat, ...mandatList];
+      }
+      if (affectation.posteId && !posteList.some((p: { id: string }) => p.id === affectation.posteId) && affectation.poste) {
+        posteList = [affectation.poste, ...posteList];
+      }
+
+      setMandats(mandatList);
+      setPostes(posteList);
 
       let memberList: MemberPickOption[] = membersData.data ?? membersData.members ?? [];
       const mid = affectation.memberId as string;
@@ -110,6 +124,16 @@ export default function EditAffectationPage() {
         ];
       }
       setMembers(memberList);
+
+      reset({
+        mandatId: affectation.mandatId,
+        posteId: affectation.posteId,
+        memberId: affectation.memberId,
+        dateDebut: new Date(affectation.dateDebut).toISOString().split('T')[0],
+        dateFin: affectation.dateFin ? new Date(affectation.dateFin).toISOString().split('T')[0] : '',
+        statut: affectation.statut === 'INACTIF' ? 'INACTIF' : 'ACTIF',
+        raisonInactivation: affectation.raisonInactivation || '',
+      });
     } catch (err: any) {
       setError(err.message || 'Erreur lors du chargement');
     } finally {

@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { isBureauActif } from '@/lib/rbac';
 import ProfilForm from '@/components/app/ProfilForm';
 import { memberContactEmail } from '@/lib/member-contact';
 
@@ -17,7 +18,13 @@ export default async function AdminProfilPage() {
     redirect('/connexion');
   }
 
-  if (!['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)) {
+  const role = session.user.role;
+  const accesProfilAdmin =
+    role === 'ADMIN' ||
+    role === 'SUPER_ADMIN' ||
+    (role === 'MEMBER' && (await isBureauActif(session.user.id)));
+
+  if (!accesProfilAdmin) {
     redirect('/dashboard');
   }
 
@@ -63,7 +70,7 @@ export default async function AdminProfilPage() {
         <ProfilForm
           member={member}
           userEmail={memberContactEmail(member)}
-          allowImageUpload
+          allowEmailEdit={Boolean(member.userId)}
         />
       </div>
     </div>

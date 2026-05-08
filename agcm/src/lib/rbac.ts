@@ -71,10 +71,27 @@ export async function canViewBureauActivities(user: User): Promise<boolean> {
  * ============================================
  */
 
+type AffectationBureauRow = {
+  posteId: string;
+  statut: string;
+  poste: { id: string; nom: string; estBureau: boolean };
+  mandat: { id: string; dateDebut: Date; dateFin: Date; titre: string };
+};
+
+export type BureauMandatContext = {
+  mandatId: string;
+  mandat: NonNullable<Awaited<ReturnType<typeof getMandatActif>>>;
+  /** Tous les postes occupés par le membre sur le mandat actif (pour filtres liste) */
+  posteIds: string[];
+  affectations: AffectationBureauRow[];
+  /** Première affectation (ordre stable) — création de contenus / rétrocompat */
+  primaryAffectation: AffectationBureauRow;
+};
+
 /**
- * Récupère l'affectation active d'un utilisateur pour le mandat actif
+ * Contexte mandat actif + tous les postes actifs du membre (indispensable pour listes « mes » données).
  */
-export async function getAffectationActive(userId: string) {
+export async function getBureauMandatContext(userId: string): Promise<BureauMandatContext | null> {
   const mandatActif = await getMandatActif();
   if (!mandatActif) return null;
 
@@ -84,28 +101,46 @@ export async function getAffectationActive(userId: string) {
       affectations: {
         where: { mandatId: mandatActif.id, statut: 'ACTIF' },
         include: { poste: true, mandat: true },
+        orderBy: { createdAt: 'asc' },
       },
     },
   });
 
-  return member?.affectations[0] || null;
+  if (!member?.affectations.length) return null;
+
+  return {
+    mandatId: mandatActif.id,
+    mandat: mandatActif,
+    posteIds: member.affectations.map((a) => a.posteId),
+    affectations: member.affectations,
+    primaryAffectation: member.affectations[0]!,
+  };
 }
 
 /**
- * Vérifie si un utilisateur a un poste actif dans le bureau
+ * Récupère l'affectation « principale » (première du mandat actif, ordre chronologique)
+ */
+export async function getAffectationActive(userId: string) {
+  const ctx = await getBureauMandatContext(userId);
+  return ctx?.primaryAffectation ?? null;
+}
+
+/**
+ * Vérifie si l'utilisateur occupe au moins un poste du bureau exécutif sur le mandat actif
  */
 export async function isBureauActif(userId: string): Promise<boolean> {
-  const affectation = await getAffectationActive(userId);
-  return affectation?.poste.estBureau === true && affectation.statut === 'ACTIF';
+  const ctx = await getBureauMandatContext(userId);
+  if (!ctx) return false;
+  return ctx.affectations.some((a) => a.poste.estBureau === true && a.statut === 'ACTIF');
 }
 
 /**
- * Vérifie si un utilisateur peut créer/soumettre du contenu
+ * Vérifie si un utilisateur peut créer/soumettre du contenu (auteur = l’un de ses postes)
  */
 export async function canSubmitContent(userId: string, auteurPosteId?: string): Promise<boolean> {
-  const affectation = await getAffectationActive(userId);
-  if (!affectation || affectation.statut !== 'ACTIF') return false;
-  if (auteurPosteId) return affectation.posteId === auteurPosteId;
+  const ctx = await getBureauMandatContext(userId);
+  if (!ctx) return false;
+  if (auteurPosteId) return ctx.posteIds.includes(auteurPosteId);
   return true;
 }
 
@@ -136,8 +171,8 @@ export async function canModifyContent(
   if (content.statutWorkflow === 'ARCHIVE')
     return { canModify: false, reason: 'Contenu archivé' };
 
-  const affectation = await getAffectationActive(userId);
-  if (!affectation || affectation.posteId !== content.auteurPosteId)
+  const ctx = await getBureauMandatContext(userId);
+  if (!ctx || !ctx.posteIds.includes(content.auteurPosteId))
     return { canModify: false, reason: "Vous n'êtes pas l'auteur de ce contenu" };
 
   return { canModify: true };
@@ -145,6 +180,8 @@ export async function canModifyContent(
 
 /**
  * Vérifie si un utilisateur peut supprimer un contenu
+ * - Super-admin : oui (y compris publié, sauf si autre règle métier côté API).
+ * - Auteur (poste) : brouillon, soumis (retrait avant décision) ou rejeté — pas publié / archivé / approuvé en attente de mise en ligne.
  */
 export async function canDeleteContent(userId: string, contentId: string): Promise<boolean> {
   const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -154,13 +191,16 @@ export async function canDeleteContent(userId: string, contentId: string): Promi
   const content = await prisma.content.findUnique({ where: { id: contentId } });
   if (!content) return false;
   if (content.statutWorkflow === 'ARCHIVE' || content.statutWorkflow === 'PUBLIE') return false;
+  if (content.statutWorkflow === 'APPROUVE') return false;
 
-  if (content.statutWorkflow === 'BROUILLON') {
-    const affectation = await getAffectationActive(userId);
-    return affectation?.posteId === content.auteurPosteId;
-  }
+  const ctx = await getBureauMandatContext(userId);
+  if (!ctx || !ctx.posteIds.includes(content.auteurPosteId)) return false;
 
-  return false;
+  return (
+    content.statutWorkflow === 'BROUILLON' ||
+    content.statutWorkflow === 'SOUMIS' ||
+    content.statutWorkflow === 'REJETE'
+  );
 }
 
 /**

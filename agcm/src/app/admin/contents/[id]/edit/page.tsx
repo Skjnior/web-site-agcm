@@ -202,6 +202,7 @@ export default function EditContentPage() {
                 value={watch('imagePrincipale') || ''}
                 onChange={(url) => setValue('imagePrincipale', url)}
                 label="Image principale"
+                hideUrlOption
               />
               {errors.imagePrincipale && (
                 <p className="text-red-500 text-sm mt-1">{errors.imagePrincipale.message}</p>

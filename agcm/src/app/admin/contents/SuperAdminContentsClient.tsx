@@ -1,10 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Plus, Search as SearchIcon, X, FileText } from 'lucide-react';
 import ContentsList from '@/components/bureau/ContentsList';
 
@@ -137,22 +144,55 @@ export default function SuperAdminContentsClient({
 
   const hasActiveFilters = search || (status && status !== 'ALL');
 
+  const goToStatus = (newStatus: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', '1');
+    params.set('status', newStatus);
+    router.push(`/admin/contents?${params.toString()}`);
+  };
+
+  const hrefForStatusFilter = (value: string) => {
+    const p = new URLSearchParams(searchParams.toString());
+    p.set('status', value);
+    p.set('page', '1');
+    return `/admin/contents?${p.toString()}`;
+  };
+
+  const adminStatusOptions = useMemo(() => {
+    const totalAll =
+      stats.brouillon +
+      stats.soumis +
+      stats.approuve +
+      stats.publie +
+      stats.rejete +
+      stats.archive;
+    return [
+      { value: 'ALL', label: `Tous (${totalAll})` },
+      { value: 'BROUILLON', label: `Brouillons (${stats.brouillon})` },
+      { value: 'SOUMIS', label: `En attente (${stats.soumis})` },
+      { value: 'APPROUVE', label: `Approuvés (${stats.approuve})` },
+      { value: 'PUBLIE', label: `Publiés (${stats.publie})` },
+      { value: 'REJETE', label: `Rejetés (${stats.rejete})` },
+      { value: 'ARCHIVE', label: `Archivés (${stats.archive})` },
+    ];
+  }, [stats]);
+
   return (
-    <div className="mx-auto max-w-7xl space-y-6 text-slate-100">
+    <div className="mx-auto max-w-7xl space-y-4 px-4 pb-8 text-slate-100 sm:space-y-6 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="flex items-center gap-2 text-3xl font-bold text-slate-100">
-            <FileText className="h-8 w-8" />
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0">
+          <h1 className="flex items-center gap-2 text-2xl font-bold text-slate-100 sm:text-3xl">
+            <FileText className="h-7 w-7 shrink-0 sm:h-8 sm:w-8" />
             Gestion des contenus
           </h1>
           <p className="mt-1 text-slate-400">
             Super Admin : Visualisez et gérez tous les contenus de la plateforme
           </p>
         </div>
-        <Link href="/bureau/contents/nouveau">
-          <Button variant="add">
-            <Plus className="h-4 w-4 mr-2" />
+        <Link href="/bureau/contents/nouveau" className="shrink-0 lg:self-start">
+          <Button variant="add" className="w-full sm:w-auto">
+            <Plus className="mr-2 h-4 w-4" />
             Nouveau contenu
           </Button>
         </Link>
@@ -165,102 +205,90 @@ export default function SuperAdminContentsClient({
         </p>
       </div>
 
-      {/* Filtres de recherche */}
-      <div className="admin-panel p-4 space-y-4">
-        <div className="flex items-center gap-4 flex-wrap">
-          <div className="flex-1 min-w-[200px]">
-            <div className="relative flex items-center gap-2">
-              <SearchIcon className="pointer-events-none absolute left-3 h-4 w-4 text-slate-500" />
-              <Input
-                placeholder="Rechercher par titre ou contenu..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleSearch();
-                  }
-                }}
-                className="border-slate-600 bg-slate-800/50 pl-10 text-slate-100 placeholder:text-slate-500"
-              />
+      {/* Recherche + filtres statut */}
+      <div className="admin-panel p-4">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+            <div className="min-w-0 flex-1 sm:min-w-[min(100%,220px)]">
+              <label htmlFor="admin-content-search" className="mb-1.5 block text-xs font-medium text-slate-400">
+                Recherche
+              </label>
+              <div className="relative flex items-center gap-2">
+                <SearchIcon className="pointer-events-none absolute left-3 h-4 w-4 text-slate-500" />
+                <Input
+                  id="admin-content-search"
+                  placeholder="Titre ou contenu..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSearch();
+                    }
+                  }}
+                  className="border-slate-600 bg-slate-800/50 pl-10 text-slate-100 placeholder:text-slate-500"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSearch}
+                  className="shrink-0"
+                >
+                  <SearchIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="w-full sm:max-w-xs md:hidden">
+              <label htmlFor="admin-content-status" className="mb-1.5 block text-xs font-medium text-slate-400">
+                Statut
+              </label>
+              <Select value={status} onValueChange={goToStatus}>
+                <SelectTrigger
+                  id="admin-content-status"
+                  className="w-full border-slate-600 bg-slate-800/50 text-slate-100"
+                >
+                  <SelectValue placeholder="Choisir un statut" />
+                </SelectTrigger>
+                <SelectContent>
+                  {adminStatusOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {hasActiveFilters && (
               <Button
-                type="button"
                 variant="outline"
+                onClick={handleResetFilters}
                 size="sm"
-                onClick={handleSearch}
-                className="shrink-0"
+                className="w-full shrink-0 sm:ml-auto sm:w-auto"
               >
-                <SearchIcon className="h-4 w-4" />
+                <X className="mr-2 h-4 w-4" />
+                Réinitialiser
               </Button>
+            )}
+          </div>
+
+          <div className="hidden border-t border-slate-700 pt-3 md:block">
+            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-400">Filtrer par statut</p>
+            <div className="flex flex-wrap gap-2">
+              {adminStatusOptions.map((opt) => (
+                <Button
+                  key={opt.value}
+                  asChild
+                  variant={status === opt.value ? 'default' : 'outline'}
+                  size="sm"
+                  className="border-slate-600 text-slate-200 hover:bg-slate-800"
+                >
+                  <Link href={hrefForStatusFilter(opt.value)}>{opt.label}</Link>
+                </Button>
+              ))}
             </div>
           </div>
-          {hasActiveFilters && (
-            <Button variant="outline" onClick={handleResetFilters} size="sm">
-              <X className="h-4 w-4 mr-2" />
-              Réinitialiser
-            </Button>
-          )}
-        </div>
-      </div>
-
-      {/* Filtres par statut */}
-      <div className="admin-panel border overflow-hidden">
-        <div className="flex gap-2 overflow-x-auto border-b border-slate-700 p-2">
-          <Link href="/admin/contents?status=ALL">
-            <Button
-              variant={status === 'ALL' ? 'default' : 'ghost'}
-              className="rounded-b-none whitespace-nowrap"
-            >
-              Tous ({stats.brouillon + stats.soumis + stats.approuve + stats.publie + stats.rejete + stats.archive})
-            </Button>
-          </Link>
-          <Link href="/admin/contents?status=BROUILLON">
-            <Button
-              variant={status === 'BROUILLON' ? 'default' : 'ghost'}
-              className="rounded-b-none whitespace-nowrap"
-            >
-              Brouillons ({stats.brouillon})
-            </Button>
-          </Link>
-          <Link href="/admin/contents?status=SOUMIS">
-            <Button
-              variant={status === 'SOUMIS' ? 'default' : 'ghost'}
-              className="rounded-b-none whitespace-nowrap"
-            >
-              En attente ({stats.soumis})
-            </Button>
-          </Link>
-          <Link href="/admin/contents?status=APPROUVE">
-            <Button
-              variant={status === 'APPROUVE' ? 'default' : 'ghost'}
-              className="rounded-b-none whitespace-nowrap"
-            >
-              Approuvés ({stats.approuve})
-            </Button>
-          </Link>
-          <Link href="/admin/contents?status=PUBLIE">
-            <Button
-              variant={status === 'PUBLIE' ? 'default' : 'ghost'}
-              className="rounded-b-none whitespace-nowrap"
-            >
-              Publiés ({stats.publie})
-            </Button>
-          </Link>
-          <Link href="/admin/contents?status=REJETE">
-            <Button
-              variant={status === 'REJETE' ? 'default' : 'ghost'}
-              className="rounded-b-none whitespace-nowrap"
-            >
-              Rejetés ({stats.rejete})
-            </Button>
-          </Link>
-          <Link href="/admin/contents?status=ARCHIVE">
-            <Button
-              variant={status === 'ARCHIVE' ? 'default' : 'ghost'}
-              className="rounded-b-none whitespace-nowrap"
-            >
-              Archivés ({stats.archive})
-            </Button>
-          </Link>
         </div>
       </div>
 

@@ -80,28 +80,56 @@ export const authConfig = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async jwt({ token, user }: any) {
       if (user) {
-        const u = user as { id?: string; role?: string; roleSysteme?: string; memberId?: string };
+        const u = user as { id?: string; role?: string; roleSysteme?: string; memberId?: string; email?: string };
         token.id = u.id;
         token.role = u.role;
         token.roleSysteme = u.roleSysteme || u.role;
         token.memberId = u.memberId;
+        if (u.email) token.email = u.email;
       }
       return token;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async session({ session, token }: any) {
-      if (session.user) {
+      if (session?.user && token?.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: {
+            email: true,
+            roleSysteme: true,
+            member: { select: { id: true, prenom: true, nom: true } },
+          },
+        });
+
         const u = session.user as {
           id?: string;
+          email?: string;
+          name?: string;
           role?: string;
           roleSysteme?: string;
           memberId?: string | null;
           canAccessIntranet?: boolean;
         };
-        u.id = token.id as string;
-        u.role = token.role as string;
-        u.roleSysteme = (token.roleSysteme || token.role) as string;
-        u.memberId = token.memberId as string | null;
+
+        if (dbUser) {
+          u.id = token.id as string;
+          u.email = dbUser.email;
+          u.name =
+            dbUser.member?.prenom && dbUser.member?.nom
+              ? `${dbUser.member.prenom} ${dbUser.member.nom}`
+              : dbUser.email;
+          u.role = dbUser.roleSysteme;
+          u.roleSysteme = dbUser.roleSysteme;
+          u.memberId = dbUser.member?.id ?? null;
+        } else {
+          u.id = token.id as string;
+          u.email = (token.email as string) || '';
+          u.name = u.email || 'Utilisateur';
+          u.role = token.role as string;
+          u.roleSysteme = (token.roleSysteme || token.role) as string;
+          u.memberId = token.memberId as string | null;
+        }
+
         const role = u.roleSysteme || u.role || '';
         if (role === 'SUPER_ADMIN' || role === 'ADMIN') {
           u.canAccessIntranet = true;

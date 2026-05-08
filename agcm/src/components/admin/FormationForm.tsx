@@ -440,6 +440,7 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               value={formData.imageUrl}
               onChange={(url) => setFormData((prev) => ({ ...prev, imageUrl: url }))}
               label="Image de la formation"
+              hideUrlOption
             />
           </div>
         </div>

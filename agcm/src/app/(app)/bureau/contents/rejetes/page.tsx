@@ -1,9 +1,7 @@
 import { Metadata } from 'next';
-import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { isBureauActif, getAffectationActive } from '@/lib/rbac';
-import { getMandatActif } from '@/lib/mandat';
+import { canDeleteContent } from '@/lib/rbac';
+import { assertBureauModuleOrRedirect } from '@/lib/bureau-page-guard';
 import BureauContentsClient from '../BureauContentsClient';
 
 export const metadata: Metadata = {
@@ -16,39 +14,17 @@ export default async function BureauContentsRejetesPage({
 }: {
   searchParams: Promise<{ page?: string }>;
 }) {
-  const session = await auth();
   const params = await searchParams;
 
-  if (!session?.user) {
-    redirect('/connexion');
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-  });
-
-  if (!user) {
-    redirect('/connexion');
-  }
-
-  const bureauActif = await isBureauActif(user.id);
-  if (!bureauActif) {
-    redirect('/');
-  }
-
-  const affectation = await getAffectationActive(user.id);
-  const mandatActif = await getMandatActif();
-  if (!affectation || !mandatActif) {
-    redirect('/');
-  }
+  const { user, ctx } = await assertBureauModuleOrRedirect('contents');
 
   const page = parseInt(params.page || '1');
   const limit = 20;
   const offset = (page - 1) * limit;
 
   const where = {
-    auteurPosteId: affectation.posteId,
-    mandatId: mandatActif.id,
+    auteurPosteId: { in: ctx.posteIds },
+    mandatId: ctx.mandatId,
     statutWorkflow: 'REJETE' as const,
   };
 
@@ -69,17 +45,24 @@ export default async function BureauContentsRejetesPage({
 
   const totalPages = Math.ceil(total / limit);
 
+  const contentsWithPerms = await Promise.all(
+    contents.map(async (c) => ({
+      ...c,
+      canDelete: await canDeleteContent(user.id, c.id),
+    })),
+  );
+
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-100">Contenus rejetés</h1>
-        <p className="text-slate-400 mt-1">
+    <div className="mx-auto max-w-7xl space-y-6 px-4 pb-8 sm:px-6 lg:px-8">
+      <div className="min-w-0">
+        <h1 className="text-2xl font-bold text-slate-100 sm:text-3xl">Contenus rejetés</h1>
+        <p className="mt-1 text-slate-400">
           Contenus rejetés par le Président. Vous pouvez les modifier et les resoumettre.
         </p>
       </div>
 
       <BureauContentsClient
-        initialContents={contents}
+        initialContents={contentsWithPerms}
         initialTotal={total}
         initialPage={page}
         initialTotalPages={totalPages}

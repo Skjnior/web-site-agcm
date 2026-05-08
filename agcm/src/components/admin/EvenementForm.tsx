@@ -341,6 +341,7 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
                 value={formData.imageUrl}
                 onChange={(url) => setFormData((prev) => ({ ...prev, imageUrl: url }))}
                 label="Cliquez ou glissez une image ici"
+                hideUrlOption
               />
             </div>
           </div>
