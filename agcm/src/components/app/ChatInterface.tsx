@@ -20,7 +20,7 @@ import {
   Trash2,
   Paperclip,
   FileText,
-  Image,
+  Image as ImageIcon,
   Video,
   X,
   Users,
@@ -965,7 +965,7 @@ export default function ChatInterface({ scope, mandatId, canModerate = false }: 
                   className="admin-panel flex items-center gap-2 rounded-lg px-2 py-1 text-xs shadow-none sm:text-sm"
                 >
                   {a.type === 'IMAGE' ? (
-                    <Image className="h-4 w-4 text-blue-400" />
+                    <ImageIcon className="h-4 w-4 text-blue-400" />
                   ) : a.type === 'VIDEO' ? (
                     <Video className="h-4 w-4 text-purple-400" />
                   ) : (

@@ -79,7 +79,7 @@ export default function AdminSidebar({ role, allowedBureauModules }: SidebarProp
         { name: 'Visites', href: '/admin/logs/visits', icon: Activity },
     ];
 
-    let navigation =
+    const navigation =
         role === 'MEMBER'
             ? memberBureauNavigation.filter((item) =>
                   isBureauSidebarHrefAllowed(
