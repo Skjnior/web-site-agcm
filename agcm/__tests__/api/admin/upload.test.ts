@@ -1,6 +1,6 @@
 // __tests__/api/admin/upload.test.ts
 import { POST } from '@/app/api/admin/upload/route';
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/lib/auth';
 import { saveUploadedFile } from '@/lib/file-upload';
 import { NextRequest } from 'next/server';
 
@@ -26,7 +26,7 @@ jest.mock('next/server', () => {
 });
 
 // Mock dependencies
-jest.mock('@/app/api/auth/[...nextauth]/route', () => ({
+jest.mock('@/lib/auth', () => ({
   auth: jest.fn(),
 }));
 

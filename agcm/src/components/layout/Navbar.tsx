@@ -76,10 +76,10 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 ${
         scrolled
-          ? 'bg-slate-900/98 shadow-xl shadow-black/30 border-b border-slate-800/50'
-          : 'bg-slate-900/90'
+          ? 'border-agcm-700/50 bg-agcm-900 shadow-[0_8px_30px_rgba(0,0,0,0.35)] backdrop-blur-md'
+          : 'border-agcm-800/30 bg-agcm-900 backdrop-blur-sm'
       }`}
     >
       {/*<div className="h-1 flex">*/}
@@ -144,7 +144,7 @@ export default function Navbar() {
                   />
                 </button>
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 z-50 mt-2 w-52 animate-in rounded-xl border border-slate-700/50 bg-slate-800/95 py-2 shadow-xl backdrop-blur-xl fade-in slide-in-from-top-2 duration-200">
+                  <div className="absolute right-0 z-50 mt-2 w-52 animate-in rounded-xl border border-agcm-700/60 bg-agcm-800 py-2 shadow-xl fade-in slide-in-from-top-2 duration-200">
                     <Link
                       href="/dashboard"
                       onClick={() => setIsUserMenuOpen(false)}
@@ -153,7 +153,7 @@ export default function Navbar() {
                       <User className="h-4 w-4 text-slate-400" />
                       Tableau de bord
                     </Link>
-                    <div className="my-1 border-t border-slate-700/50" />
+                    <div className="my-1 border-t border-agcm-700/50" />
                     <button
                       onClick={handleLogout}
                       className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300"
@@ -185,7 +185,7 @@ export default function Navbar() {
       </div>
 
       {isMenuOpen && (
-        <div className="animate-in border-t border-slate-700/50 bg-slate-900/98 slide-in-from-top-2 duration-200 lg:hidden">
+        <div className="animate-in border-t border-agcm-700/50 bg-agcm-900 slide-in-from-top-2 duration-200 lg:hidden">
           <div className="mx-auto max-w-7xl space-y-1 px-4 py-4">
             {publicNavForHeader.map((link) => {
               const active = isNavActive(pathname, link.href);
@@ -204,7 +204,7 @@ export default function Navbar() {
                 </Link>
               );
             })}
-            <div className="mt-3 space-y-2 border-t border-slate-700/50 pt-3">
+            <div className="mt-3 space-y-2 border-t border-agcm-700/50 pt-3">
               {isLoggedIn ? (
                 <>
                   <Link
