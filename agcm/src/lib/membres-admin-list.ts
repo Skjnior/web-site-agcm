@@ -3,6 +3,7 @@
 import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { getMandatActif } from '@/lib/mandat';
+import { memberContactEmail } from '@/lib/member-contact';
 
 type MemberRow = Prisma.MemberGetPayload<{
   include: {
@@ -65,11 +66,12 @@ export async function listMembersForAdmin(params: {
     const postesBureau =
       bureauAffs.length > 0 ? bureauAffs.map((a) => a.poste.nom).join(', ') : null;
 
+    const em = memberContactEmail(m);
     return {
       id: m.id,
       prenom: m.prenom,
       nom: m.nom,
-      email: m.user.email,
+      email: em,
       telephone: m.telephone,
       ville: m.ville,
       pays: m.pays,
@@ -77,11 +79,14 @@ export async function listMembersForAdmin(params: {
       dateAdhesion: m.dateAdhesion,
       isBureauActuel,
       postesBureau,
-      user: {
-        id: m.user.id,
-        email: m.user.email,
-        role: m.user.roleSysteme,
-      },
+      isAdherentSansCompte: !m.user,
+      user: m.user
+        ? {
+            id: m.user.id,
+            email: m.user.email,
+            role: m.user.roleSysteme,
+          }
+        : null,
     };
   });
 

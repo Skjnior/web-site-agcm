@@ -23,11 +23,12 @@ interface Member {
   /** Au moins une affectation « bureau » active sur le mandat en cours */
   isBureauActuel: boolean;
   postesBureau: string | null;
+  isAdherentSansCompte?: boolean;
   user: {
     id: string;
     email: string;
     role: string;
-  };
+  } | null;
   canAct: boolean;
 }
 

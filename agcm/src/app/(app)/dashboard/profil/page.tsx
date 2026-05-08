@@ -22,7 +22,7 @@ export default async function ProfilPage() {
   });
   if (user?.roleSysteme === 'MEMBER') {
     const bureauActif = await isBureauActif(user.id);
-    if (!bureauActif) redirect('/app/dashboard/profil');
+    if (!bureauActif) redirect('/');
   }
 
   const member = await prisma.member.findUnique({

@@ -91,11 +91,26 @@ export const authConfig = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async session({ session, token }: any) {
       if (session.user) {
-        const u = session.user as { id?: string; role?: string; roleSysteme?: string; memberId?: string | null };
+        const u = session.user as {
+          id?: string;
+          role?: string;
+          roleSysteme?: string;
+          memberId?: string | null;
+          canAccessIntranet?: boolean;
+        };
         u.id = token.id as string;
         u.role = token.role as string;
         u.roleSysteme = (token.roleSysteme || token.role) as string;
         u.memberId = token.memberId as string | null;
+        const role = u.roleSysteme || u.role || '';
+        if (role === 'SUPER_ADMIN' || role === 'ADMIN') {
+          u.canAccessIntranet = true;
+        } else if (role === 'MEMBER' && u.id) {
+          const { isBureauActif } = await import('@/lib/rbac');
+          u.canAccessIntranet = await isBureauActif(u.id);
+        } else {
+          u.canAccessIntranet = false;
+        }
       }
       return session;
     },

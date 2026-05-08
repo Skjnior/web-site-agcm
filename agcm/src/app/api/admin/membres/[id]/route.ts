@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
 import { logAction } from '@/lib/audit';
-import { canActOnUser } from '@/lib/permissions';
+import { canActOnMemberRecord } from '@/lib/permissions';
 import { z } from 'zod';
 import type { Prisma } from '@prisma/client';
 
@@ -57,8 +57,7 @@ export async function PATCH(
 
     // Vérifier les permissions
     const userRole = (session!.user as any).roleSysteme || session!.user.role;
-    const targetRole = memberBefore.user.roleSysteme || (memberBefore.user as any).role;
-    if (!canActOnUser(userRole, targetRole)) {
+    if (!canActOnMemberRecord(userRole, memberBefore)) {
       return NextResponse.json(
         { error: 'Vous n\'avez pas la permission de modifier ce membre' },
         { status: 403 }
@@ -156,7 +155,7 @@ export async function DELETE(
     }
 
     // Empêcher la suppression de soi-même
-    if (memberBefore.user.id === session!.user.id) {
+    if (memberBefore.user?.id === session!.user.id) {
       return NextResponse.json(
         { error: 'Vous ne pouvez pas supprimer votre propre compte' },
         { status: 400 }
@@ -165,8 +164,7 @@ export async function DELETE(
 
     // Vérifier les permissions
     const userRole = (session!.user as any).roleSysteme || session!.user.role;
-    const targetRole = memberBefore.user.roleSysteme || (memberBefore.user as any).role;
-    if (!canActOnUser(userRole, targetRole)) {
+    if (!canActOnMemberRecord(userRole, memberBefore)) {
       return NextResponse.json(
         { error: 'Vous n\'avez pas la permission de supprimer ce membre' },
         { status: 403 }
@@ -182,10 +180,16 @@ export async function DELETE(
       beforeData: memberBefore,
     });
 
-    // Supprimer le membre (cascade supprimera aussi l'utilisateur)
-    await prisma.member.delete({
-      where: { id },
-    });
+    // Supprimer la fiche membre (et l'utilisateur associé s'il existe, via cascade Prisma)
+    if (memberBefore.userId) {
+      await prisma.user.delete({
+        where: { id: memberBefore.userId },
+      });
+    } else {
+      await prisma.member.delete({
+        where: { id },
+      });
+    }
 
     return NextResponse.json({
       success: true,

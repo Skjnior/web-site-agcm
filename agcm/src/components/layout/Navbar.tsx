@@ -74,6 +74,12 @@ export default function Navbar() {
 
   const isLoggedIn = status === 'authenticated' && !!session?.user;
 
+  const u = session?.user as { role?: string; canAccessIntranet?: boolean } | undefined;
+  const showIntranetEntry =
+    u?.role === 'SUPER_ADMIN' ||
+    u?.role === 'ADMIN' ||
+    (u?.role === 'MEMBER' && u?.canAccessIntranet === true);
+
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 ${
@@ -138,22 +144,24 @@ export default function Navbar() {
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-500/30 bg-gradient-to-br from-emerald-500/20 to-green-600/20">
                     <User className="h-4 w-4 text-emerald-400" />
                   </div>
-                  <span>Mon espace</span>
+                  <span>{showIntranetEntry ? 'Mon espace' : 'Mon compte'}</span>
                   <ChevronDown
                     className={`h-4 w-4 text-slate-400 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`}
                   />
                 </button>
                 {isUserMenuOpen && (
                   <div className="absolute right-0 z-50 mt-2 w-52 animate-in rounded-xl border border-agcm-700/60 bg-agcm-800 py-2 shadow-xl fade-in slide-in-from-top-2 duration-200">
-                    <Link
-                      href="/dashboard"
-                      onClick={() => setIsUserMenuOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-200 transition-colors hover:bg-white/5 hover:text-white"
-                    >
-                      <User className="h-4 w-4 text-slate-400" />
-                      Tableau de bord
-                    </Link>
-                    <div className="my-1 border-t border-agcm-700/50" />
+                    {showIntranetEntry && (
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-200 transition-colors hover:bg-white/5 hover:text-white"
+                      >
+                        <User className="h-4 w-4 text-slate-400" />
+                        Tableau de bord
+                      </Link>
+                    )}
+                    {showIntranetEntry && <div className="my-1 border-t border-agcm-700/50" />}
                     <button
                       onClick={handleLogout}
                       className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300"
@@ -207,16 +215,20 @@ export default function Navbar() {
             <div className="mt-3 space-y-2 border-t border-agcm-700/50 pt-3">
               {isLoggedIn ? (
                 <>
-                  <Link
-                    href="/dashboard"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/10 px-4 py-3 font-medium text-white"
-                  >
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/20">
-                      <User className="h-4 w-4 text-emerald-400" />
-                    </div>
-                    Mon espace
-                  </Link>
+                  <>
+                    {showIntranetEntry && (
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/10 px-4 py-3 font-medium text-white"
+                      >
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/20">
+                          <User className="h-4 w-4 text-emerald-400" />
+                        </div>
+                        Tableau de bord
+                      </Link>
+                    )}
+                  </>
                   <button
                     onClick={handleLogout}
                     className="flex w-full items-center gap-3 rounded-xl px-4 py-3 font-medium text-slate-300 transition-colors hover:bg-red-500/10 hover:text-red-400"

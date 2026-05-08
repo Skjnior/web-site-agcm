@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
       id: m.id,
       prenom: m.prenom,
       nom: m.nom,
-      email: m.user.email,
+      email: m.user!.email,
       telephone: m.telephone,
       photoUrl: m.photoUrl,
       fullName: `${m.prenom} ${m.nom}`,

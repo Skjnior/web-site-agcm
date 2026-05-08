@@ -1,32 +1,14 @@
-================================================================================
-AGCM — Correspondance seed : bureau (mandat actif)
-================================================================================
-(postes[0] … postes[14] — 15 premières affectations au mandat actif, prisma/seed.ts)
+Mot de passe unique (seed) : AGCM-Bureau-Test-2026!
 
-Mot de passe pour tous les comptes de test : password123
+Bureau exécutif (9) :
+  Président → president@seed.agcm.local (SUPER_ADMIN)
+  Secrétaire administratif → secretaire.administratif@seed.agcm.local
+  Secrétaire chargé à la formation et directeur des finances → formation.finance@seed.agcm.local
+  Trésorier → tresorier@seed.agcm.local
+  Secrétaire organisation → organisation@seed.agcm.local
+  Secrétaire communication → communication@seed.agcm.local
+  Secrétaire affaires sociales → affaires.sociales@seed.agcm.local
+  Secrétaire sécurité → securite@seed.agcm.local
+  Secrétaire sports, culture, environnement → sports.culture.environnement@seed.agcm.local
 
-Poste (fonction)                  Email                 Rôle système
---------------------------------------------------------------------------------
-Président                         user1@agcm.gn         SUPER_ADMIN
-Vice-Président                    user2@agcm.gn         ADMIN
-Secrétaire général                user3@agcm.gn         ADMIN
-Secrétaire adjoint                user4@agcm.gn         ADMIN
-Trésorier                         user5@agcm.gn         ADMIN
-Trésorier adjoint                 user6@agcm.gn         ADMIN
-Responsable communication         user7@agcm.gn         MEMBER
-Responsable projets               user8@agcm.gn         MEMBER
-Responsable événements            user9@agcm.gn         MEMBER
-Responsable partenariats          user10@agcm.gn        MEMBER
-Responsable formation             user11@agcm.gn        MEMBER
-Responsable jeunesse              user12@agcm.gn        MEMBER
-Responsable culture               user13@agcm.gn        MEMBER
-Responsable social                user14@agcm.gn        MEMBER
-Responsable sport                 user15@agcm.gn        MEMBER
-
---------------------------------------------------------------------------------
-Après connexion :
-  • user1 … user6  → typiquement /admin
-  • user7 … user15 → /dashboard puis /bureau
---------------------------------------------------------------------------------
-Valable après : npx prisma db seed (base non modifiée manuellement)
-================================================================================
+Démo : user10@agcm.gn … user600@agcm.gn (MEMBER)

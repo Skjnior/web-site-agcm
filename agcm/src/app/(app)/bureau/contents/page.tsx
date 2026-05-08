@@ -36,13 +36,13 @@ export default async function BureauContentsPage({
 
   const bureauActif = await isBureauActif(user.id);
   if (!bureauActif) {
-    redirect('/app/dashboard');
+    redirect('/');
   }
 
   const affectation = await getAffectationActive(user.id);
   const mandatActif = await getMandatActif();
   if (!affectation || !mandatActif) {
-    redirect('/app/dashboard');
+    redirect('/');
   }
 
   const status = params.status || 'ALL';

@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
       baseWhere.OR = [
         { prenom: { contains: search, mode: 'insensitive' } },
         { nom: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
         { user: { email: { contains: search, mode: 'insensitive' } } },
         { telephone: { contains: search, mode: 'insensitive' } },
       ];

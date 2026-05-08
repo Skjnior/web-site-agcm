@@ -4,6 +4,13 @@
 import { PrismaClient, Prisma } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { SITE_PUBLIC_DEFAULT_PAYLOAD } from '../src/config/site-public-default-payload';
+import {
+  BUREAU_EXECUTIF_POSTES,
+  BUREAU_SEED_ACCOUNTS,
+  BUREAU_SEED_DOMAIN,
+  BUREAU_SEED_PASSWORD,
+  NOMBRE_POSTES_BUREAU,
+} from './bureau-reglement-seed';
 
 const prisma = new PrismaClient();
 
@@ -92,7 +99,7 @@ async function main() {
   await prisma.mandat.deleteMany();
   console.log('✅ Nettoyage terminé\n');
 
-  const hashedPassword = await bcrypt.hash('password123', 10);
+  const hashedPassword = await bcrypt.hash(BUREAU_SEED_PASSWORD, 10);
 
   // ============================================
   // 1. CRÉER MANDATS (600)
@@ -124,28 +131,35 @@ async function main() {
   console.log(`✅ ${mandats.length} mandats créés\n`);
 
   // ============================================
-  // 2. CRÉER POSTES (600)
+  // 2. CRÉER POSTES (9 bureau règlement + postes démo hors bureau)
   // ============================================
-  console.log('💼 Création de 600 postes...');
-  const postesNoms = [
-    'Président', 'Vice-Président', 'Secrétaire Général', 'Secrétaire Adjoint',
-    'Trésorier', 'Trésorier Adjoint', 'Responsable Communication', 'Responsable Projets',
-    'Responsable Événements', 'Responsable Partenariats', 'Responsable Formation',
-    'Responsable Jeunesse', 'Responsable Culture', 'Responsable Social', 'Responsable Sport',
-  ];
+  console.log(`💼 Création de ${NOMBRE_POSTES_BUREAU} postes du bureau exécutif + postes démo...`);
   const postes = [];
-  for (let i = 0; i < TARGET_COUNT; i++) {
-    const nom = `${postesNoms[i % postesNoms.length]} ${i < postesNoms.length ? '' : `(${Math.floor(i / postesNoms.length)})`}`;
-
-    const poste = await prisma.poste.create({
-      data: {
-        nom,
-        description: `Description du poste ${nom}`,
-        estBureau: i < 400, // 400 postes bureau, 200 autres
-        estActif: i < 550, // 550 actifs, 50 inactifs
-      },
-    });
-    postes.push(poste);
+  for (const p of BUREAU_EXECUTIF_POSTES) {
+    postes.push(
+      await prisma.poste.create({
+        data: {
+          nom: p.nom,
+          description: p.description,
+          estBureau: true,
+          estActif: true,
+        },
+      })
+    );
+  }
+  for (let i = NOMBRE_POSTES_BUREAU; i < TARGET_COUNT; i++) {
+    const k = i - NOMBRE_POSTES_BUREAU + 1;
+    const nom = `Poste démo ${k}`;
+    postes.push(
+      await prisma.poste.create({
+        data: {
+          nom,
+          description: `Poste hors bureau (données de démonstration seed) — ${nom}`,
+          estBureau: false,
+          estActif: i < TARGET_COUNT - 50,
+        },
+      })
+    );
 
     if ((i + 1) % 100 === 0) {
       console.log(`   ${i + 1}/${TARGET_COUNT} créés...`);
@@ -154,24 +168,31 @@ async function main() {
   console.log(`✅ ${postes.length} postes créés\n`);
 
   // ============================================
-  // 3. CRÉER USERS (600)
+  // 3. CRÉER USERS — 9 comptes bureau (règlement) + utilisateurs démo
   // ============================================
-  console.log('👤 Création de 600 utilisateurs...');
+  console.log('👤 Création des utilisateurs (bureau exécutif + démo)...');
   const users = [];
-  for (let i = 0; i < TARGET_COUNT; i++) {
+  for (const acc of BUREAU_SEED_ACCOUNTS) {
+    users.push(
+      await prisma.user.create({
+        data: {
+          email: `${acc.localPart}@${BUREAU_SEED_DOMAIN}`,
+          passwordHash: hashedPassword,
+          roleSysteme: acc.roleSysteme,
+          isActive: true,
+          lastLogin: new Date(),
+        },
+      })
+    );
+  }
+  for (let i = BUREAU_SEED_ACCOUNTS.length; i < TARGET_COUNT; i++) {
     const email = `user${i + 1}@agcm.gn`;
-
-    // Déterminer le rôle (1 SuperAdmin, 5 Admin, reste Member)
-    let roleSysteme: 'SUPER_ADMIN' | 'ADMIN' | 'MEMBER' = 'MEMBER';
-    if (i === 0) roleSysteme = 'SUPER_ADMIN';
-    else if (i < 6) roleSysteme = 'ADMIN';
-
     const user = await prisma.user.create({
       data: {
         email,
         passwordHash: hashedPassword,
-        roleSysteme,
-        isActive: i < 580, // 580 actifs, 20 inactifs
+        roleSysteme: 'MEMBER',
+        isActive: i < 580,
         lastLogin: i % 3 === 0 ? new Date() : null,
       },
     });
@@ -184,13 +205,24 @@ async function main() {
   console.log(`✅ ${users.length} utilisateurs créés\n`);
 
   // ============================================
-  // 4. CRÉER MEMBERS (600)
+  // 4. CRÉER MEMBERS (600) — 9 premiers = titulaires des postes bureau sur mandat actif
   // ============================================
   console.log('👥 Création de 600 membres...');
+  const bureauIdentites: [string, string][] = [
+    ['Amadou', 'Barry'],
+    ['Fatoumata', 'Camara'],
+    ['Ibrahim', 'Diallo'],
+    ['Alpha', 'Bah'],
+    ['Mamadou', 'Sylla'],
+    ['Aissatou', 'Diallo'],
+    ['Kadiatou', 'Keita'],
+    ['Ousmane', 'Touré'],
+    ['Mariama', 'Sow'],
+  ];
   const members = [];
   for (let i = 0; i < TARGET_COUNT; i++) {
-    const prenom = prenoms[i % prenoms.length];
-    const nom = noms[i % noms.length];
+    const prenom = i < bureauIdentites.length ? bureauIdentites[i][0] : prenoms[i % prenoms.length];
+    const nom = i < bureauIdentites.length ? bureauIdentites[i][1] : noms[i % noms.length];
     const user = users[i];
 
     const memberPhotos = [
@@ -227,20 +259,32 @@ async function main() {
   console.log(`✅ ${members.length} membres créés\n`);
 
   // ============================================
-  // 5. CRÉER AFFECTATIONS (600)
+  // 5. CRÉER AFFECTATIONS — exactement 9 actives sur le mandat actif (bureau exécutif)
   // ============================================
   console.log('🔗 Création de 600 affectations...');
-  // Trouver le mandat avec la date de début la plus récente parmi les actifs
-  const mandatActifLatest = mandats.filter(m => m.statut === 'ACTIF').sort((a, b) => b.dateDebut.getTime() - a.dateDebut.getTime())[0] || mandats[0];
+  const mandatActifLatest =
+    mandats.filter((m) => m.statut === 'ACTIF').sort((a, b) => b.dateDebut.getTime() - a.dateDebut.getTime())[0] ||
+    mandats[0];
 
-  for (let i = 0; i < TARGET_COUNT; i++) {
+  for (let b = 0; b < NOMBRE_POSTES_BUREAU; b++) {
+    await prisma.affectationPoste.create({
+      data: {
+        mandatId: mandatActifLatest.id,
+        posteId: postes[b].id,
+        memberId: members[b].id,
+        statut: 'ACTIF',
+        dateDebut: mandatActifLatest.dateDebut,
+        dateFin: null,
+        raisonInactivation: null,
+      },
+    });
+  }
+
+  for (let i = NOMBRE_POSTES_BUREAU; i < TARGET_COUNT; i++) {
     const member = members[i];
     const poste = postes[i % postes.length];
-
-    // Assigner les 15 premiers membres au mandat actif actuel le plus récent pour former le bureau réel
-    const isCurrentBureau = i < 15;
-    const mandat = isCurrentBureau ? mandatActifLatest : mandats[i % mandats.length];
-    const statut = isCurrentBureau ? 'ACTIF' : (i < 580 ? 'ARCHIVE' : 'INACTIF');
+    const mandat = mandats[i % mandats.length];
+    const statut = i < 580 ? 'ARCHIVE' : 'INACTIF';
 
     await prisma.affectationPoste.create({
       data: {
@@ -248,8 +292,8 @@ async function main() {
         posteId: poste.id,
         memberId: member.id,
         statut: statut as any,
-        dateDebut: isCurrentBureau ? mandatActifLatest.dateDebut : new Date(2020 + (i % 5), i % 12, (i % 28) + 1),
-        dateFin: isCurrentBureau ? null : new Date(2023 + (i % 2), i % 12, (i % 28) + 1),
+        dateDebut: new Date(2020 + (i % 5), i % 12, (i % 28) + 1),
+        dateFin: new Date(2023 + (i % 2), i % 12, (i % 28) + 1),
         raisonInactivation: statut === 'INACTIF' ? `Raison d'inactivation ${i}` : null,
       },
     });
@@ -498,8 +542,8 @@ async function main() {
   // 13b. CRÉER ÉVÉNEMENTS VISIBLES SUR LE SITE (minimum 10 à venir)
   // ============================================
   console.log('📅 Création des événements affichés sur le site (min 10)...');
-  const mandatActifEvents = mandats.find(m => m.statut === 'ACTIF') || mandats[0];
-  const postePresident = postes.find(p => p.nom.startsWith('Président')) || postes[0];
+  const mandatActifEvents = mandats.find((m) => m.statut === 'ACTIF') || mandats[0];
+  const postePresident = postes.find((p) => p.nom === 'Président') || postes[0];
 
   const realEvents = [
     {
@@ -961,10 +1005,13 @@ async function main() {
 
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log(`\n🎉 Seed terminé ! Total : ${Object.values(counts).reduce((a, b) => a + b, 0)} entrées`);
-  console.log('\n📝 Comptes de test :');
-  console.log('   SuperAdmin: user1@agcm.gn / password123');
-  console.log('   Admin: user2@agcm.gn / password123');
-  console.log('   Member: user7@agcm.gn / password123');
+  console.log('\n📝 Comptes bureau exécutif (9 postes, règlement intérieur) :');
+  console.log(`   Mot de passe unique : ${BUREAU_SEED_PASSWORD}`);
+  BUREAU_SEED_ACCOUNTS.forEach((acc, idx) => {
+    const posteNom = BUREAU_EXECUTIF_POSTES[idx]?.nom ?? '?';
+    console.log(`   ${posteNom}: ${acc.localPart}@${BUREAU_SEED_DOMAIN} (${acc.roleSysteme})`);
+  });
+  console.log(`\n   Utilisateurs démo : user10@agcm.gn … user600@agcm.gn — même mot de passe`);
 }
 
 main()

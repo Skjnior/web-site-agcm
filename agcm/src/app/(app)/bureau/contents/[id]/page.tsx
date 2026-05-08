@@ -35,7 +35,7 @@ export default async function BureauContentDetailPage({
 
   const bureauActif = await isBureauActif(user.id);
   if (!bureauActif) {
-    redirect('/app/dashboard');
+    redirect('/');
   }
 
   const content = await prisma.content.findUnique({

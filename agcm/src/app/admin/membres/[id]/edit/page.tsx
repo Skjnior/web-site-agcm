@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { redirect, notFound } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { canActOnUser } from '@/lib/permissions';
+import { canActOnMemberRecord } from '@/lib/permissions';
 import EditMemberClient from './EditMemberClient';
 
 export const metadata: Metadata = {
@@ -46,7 +46,7 @@ export default async function EditMemberPage({ params }: EditMemberPageProps) {
   }
 
   // Vérifier les permissions
-  const canAct = canActOnUser(userRole, member.user.roleSysteme);
+  const canAct = canActOnMemberRecord(userRole, member);
   if (!canAct) {
     redirect('/admin/membres');
   }

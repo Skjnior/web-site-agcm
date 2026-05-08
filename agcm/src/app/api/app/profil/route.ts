@@ -2,7 +2,7 @@
 // Mise à jour du profil membre
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/require-auth';
+import { requireIntranetAccess } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
@@ -30,7 +30,7 @@ const profilUpdateSchema = z.object({
 });
 
 export async function PATCH(request: NextRequest) {
-  const { error, session } = await requireAuth();
+  const { error, session } = await requireIntranetAccess();
   if (error) return error;
 
   try {

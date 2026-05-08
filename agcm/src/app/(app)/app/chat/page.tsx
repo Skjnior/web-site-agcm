@@ -22,7 +22,7 @@ export default async function ChatPage() {
   const canAccessPrivate = await canAccessSalonBureau(session.user.id);
 
   if (!canAccessPrivate) {
-    redirect('/app/dashboard');
+    redirect('/');
   }
 
   const mandatActif = await getMandatActif();

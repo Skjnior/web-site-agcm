@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Save, Upload, FileText, X } from 'lucide-react';
+import { ArrowLeft, Save, Upload, FileText, X, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 
 const mandatUpdateSchema = z.object({
@@ -29,7 +29,9 @@ export default function EditMandatPage() {
   const [loadingMandat, setLoadingMandat] = useState(true);
   const [error, setError] = useState<string>('');
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadedFile, setUploadedFile] = useState<{ url: string; name: string } | null>(null);
+  const pvFileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
@@ -107,6 +109,7 @@ export default function EditMandatPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setUploadError(null);
     setUploading(true);
     try {
       const formData = new FormData();
@@ -121,20 +124,24 @@ export default function EditMandatPage() {
         const data = await response.json();
         setUploadedFile({ url: data.fileUrl, name: data.fileName });
         setValue('pvDocumentUrl', data.fileUrl);
+        setUploadError(null);
       } else {
-        const error = await response.json();
-        alert(error.error || 'Erreur lors de l\'upload du fichier');
+        const body = await response.json().catch(() => ({}));
+        setUploadError(body.error || 'Erreur lors de l’envoi du fichier. Réessayez ou choisissez un autre document.');
       }
-    } catch (error) {
-      alert('Erreur lors de l\'upload du fichier');
+    } catch {
+      setUploadError('Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.');
     } finally {
       setUploading(false);
+      e.target.value = '';
     }
   };
 
   const handleRemoveFile = () => {
     setUploadedFile(null);
     setValue('pvDocumentUrl', '');
+    setUploadError(null);
+    if (pvFileInputRef.current) pvFileInputRef.current.value = '';
   };
 
   if (loadingMandat) {
@@ -247,6 +254,7 @@ export default function EditMandatPage() {
                     )}
                   </div>
                   <input
+                    ref={pvFileInputRef}
                     id="file-upload-edit"
                     type="file"
                     className="hidden"
@@ -255,6 +263,36 @@ export default function EditMandatPage() {
                     accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv"
                   />
                 </label>
+                {uploadError && (
+                  <div
+                    role="alert"
+                    className="mt-3 flex gap-3 rounded-xl border border-amber-200/90 bg-amber-50/95 p-4 text-amber-950 shadow-sm dark:border-amber-900/45 dark:bg-amber-950/40 dark:text-amber-50"
+                  >
+                    <AlertTriangle
+                      className="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400"
+                      aria-hidden
+                    />
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <p className="font-semibold text-amber-900 dark:text-amber-100">
+                        Document PV : fichier refusé
+                      </p>
+                      <p className="text-sm leading-relaxed text-amber-900/95 dark:text-amber-100/90">
+                        {uploadError}
+                      </p>
+                      <p className="text-xs text-amber-800/85 dark:text-amber-200/80">
+                        Astuce : enregistrez ou exportez le PV en PDF depuis votre traitement de texte, puis réessayez.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setUploadError(null)}
+                      className="shrink-0 self-start rounded-lg p-1.5 text-amber-700 transition-colors hover:bg-amber-200/60 dark:text-amber-300 dark:hover:bg-amber-900/50"
+                      aria-label="Fermer l’alerte"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="mt-2 flex items-center justify-between rounded-lg border border-emerald-200/80 bg-emerald-50/90 p-4 dark:border-emerald-900/40 dark:bg-emerald-950/30">

@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { canActOnUser } from '@/lib/permissions';
+import { canActOnMemberRecord } from '@/lib/permissions';
 import { listMembersForAdmin } from '@/lib/membres-admin-list';
 import MembresPageClient from './MembresPageClient';
 import type { Prisma } from '@prisma/client';
@@ -56,6 +56,7 @@ export default async function MembresPage({ searchParams }: MembresPageProps) {
     baseWhere.OR = [
       { prenom: { contains: search, mode: 'insensitive' } },
       { nom: { contains: search, mode: 'insensitive' } },
+      { email: { contains: search, mode: 'insensitive' } },
       { user: { email: { contains: search, mode: 'insensitive' } } },
       { telephone: { contains: search, mode: 'insensitive' } },
     ];
@@ -71,7 +72,9 @@ export default async function MembresPage({ searchParams }: MembresPageProps) {
   const membersWithPermissions = members.map((member) => ({
     ...member,
     memberType: null as string | null,
-    canAct: canActOnUser(userRole, member.user.role),
+    canAct: canActOnMemberRecord(userRole, {
+      user: member.user ? { roleSysteme: member.user.role } : null,
+    }),
   }));
 
   const stats = {

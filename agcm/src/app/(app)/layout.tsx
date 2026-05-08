@@ -38,9 +38,15 @@ export default async function AppLayout({
     redirect('/connexion');
   }
 
+  const { getAffectationActive, isBureauActif } = await import('@/lib/rbac');
+
+  // Adhérents simples : pas d'intranet sur le site (vie associative hors ligne / WhatsApp, etc.)
+  if (user.roleSysteme === 'MEMBER' && !(await isBureauActif(user.id))) {
+    redirect('/');
+  }
+
   // Déterminer le rôle et les infos
   const userRole = user.roleSysteme;
-  const { getAffectationActive, isBureauActif } = await import('@/lib/rbac');
   const affectation = await getAffectationActive(user.id);
   const isBureau = await isBureauActif(user.id);
 

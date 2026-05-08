@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowLeft, Save } from 'lucide-react';
 import { MemberPickField, type MemberPickOption } from '@/components/admin/MemberPickField';
+import { memberContactEmail } from '@/lib/member-contact';
 
 const affectationUpdateSchema = z.object({
   mandatId: z.string().min(1, 'Le mandat est requis'),
@@ -92,14 +93,15 @@ export default function EditAffectationPage() {
           nom: string;
           telephone: string | null;
           photoUrl: string | null;
-          user: { email: string };
+          email: string | null;
+          user: { email: string } | null;
         };
         memberList = [
           {
             id: mm.id,
             prenom: mm.prenom,
             nom: mm.nom,
-            email: mm.user.email,
+            email: memberContactEmail(mm),
             telephone: mm.telephone,
             photoUrl: mm.photoUrl,
             fullName: `${mm.prenom} ${mm.nom}`,

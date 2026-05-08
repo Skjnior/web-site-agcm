@@ -38,6 +38,7 @@ interface MemberDetailClientProps {
     dateAdhesion: Date | null;
     createdAt: Date;
     updatedAt: Date;
+    email: string | null;
     user: {
       id: string;
       email: string;
@@ -45,7 +46,7 @@ interface MemberDetailClientProps {
       isActive: boolean;
       lastLogin: Date | null;
       createdAt: Date;
-    };
+    } | null;
     affectations?: Array<{
       id: string;
       poste: {
@@ -91,6 +92,8 @@ export default function MemberDetailClient({
   const [suspendModal, setSuspendModal] = useState(false);
   const [successModal, setSuccessModal] = useState<{ isOpen: boolean; message: string }>({ isOpen: false, message: '' });
   const [errorModal, setErrorModal] = useState<{ isOpen: boolean; message: string }>({ isOpen: false, message: '' });
+
+  const contactEmail = member.user?.email ?? member.email ?? '—';
 
   const getStatutLabel = (statut: string) => {
     const labels: Record<string, string> = {
@@ -230,7 +233,7 @@ export default function MemberDetailClient({
                 variant="delete"
                 size="sm"
                 onClick={() => setDeleteModal(true)}
-                disabled={loading || member.user.id === currentUserId}
+                disabled={loading || (!!member.user && member.user.id === currentUserId)}
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Supprimer
@@ -302,7 +305,7 @@ export default function MemberDetailClient({
                       <Mail className="h-4 w-4" />
                       Email
                     </label>
-                    <p className="text-gray-900 dark:text-slate-100">{member.user.email}</p>
+                    <p className="text-gray-900 dark:text-slate-100">{contactEmail}</p>
                   </div>
                   {member.telephone && (
                     <div>
@@ -418,6 +421,7 @@ export default function MemberDetailClient({
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Compte utilisateur */}
+            {member.user ? (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-slate-100">
@@ -470,6 +474,19 @@ export default function MemberDetailClient({
                 )}
               </CardContent>
             </Card>
+            ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-slate-100">
+                  <Shield className="h-5 w-5" />
+                  Adhérent sans compte
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                <p>Cette personne est enregistrée comme adhérent·e (pas d&apos;accès au site). Pour lui donner un compte bureau ou admin, créez un utilisateur depuis la section Utilisateurs avec le même email : la fiche sera reliée automatiquement si elle existe.</p>
+              </CardContent>
+            </Card>
+            )}
 
             {/* Informations système */}
             <Card>
@@ -481,10 +498,12 @@ export default function MemberDetailClient({
                   <span className="text-gray-500 dark:text-slate-400">ID Membre</span>
                   <span className="text-gray-900 dark:text-slate-100 font-mono">{member.id}</span>
                 </div>
+                {member.user ? (
                 <div className="flex justify-between">
                   <span className="text-gray-500 dark:text-slate-400">ID Utilisateur</span>
                   <span className="text-gray-900 dark:text-slate-100 font-mono">{member.user.id}</span>
                 </div>
+                ) : null}
                 <div className="flex justify-between">
                   <span className="text-gray-500 dark:text-slate-400">Créé le</span>
                   <span className="text-gray-900 dark:text-slate-100">{formatDate(member.createdAt)}</span>
@@ -505,7 +524,9 @@ export default function MemberDetailClient({
         onClose={() => setDeleteModal(false)}
         onConfirm={handleDelete}
         title="Supprimer le membre"
-        message="Êtes-vous sûr de vouloir supprimer ce membre ? Cette action est irréversible et supprimera également le compte utilisateur associé."
+        message={member.user
+          ? 'Êtes-vous sûr de vouloir supprimer ce membre ? Cette action est irréversible et supprimera également le compte utilisateur associé.'
+          : 'Êtes-vous sûr de vouloir supprimer cette fiche adhérent ? Cette action est irréversible (pas de compte associé).'}
         type="danger"
         confirmText="Supprimer"
         isLoading={loading}

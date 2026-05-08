@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import ProfilForm from '@/components/app/ProfilForm';
+import { memberContactEmail } from '@/lib/member-contact';
 
 export const metadata: Metadata = {
   title: 'Mon profil - Administration AGCM',
@@ -61,7 +62,7 @@ export default async function AdminProfilPage() {
         <div className="absolute top-0 right-0 -z-10 h-64 w-64 rounded-full bg-blue-500/5 blur-3xl" />
         <ProfilForm
           member={member}
-          userEmail={member.user.email}
+          userEmail={memberContactEmail(member)}
           allowImageUpload
         />
       </div>

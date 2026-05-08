@@ -91,5 +91,31 @@ export async function requireBureau() {
   return { error: null, session };
 }
 
+/**
+ * Admin, Super-admin ou membre du bureau (mandat actif). Les adhérents simples n'ont plus d'intranet sur le site.
+ */
+export async function requireIntranetAccess() {
+  const { error, session } = await requireAuth();
+  if (error) return { error, session: null };
+
+  const role = session!.user!.role as RoleSysteme;
+  if (role === 'SUPER_ADMIN' || role === 'ADMIN') {
+    return { error: null, session };
+  }
+
+  const { isBureauActif } = await import('@/lib/rbac');
+  const bureau = await isBureauActif(session!.user!.id!);
+  if (!bureau) {
+    return {
+      error: NextResponse.json(
+        { error: 'Accès refusé : espace réservé au bureau et à l\'administration' },
+        { status: 403 }
+      ),
+      session: null,
+    };
+  }
+  return { error: null, session };
+}
+
 
 

@@ -2,12 +2,9 @@
 
 ## Comptes de test (seed)
 
-| Rôle | Email | Mot de passe | Accès |
-|------|-------|--------------|-------|
-| **SUPER_ADMIN** | user1@agcm.gn | password123 | Admin, Salon bureau, Approbations, tout |
-| **ADMIN** | user2@agcm.gn | password123 | Admin, Salon bureau, Approbations |
-| **MEMBER BUREAU** | user7@agcm.gn | password123 | Bureau, Salon privé, Paiements |
-| **MEMBER SIMPLE** | user16@agcm.gn | password123 | Dashboard membre, Paiements (pas de salon) |
+Voir **`docs/COMPTES_BUREAU_SEED.md`** (9 postes du règlement + mot de passe unique).
+
+Résumé : mot de passe **`AGCM-Bureau-Test-2026!`** — Président **`president@seed.agcm.local`** (SUPER_ADMIN) ; autres postes en **`*.@seed.agcm.local`** (MEMBER avec bureau) ; démo **`user10@agcm.gn`**.
 
 ## Script de test RBAC
 
@@ -26,9 +23,8 @@ npm test
 ## Tests manuels (navigateur)
 
 1. Démarrer le serveur : `npm run dev`
-2. Se connecter avec chaque compte
+2. Se connecter avec les comptes du fichier `COMPTES_BUREAU_SEED.md`
 3. Vérifier :
-   - **SUPER_ADMIN** : /admin, /admin/approbations, /app/chat
-   - **ADMIN** : idem
-   - **MEMBER BUREAU** : /bureau, /app/chat, /app/dashboard/paiements (avec carte Salon privé)
-   - **MEMBER SIMPLE** : /app/dashboard, /app/chat → redirection vers /app/dashboard
+   - **Président (SUPER_ADMIN)** : `/admin`, approbations, super-admin
+   - **Autres titulaires de poste** : `/bureau` selon affectation active
+   - **user10@agcm.gn** : espace membre sans bureau actif

@@ -14,6 +14,7 @@ import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import SuccessModal from '@/components/ui/SuccessModal';
 import ErrorModal from '@/components/ui/ErrorModal';
 import { cn } from '@/lib/utils';
+import { memberContactEmail } from '@/lib/member-contact';
 
 interface Affectation {
   id: string;
@@ -33,11 +34,12 @@ interface Affectation {
     nom: string;
     telephone: string | null;
     ville: string | null;
+    email: string | null;
     user: {
       email: string;
       roleSysteme: string;
       isActive: boolean;
-    };
+    } | null;
   };
 }
 
@@ -333,7 +335,7 @@ export default function SuperAdminPosteDetailPage() {
                   <CardContent className="space-y-2 text-sm">
                     <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
                       <Mail className="h-3 w-3" />
-                      <span>{affectation.member.user.email}</span>
+                      <span>{memberContactEmail(affectation.member) || '—'}</span>
                     </div>
                     {affectation.member.telephone && (
                       <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
@@ -362,12 +364,16 @@ export default function SuperAdminPosteDetailPage() {
                         </span>
                       </div>
                       <div className="flex items-center gap-2 mt-2 flex-wrap">
-                        <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold ${getRoleBadgeClasses(affectation.member.user.roleSysteme)}`}>
-                          {affectation.member.user.roleSysteme}
-                        </span>
-                        <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold ${getStatusBadgeClasses('', affectation.member.user.isActive)}`}>
-                          {affectation.member.user.isActive ? 'Actif' : 'Inactif'}
-                        </span>
+                        {affectation.member.user ? (
+                          <>
+                            <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold ${getRoleBadgeClasses(affectation.member.user.roleSysteme)}`}>
+                              {affectation.member.user.roleSysteme}
+                            </span>
+                            <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold ${getStatusBadgeClasses('', affectation.member.user.isActive)}`}>
+                              {affectation.member.user.isActive ? 'Actif' : 'Inactif'}
+                            </span>
+                          </>
+                        ) : null}
                         <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold ${getStatusBadgeClasses(affectation.mandat.statut)}`}>
                           {affectation.mandat.statut}
                         </span>
@@ -417,7 +423,7 @@ export default function SuperAdminPosteDetailPage() {
                   <CardContent className="space-y-2 text-sm">
                     <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
                       <Mail className="h-3 w-3" />
-                      <span>{affectation.member.user.email}</span>
+                      <span>{memberContactEmail(affectation.member) || '—'}</span>
                     </div>
                     {affectation.member.telephone && (
                       <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">

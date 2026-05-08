@@ -16,6 +16,7 @@ import { ImageUpload } from '@/components/ui/image-upload';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import SuccessModal from '@/components/ui/SuccessModal';
 import ErrorModal from '@/components/ui/ErrorModal';
+import { memberContactEmail } from '@/lib/member-contact';
 
 const memberUpdateSchema = z.object({
   prenom: z.string().min(1, 'Le prénom est requis'),
@@ -49,11 +50,12 @@ interface EditMemberClientProps {
     bio: string | null;
     photoUrl: string | null;
     statutMembre: string;
+    email: string | null;
     user: {
       id: string;
       email: string;
       roleSysteme: string;
-    };
+    } | null;
   };
   currentUserRole: string;
 }
@@ -296,21 +298,25 @@ export default function EditMemberClient({ member: initialMember, currentUserRol
             </CardContent>
           </Card>
 
-          {/* Informations compte */}
+          {/* Contact / compte */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-slate-900 dark:text-slate-100">Compte utilisateur</CardTitle>
+              <CardTitle className="text-slate-900 dark:text-slate-100">
+                {initialMember.user ? 'Compte utilisateur' : 'Contact adhérent'}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div>
-                <Label>Email</Label>
+                <Label>{initialMember.user ? 'Email (compte)' : 'Email de contact'}</Label>
                 <Input
-                  value={initialMember.user.email}
+                  value={memberContactEmail(initialMember)}
                   disabled
                   className="bg-gray-50 text-slate-900 dark:bg-slate-800/60 dark:text-slate-300"
                 />
                 <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
-                  L'email ne peut pas être modifié depuis cette page
+                  {initialMember.user
+                    ? "L'email ne peut pas être modifié depuis cette page"
+                    : 'Pas de compte de connexion. Pour donner un accès admin ou bureau, créez un utilisateur avec le même email : la fiche sera reliée automatiquement.'}
                 </p>
               </div>
             </CardContent>

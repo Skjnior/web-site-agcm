@@ -54,27 +54,24 @@ export default function AppSidebar({ userRole, isBureau, posteNom, mobileOpen, o
     // Extraire le chemin sans les query strings
     const hrefPath = href.split('?')[0];
 
-    // Cas spécial pour la racine du dashboard
+    // Cas spécial pour la racine du dashboard (routeur)
     if (hrefPath === '/dashboard') {
-      return pathname === '/dashboard' || pathname === '/';
+      return pathname === '/dashboard';
     }
 
-    // Cas spécial pour la racine /super-admin pour ne pas tout highlighter
     if (hrefPath === '/super-admin') {
       return pathname === '/super-admin';
     }
 
-    // Cas spécial pour la racine /admin pour ne pas tout highlighter
     if (hrefPath === '/admin') {
       return pathname === '/admin';
     }
 
-    // Cas spécial pour la racine /bureau
     if (hrefPath === '/bureau') {
       return pathname === '/bureau';
     }
 
-    // Cas spécial pour /app/dashboard (ne pas tout highlighter)
+    // Ancien chemin : conservé pour compat éventuelle des favoris
     if (hrefPath === '/app/dashboard') {
       return pathname === '/app/dashboard';
     }
@@ -91,7 +88,7 @@ export default function AppSidebar({ userRole, isBureau, posteNom, mobileOpen, o
     if (userRole === 'SUPER_ADMIN') return '/admin';
     if (userRole === 'ADMIN') return '/admin';
     if (isBureau) return '/bureau';
-    return '/app/dashboard';
+    return '/';
   };
 
   // Salon chat : bureau = privé, admin = privé, membre = pas d'accès
@@ -207,31 +204,31 @@ export default function AppSidebar({ userRole, isBureau, posteNom, mobileOpen, o
     },
     {
       label: 'Paiements',
-      href: '/app/dashboard/paiements',
+      href: '/dashboard/paiements',
       icon: Settings,
     },
   ];
 
-  // Menu Membre simple
+  // Menu Membre simple (non utilisé en pratique : les MEMBER sans bureau sont renvoyés au site public)
   const memberMenu: SidebarItem[] = [
     {
       label: 'Mon profil',
-      href: '/app/dashboard/profil',
+      href: '/dashboard/profil',
       icon: User,
     },
     {
-      label: 'Mes événements',
-      href: '/app/dashboard/mes-evenements',
+      label: 'Événements',
+      href: '/evenements',
       icon: Calendar,
     },
     {
-      label: 'Actualités & activités',
-      href: '/app/dashboard/mes-activites',
+      label: 'Formations',
+      href: '/formations',
       icon: FileText,
     },
     {
       label: 'Paiements',
-      href: '/app/dashboard/paiements',
+      href: '/dashboard/paiements',
       icon: Settings,
     },
   ];

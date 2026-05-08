@@ -1,9 +1,12 @@
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { getAffectationActive, isBureauActif } from '@/lib/rbac';
+import { isBureauActif } from '@/lib/rbac';
 
-// Rediriger vers le dashboard approprié selon le rôle
+/**
+ * Routeur central : hors du layout (app) pour que les MEMBER simples
+ * puissent être renvoyés vers le site public sans passer par l'intranet.
+ */
 export default async function DashboardRouter() {
   const session = await auth();
 
@@ -19,20 +22,17 @@ export default async function DashboardRouter() {
     redirect('/connexion');
   }
 
-  // Rediriger selon le rôle
   if (user.roleSysteme === 'SUPER_ADMIN') {
     redirect('/admin');
-  } else if (user.roleSysteme === 'ADMIN') {
-    redirect('/admin');
-  } else {
-    const bureauActif = await isBureauActif(user.id);
-    if (bureauActif) {
-      redirect('/bureau');
-    } else {
-      redirect('/app/dashboard');
-    }
   }
+  if (user.roleSysteme === 'ADMIN') {
+    redirect('/admin');
+  }
+
+  const bureauActif = await isBureauActif(user.id);
+  if (bureauActif) {
+    redirect('/bureau');
+  }
+
+  redirect('/');
 }
-
-
-

@@ -125,6 +125,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!member.userId) {
+      return NextResponse.json(
+        {
+          error:
+            "Seuls les membres disposant d'un compte de connexion peuvent occuper un poste. Créez d'abord un utilisateur (ou reliez la fiche) via la section Utilisateurs.",
+        },
+        { status: 400 }
+      );
+    }
+
     // Créer l'affectation
     const affectation = await prisma.affectationPoste.create({
       data: {

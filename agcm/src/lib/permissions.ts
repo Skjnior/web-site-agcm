@@ -1,6 +1,23 @@
 // lib/permissions.ts
 
 /**
+ * Rôle cible pour les règles admin (adhérent sans compte = virtuel ADHERENT).
+ */
+export function getMemberTargetRole(member: { user?: { roleSysteme: string } | null }): string {
+  return member.user?.roleSysteme ?? 'ADHERENT';
+}
+
+/**
+ * Vérifie si un administrateur peut agir sur une fiche membre (avec ou sans compte).
+ */
+export function canActOnMemberRecord(
+  currentUserRole: string,
+  member: { user?: { roleSysteme: string } | null }
+): boolean {
+  return canActOnUser(currentUserRole, getMemberTargetRole(member));
+}
+
+/**
  * Vérifie si un utilisateur peut agir sur un autre utilisateur
  * @param currentUserRole - Rôle de l'utilisateur actuel
  * @param targetUserRole - Rôle de l'utilisateur cible
@@ -10,7 +27,12 @@ export function canActOnUser(currentUserRole: string, targetUserRole: string): b
   // Normaliser les rôles (supporter ROLE_ et sans ROLE_)
   const normalizedCurrent = currentUserRole.replace('ROLE_', '');
   const normalizedTarget = targetUserRole.replace('ROLE_', '');
-  
+
+  // Adhérent en base sans compte (pas de User)
+  if (normalizedTarget === 'ADHERENT') {
+    return normalizedCurrent === 'SUPER_ADMIN' || normalizedCurrent === 'ADMIN';
+  }
+
   // SUPER_ADMIN peut agir sur tout le monde
   if (normalizedCurrent === 'SUPER_ADMIN') {
     return true;

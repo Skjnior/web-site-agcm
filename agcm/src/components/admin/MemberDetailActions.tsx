@@ -11,11 +11,12 @@ type Member = {
   nom: string;
   status: string;
   numeroMembre: string | null;
+  email?: string | null;
   user: {
     id: string;
     email: string;
     role: string;
-  };
+  } | null;
 };
 
 type MemberDetailActionsProps = {

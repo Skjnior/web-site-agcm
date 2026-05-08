@@ -7,9 +7,10 @@ type Member = {
   id: string;
   prenom: string;
   nom: string;
+  email?: string | null;
   user: {
     email: string;
-  };
+  } | null;
 };
 
 type MemberValidationModalProps = {
@@ -73,7 +74,7 @@ export default function MemberValidationModal({ member, onClose, onSuccess }: Me
       <div className="admin-panel mx-4 max-w-md rounded-xl p-6">
         <h2 className="mb-4 text-xl font-bold text-slate-100">Valider le membre</h2>
         <p className="text-sm text-gray-600 mb-4">
-          Vous êtes sur le point de valider <strong>{member.prenom} {member.nom}</strong> ({member.user.email})
+          Vous êtes sur le point de valider <strong>{member.prenom} {member.nom}</strong> ({member.user?.email ?? member.email ?? '—'})
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">

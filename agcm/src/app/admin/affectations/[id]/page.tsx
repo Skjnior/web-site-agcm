@@ -10,6 +10,7 @@ import SuccessModal from '@/components/ui/SuccessModal';
 import ErrorModal from '@/components/ui/ErrorModal';
 import InputModal from '@/components/ui/InputModal';
 import Link from 'next/link';
+import { memberContactEmail } from '@/lib/member-contact';
 
 interface AffectationDetails {
   id: string;
@@ -39,12 +40,13 @@ interface AffectationDetails {
     nom: string;
     telephone: string | null;
     ville: string | null;
+    email: string | null;
     user: {
       id: string;
       email: string;
       roleSysteme: string;
       isActive: boolean;
-    };
+    } | null;
   };
 }
 
@@ -117,7 +119,6 @@ export default function AffectationDetailPage() {
   };
 
   const confirmActivate = async () => {
-    setActivateConfirmModal(false);
     try {
       setActivating(true);
       const response = await fetch(`/api/super-admin/affectations/${id}/activer`, {
@@ -129,7 +130,7 @@ export default function AffectationDetailPage() {
         throw new Error(errorData.error || 'Erreur lors de l\'activation');
       }
 
-      // Recharger les données
+      setActivateConfirmModal(false);
       await fetchAffectation();
       setSuccessModal({ isOpen: true, message: 'Affectation activée avec succès' });
     } catch (err: any) {
@@ -328,7 +329,7 @@ export default function AffectationDetailPage() {
               <p className="text-sm text-slate-500 dark:text-slate-400">Email</p>
               <p className="flex items-center gap-2 font-medium text-slate-900 dark:text-slate-100">
                 <Mail className="h-4 w-4 shrink-0 text-slate-400 dark:text-slate-500" />
-                {affectation.member.user.email}
+                {memberContactEmail(affectation.member) || '—'}
               </p>
             </div>
             {affectation.member.telephone && (
@@ -343,21 +344,29 @@ export default function AffectationDetailPage() {
                 <p className="font-medium text-slate-900 dark:text-slate-100">{affectation.member.ville}</p>
               </div>
             )}
-            <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Rôle système</p>
-              <Badge
-                variant={affectation.member.user.roleSysteme === 'SUPER_ADMIN' ? 'default' : 'outline'}
-                className="mt-1 border-slate-300 dark:border-slate-600"
-              >
-                {affectation.member.user.roleSysteme}
-              </Badge>
-            </div>
-            <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Statut compte</p>
-              <Badge variant={affectation.member.user.isActive ? 'success' : 'destructive'} className="mt-1">
-                {affectation.member.user.isActive ? 'Actif' : 'Inactif'}
-              </Badge>
-            </div>
+            {affectation.member.user ? (
+              <>
+                <div>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Rôle système</p>
+                  <Badge
+                    variant={affectation.member.user.roleSysteme === 'SUPER_ADMIN' ? 'default' : 'outline'}
+                    className="mt-1 border-slate-300 dark:border-slate-600"
+                  >
+                    {affectation.member.user.roleSysteme}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Statut compte</p>
+                  <Badge variant={affectation.member.user.isActive ? 'success' : 'destructive'} className="mt-1">
+                    {affectation.member.user.isActive ? 'Actif' : 'Inactif'}
+                  </Badge>
+                </div>
+              </>
+            ) : (
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Pas de compte de connexion (fiche adhérent uniquement).
+              </p>
+            )}
           </div>
         </div>
 
@@ -506,10 +515,17 @@ export default function AffectationDetailPage() {
       />
       <ConfirmationModal
         isOpen={activateConfirmModal}
-        onClose={() => setActivateConfirmModal(false)}
+        onClose={() => {
+          if (activating) return;
+          setActivateConfirmModal(false);
+        }}
         onConfirm={confirmActivate}
         title="Activer l'affectation"
-        message="Êtes-vous sûr de vouloir activer cette affectation ?"
+        message={
+          affectation
+            ? `Le membre « ${affectation.member.prenom} ${affectation.member.nom} » reprendra le poste « ${affectation.poste.nom} » pour le mandat « ${affectation.mandat.titre} ».\n\nConfirmez-vous la réactivation de cette affectation ?`
+            : ''
+        }
         type="info"
         confirmText="Activer"
         isLoading={activating}

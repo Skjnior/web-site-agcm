@@ -27,7 +27,7 @@ export default async function BureauTracesPage() {
 
   const bureauActif = await isBureauActif(user.id);
   if (!bureauActif) {
-    redirect('/app/dashboard');
+    redirect('/');
   }
 
   return (

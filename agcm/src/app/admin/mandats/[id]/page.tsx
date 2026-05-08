@@ -8,6 +8,7 @@ import { ArrowLeft, Calendar, FileText, Edit, Trash2, Users, FileCheck, FolderKa
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { memberContactEmail } from '@/lib/member-contact';
 
 interface Affectation {
   id: string;
@@ -21,12 +22,13 @@ interface Affectation {
     nom: string;
     telephone: string | null;
     ville: string | null;
+    email: string | null;
     user: {
       id: string;
       email: string;
       roleSysteme: string;
       isActive: boolean;
-    };
+    } | null;
   };
   poste: {
     id: string;
@@ -360,7 +362,7 @@ export default function SuperAdminMandatDetailPage() {
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
                     <Mail className="h-4 w-4 text-slate-400 dark:text-slate-500" />
-                    <span>{affectation.member.user.email}</span>
+                    <span>{memberContactEmail(affectation.member) || '—'}</span>
                   </div>
                   {affectation.member.telephone && (
                     <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
@@ -374,26 +376,32 @@ export default function SuperAdminMandatDetailPage() {
                       <span>{affectation.member.ville}</span>
                     </div>
                   )}
-                  <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
-                    <Shield className="h-4 w-4 text-slate-400 dark:text-slate-500" />
-                    <span>Rôle : {affectation.member.user.roleSysteme}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {affectation.member.user.isActive ? (
-                      <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                    ) : (
-                      <XCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
-                    )}
-                    <span
-                      className={
-                        affectation.member.user.isActive
-                          ? 'text-emerald-700 dark:text-emerald-400'
-                          : 'text-red-700 dark:text-red-400'
-                      }
-                    >
-                      {affectation.member.user.isActive ? 'Compte actif' : 'Compte inactif'}
-                    </span>
-                  </div>
+                  {affectation.member.user ? (
+                    <>
+                      <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                        <Shield className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+                        <span>Rôle : {affectation.member.user.roleSysteme}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {affectation.member.user.isActive ? (
+                          <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                        ) : (
+                          <XCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
+                        )}
+                        <span
+                          className={
+                            affectation.member.user.isActive
+                              ? 'text-emerald-700 dark:text-emerald-400'
+                              : 'text-red-700 dark:text-red-400'
+                          }
+                        >
+                          {affectation.member.user.isActive ? 'Compte actif' : 'Compte inactif'}
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Pas de compte de connexion.</p>
+                  )}
                   {affectation.poste.description && (
                     <div className="mt-2 border-t border-slate-200 pt-2 dark:border-slate-600">
                       <p className="text-xs text-slate-500 dark:text-slate-400">{affectation.poste.description}</p>

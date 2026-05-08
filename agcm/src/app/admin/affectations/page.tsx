@@ -57,7 +57,11 @@ export default function SuperAdminAffectationsPage() {
   const [statutFilter, setStatutFilter] = useState(searchParams.get('statut') || 'all');
   const [mandats, setMandats] = useState<any[]>([]);
   const [loadingMandats, setLoadingMandats] = useState(true);
-  const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; affectation: Affectation | null; action: 'delete' | 'inactivate' | null }>({ isOpen: false, affectation: null, action: null });
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    affectation: Affectation | null;
+    action: 'delete' | 'inactivate' | 'activate' | null;
+  }>({ isOpen: false, affectation: null, action: null });
   const [inputModal, setInputModal] = useState<{ isOpen: boolean; affectation: Affectation | null }>({ isOpen: false, affectation: null });
   const [successModal, setSuccessModal] = useState<{ isOpen: boolean; message: string }>({ isOpen: false, message: '' });
   const [errorModal, setErrorModal] = useState<{ isOpen: boolean; message: string }>({ isOpen: false, message: '' });
@@ -213,14 +217,21 @@ export default function SuperAdminAffectationsPage() {
     }
   };
 
-  const handleActiver = async (id: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir activer cette affectation ?')) {
-      return;
-    }
+  const requestActivate = (affectation: Affectation) => {
+    setConfirmModal({
+      isOpen: true,
+      affectation,
+      action: 'activate',
+    });
+  };
 
+  const confirmActivate = async () => {
+    if (!confirmModal.affectation) return;
+
+    const affId = confirmModal.affectation.id;
     try {
-      setActivating(id);
-      const response = await fetch(`/api/super-admin/affectations/${id}/activer`, {
+      setActivating(affId);
+      const response = await fetch(`/api/super-admin/affectations/${affId}/activer`, {
         method: 'PATCH',
       });
 
@@ -229,11 +240,12 @@ export default function SuperAdminAffectationsPage() {
         throw new Error(errorData.error || 'Erreur lors de l\'activation');
       }
 
+      setConfirmModal({ isOpen: false, affectation: null, action: null });
       fetchAffectations();
-      alert('Affectation activée avec succès');
+      setSuccessModal({ isOpen: true, message: 'Affectation activée avec succès' });
     } catch (error: any) {
       console.error(error);
-      alert(error.message || 'Erreur lors de l\'activation');
+      setErrorModal({ isOpen: true, message: error.message || 'Erreur lors de l\'activation' });
     } finally {
       setActivating(null);
     }
@@ -374,7 +386,7 @@ export default function SuperAdminAffectationsPage() {
         },
         {
           label: activating === affectation.id ? 'Activation...' : 'Activer',
-          onClick: () => handleActiver(affectation.id),
+          onClick: () => requestActivate(affectation),
           variant: 'default',
           icon: activating === affectation.id ? (
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -532,6 +544,23 @@ export default function SuperAdminAffectationsPage() {
         type="textarea"
         confirmText="Inactiver"
         isLoading={inputModal.affectation ? inactivating === inputModal.affectation.id : false}
+      />
+      <ConfirmationModal
+        isOpen={confirmModal.isOpen && confirmModal.action === 'activate'}
+        onClose={() => {
+          if (confirmModal.affectation && activating === confirmModal.affectation.id) return;
+          setConfirmModal({ isOpen: false, affectation: null, action: null });
+        }}
+        onConfirm={confirmActivate}
+        title="Activer l'affectation"
+        message={
+          confirmModal.affectation
+            ? `Le membre « ${confirmModal.affectation.member.prenom} ${confirmModal.affectation.member.nom} » reprendra le poste « ${confirmModal.affectation.poste.nom} » pour le mandat « ${confirmModal.affectation.mandat.titre} ».\n\nConfirmez-vous la réactivation de cette affectation ?`
+            : ''
+        }
+        type="info"
+        confirmText="Activer"
+        isLoading={confirmModal.affectation ? activating === confirmModal.affectation.id : false}
       />
       <ConfirmationModal
         isOpen={confirmModal.isOpen && confirmModal.action === 'delete'}

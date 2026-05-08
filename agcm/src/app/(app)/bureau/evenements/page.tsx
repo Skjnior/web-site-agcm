@@ -29,7 +29,7 @@ export default async function BureauEvenementsPage() {
 
   const bureauActif = await isBureauActif(user.id);
   if (!bureauActif) {
-    redirect('/app/dashboard');
+    redirect('/');
   }
 
   const evenements = await prisma.event.findMany({

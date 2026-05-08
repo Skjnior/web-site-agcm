@@ -46,7 +46,9 @@ export async function saveUploadedFile(file: File): Promise<{
   // Vérifier le type réel du fichier avec magic bytes
   const fileType = await fileTypeFromBuffer(buffer);
   if (!fileType || !ALLOWED_MIME_TYPES.includes(fileType.mime)) {
-    throw new Error('Type de fichier non autorisé. Formats acceptés : PDF, Word, Excel, PowerPoint, TXT, CSV');
+    throw new Error(
+      'Le fichier ne correspond pas à un type autorisé. Formats acceptés : PDF, Word (.doc / .docx), Excel (.xls / .xlsx), PowerPoint (.ppt / .pptx), TXT, CSV — taille max. 50 Mo.'
+    );
   }
 
   // Générer un nom de fichier unique avec extension sécurisée

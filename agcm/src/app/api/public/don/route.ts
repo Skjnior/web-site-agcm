@@ -13,14 +13,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const data = donationIntentSchema.parse(body);
 
-    // Trouver le poste Trésorier ou Directeur finances (optionnel)
+    // Trésorier ou poste « finances » (directeur des finances / poste fusionné formation+finances)
     const tresorierPoste = await prisma.poste.findFirst({
       where: {
-        nom: {
-          contains: 'Trésorier',
-          mode: 'insensitive',
-        },
         estActif: true,
+        OR: [
+          { nom: { contains: 'Trésorier', mode: 'insensitive' } },
+          { nom: { contains: 'directeur', mode: 'insensitive' } },
+          { nom: { contains: 'finances', mode: 'insensitive' } },
+        ],
       },
     });
 

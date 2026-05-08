@@ -48,7 +48,10 @@ model Notification {
 
 model Member {
   id            String             @id @default(cuid())
-  userId        String             @unique @map("user_id")
+  /// Compte de connexion : null = adhérent inscrit en base sans accès au site (gestion par le bureau)
+  userId        String?            @unique @map("user_id")
+  /// Email de contact pour les adhérents sans compte ; les membres avec `userId` utilisent en priorité `user.email`
+  email         String?            @unique @map("email")
   prenom        String
   nom           String
   telephone     String?
@@ -65,7 +68,7 @@ model Member {
   profession    String?
   adresse       String?
   affectations  AffectationPoste[]
-  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([nom, prenom])
   @@map("members")

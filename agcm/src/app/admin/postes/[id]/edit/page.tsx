@@ -32,9 +32,15 @@ export default function EditPostePage() {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
+    reset,
   } = useForm<PosteFormData>({
     resolver: zodResolver(posteUpdateSchema),
+    defaultValues: {
+      nom: '',
+      description: '',
+      estBureau: false,
+      estActif: true,
+    },
   });
 
   useEffect(() => {
@@ -47,11 +53,17 @@ export default function EditPostePage() {
       if (!response.ok) throw new Error('Poste introuvable');
 
       const result = await response.json();
-      const poste = result.poste || result;
-      setValue('nom', poste.nom);
-      setValue('description', poste.description || '');
-      setValue('estBureau', poste.estBureau);
-      setValue('estActif', poste.estActif);
+      const poste = result?.poste;
+      if (!poste || typeof poste !== 'object') {
+        throw new Error(result?.error || 'Poste introuvable');
+      }
+
+      reset({
+        nom: poste.nom ?? '',
+        description: poste.description ?? '',
+        estBureau: poste.estBureau,
+        estActif: poste.estActif,
+      });
     } catch (err: any) {
       setError(err.message || 'Erreur lors du chargement');
     } finally {

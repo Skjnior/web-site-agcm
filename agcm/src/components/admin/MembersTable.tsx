@@ -25,11 +25,12 @@ type Member = {
   canAct?: boolean;
   isBureauActuel?: boolean;
   postesBureau?: string | null;
+  isAdherentSansCompte?: boolean;
   user: {
     id: string;
     email: string;
     role: string;
-  };
+  } | null;
 };
 
 type MembersTableProps = {
@@ -131,7 +132,7 @@ export default function MembersTable({ members, currentUserRole, currentUserId, 
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white dark:divide-slate-700 dark:bg-slate-950">
               {members.map((member) => {
-                const canDelete = member.canAct !== false && member.user.id !== currentUserId;
+                const canDelete = member.canAct !== false && member.user?.id !== currentUserId;
                 const canEdit = member.canAct !== false;
 
                 return (
@@ -146,7 +147,10 @@ export default function MembersTable({ members, currentUserRole, currentUserId, 
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      <div className="text-sm text-gray-900 dark:text-slate-100">{member.user.email}</div>
+                      <div className="text-sm text-gray-900 dark:text-slate-100">{member.user?.email ?? member.email ?? '—'}</div>
+                      {member.isAdherentSansCompte ? (
+                        <div className="text-xs text-amber-600 dark:text-amber-400">Sans compte site</div>
+                      ) : null}
                       {member.telephone && (
                         <div className="text-sm text-gray-500 dark:text-slate-400">{member.telephone}</div>
                       )}

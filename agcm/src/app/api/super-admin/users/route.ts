@@ -119,10 +119,11 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const data = userCreateSchema.parse(body);
+    const emailLower = data.email.trim().toLowerCase();
 
     // Vérifier que l'email n'existe pas déjà
     const existingUser = await prisma.user.findUnique({
-      where: { email: data.email },
+      where: { email: emailLower },
     });
 
     if (existingUser) {
@@ -135,20 +136,51 @@ export async function POST(request: NextRequest) {
     // Hasher le mot de passe
     const passwordHash = await bcrypt.hash(data.password, 10);
 
-    // Créer l'utilisateur et le membre en transaction
+    // Créer l'utilisateur et le membre en transaction (ou relier une fiche adhérent existante)
     const result = await prisma.$transaction(async (tx) => {
+      const existingAdherent = await tx.member.findFirst({
+        where: {
+          userId: null,
+          email: { equals: emailLower, mode: 'insensitive' },
+        },
+      });
+
       const user = await tx.user.create({
         data: {
-          email: data.email,
+          email: emailLower,
           passwordHash,
           roleSysteme: data.roleSysteme,
           isActive: true,
         },
       });
 
+      if (existingAdherent) {
+        const member = await tx.member.update({
+          where: { id: existingAdherent.id },
+          data: {
+            userId: user.id,
+            email: null,
+            prenom: data.prenom.trim() || existingAdherent.prenom,
+            nom: data.nom.trim() || existingAdherent.nom,
+            genre: data.genre ?? existingAdherent.genre ?? undefined,
+            dateNaissance: data.dateNaissance ?? existingAdherent.dateNaissance ?? undefined,
+            profession: data.profession?.trim() || existingAdherent.profession,
+            adresse: data.adresse?.trim() || existingAdherent.adresse,
+            telephone: data.telephone?.trim() || existingAdherent.telephone,
+            ville: data.ville?.trim() || existingAdherent.ville,
+            pays: data.pays?.trim() || existingAdherent.pays,
+            bio: data.bio?.trim() || existingAdherent.bio,
+            photoUrl: data.photoUrl ?? existingAdherent.photoUrl,
+            statutMembre: 'ACTIF',
+          },
+        });
+        return { user, member, linkedAdherent: true as const };
+      }
+
       const member = await tx.member.create({
         data: {
           userId: user.id,
+          email: null,
           prenom: data.prenom,
           nom: data.nom,
           genre: data.genre ?? undefined,
@@ -164,7 +196,7 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      return { user, member };
+      return { user, member, linkedAdherent: false as const };
     });
 
     await logAction({

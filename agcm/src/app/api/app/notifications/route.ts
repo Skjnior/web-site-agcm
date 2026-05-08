@@ -2,12 +2,12 @@
 // Notifications de l'utilisateur connecté
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/require-auth';
+import { requireIntranetAccess } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
 import { parsePagination, createPaginatedResponse } from '@/lib/pagination';
 
 export async function GET(request: NextRequest) {
-  const { error, session } = await requireAuth();
+  const { error, session } = await requireIntranetAccess();
   if (error) return error;
 
   const searchParams = request.nextUrl.searchParams;

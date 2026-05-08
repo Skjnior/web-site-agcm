@@ -25,9 +25,10 @@ interface Content {
       member: {
         prenom: string;
         nom: string;
+        email: string | null;
         user: {
           email: string;
-        };
+        } | null;
       };
     }>;
   };
