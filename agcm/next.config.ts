@@ -1,19 +1,18 @@
 import type { NextConfig } from "next";
-import path from "path";
 
 const nextConfig: NextConfig = {
-  turbopack: {
-    root: path.resolve(process.cwd()),
-  },
+  // Ne pas définir `turbopack.root` ici : sur Vercel il entre en conflit avec
+  // `outputFileTracingRoot` et déclenche un avertissement à chaque build.
+  // `npm run dev --turbopack` fonctionne sans cette option.
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: '**',
+        protocol: "https",
+        hostname: "**",
       },
       {
-        protocol: 'http',
-        hostname: 'localhost',
+        protocol: "http",
+        hostname: "localhost",
       },
     ],
     unoptimized: false,
