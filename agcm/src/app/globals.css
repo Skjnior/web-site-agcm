@@ -255,13 +255,45 @@ section[id] {
   font-style: italic;
 }
 
-/* Styles pour le contenu HTML rendu (prose) */
+/* Styles pour le contenu HTML rendu (prose) — texte foncé par défaut */
 .prose {
-  color: #374151;
+  color: #111827;
 }
 
-.dark .prose {
-  color: #e2e8f0;
+/*
+ * Ne pas forcer `.dark .prose { color: clair }` : avec `html.dark` (next-themes), cela
+ * rendait tout le contenu `.prose` illisible sur les cartes blanches (actualités, etc.).
+ * Pour un bloc à fond sombre, utiliser explicitement les utilitaires Tailwind `prose-invert`.
+ */
+
+/* Actualités / contenu riche sur fond blanc : noir lisible partout */
+.agcm-article-body {
+  color: #111827 !important;
+}
+
+/* Surcharge les utilitaires Tailwind ou styles collés (ex. text-slate-300) dans le HTML sauvé */
+.agcm-article-body *:not(a):not(img):not(svg):not(video):not(source):not(picture):not(track) {
+  color: inherit !important;
+}
+
+.agcm-article-body a,
+.agcm-article-body a * {
+  color: #b91c1c !important;
+}
+
+.agcm-article-body a:hover,
+.agcm-article-body a:hover * {
+  color: #991b1b !important;
+}
+
+.agcm-article-body pre {
+  background-color: #f1f5f9 !important;
+  color: #111827 !important;
+}
+
+.agcm-article-body code {
+  color: #111827 !important;
+  background-color: #f1f5f9 !important;
 }
 
 .prose img {

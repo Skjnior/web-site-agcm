@@ -138,7 +138,7 @@ export default async function ActualiteDetailPage({ params }: PageProps) {
         </div>
       </section>
 
-      <main className="pb-16 bg-slate-50 min-h-[60vh]">
+      <main className="pb-16 bg-slate-50 min-h-[60vh] text-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
@@ -149,7 +149,7 @@ export default async function ActualiteDetailPage({ params }: PageProps) {
 
             {/* Colonne MILIEU : Article principal */}
             <div className="lg:col-span-8">
-              <article className="bg-white rounded-2xl shadow-xl overflow-hidden">
+              <article className="bg-white rounded-2xl shadow-xl overflow-hidden text-gray-900">
                 {/* Image principale */}
                 <div className="relative aspect-video w-full overflow-hidden border-b border-slate-100">
                   <Image
@@ -165,7 +165,7 @@ export default async function ActualiteDetailPage({ params }: PageProps) {
                   {/* Contenu */}
                   {content.contenu ? (
                     <div
-                      className="prose prose-slate max-w-none text-base leading-relaxed text-slate-900 prose-headings:text-slate-900 prose-p:text-slate-800 prose-li:text-slate-800 prose-strong:text-slate-900"
+                      className="agcm-article-body prose prose-slate max-w-none text-base leading-relaxed text-gray-900 prose-headings:text-gray-900 prose-p:text-gray-900 prose-li:text-gray-900 prose-strong:text-gray-900"
                       dangerouslySetInnerHTML={{ __html: content.contenu }}
                     />
                   ) : (

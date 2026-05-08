@@ -47,7 +47,7 @@ export default function ActualiteModal({ actualite, isOpen, onClose }: Actualite
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto my-8"
+        className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto my-8 text-gray-900"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -109,12 +109,10 @@ export default function ActualiteModal({ actualite, isOpen, onClose }: Actualite
 
           {/* Contenu */}
           {actualite.contenu && (
-            <div className="prose prose-slate max-w-none mb-8">
-              <div
-                className="text-slate-700 leading-relaxed text-lg prose prose-slate max-w-none"
-                dangerouslySetInnerHTML={{ __html: actualite.contenu }}
-              />
-            </div>
+            <div
+              className="agcm-article-body prose prose-slate max-w-none mb-8 text-base leading-relaxed text-lg text-gray-900 prose-headings:text-gray-900 prose-p:text-gray-900 prose-li:text-gray-900"
+              dangerouslySetInnerHTML={{ __html: actualite.contenu }}
+            />
           )}
 
           <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-slate-100">
