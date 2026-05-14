@@ -28,6 +28,7 @@ model User {
   pageViews                    PageView[]
   dmPeerForBureauMessages      BureauMessage[]      @relation("BureauMessageDmPeer")
   bureauMessagesDeletedAsActor BureauMessage[]      @relation("BureauMessageDeletedBy")
+  registreCotisationsUpdated   MemberRegistreCotisation[] @relation("RegistreCotisationUpdatedBy")
 
   @@map("users")
 }
@@ -69,11 +70,30 @@ model Member {
   dateNaissance DateTime?          @map("date_naissance") @db.Date
   profession    String?
   adresse       String?
-  affectations  AffectationPoste[]
-  user          User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  affectations              AffectationPoste[]
+  user                      User?                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  registreCotisations       MemberRegistreCotisation[]
 
   @@index([nom, prenom])
   @@map("members")
+}
+
+/// Registre type Excel/PDF « situation cotisation au … » + absences aux réunions
+model MemberRegistreCotisation {
+  id                String   @id @default(cuid())
+  memberId          String   @map("member_id")
+  dateReference     DateTime @map("date_reference") @db.Date
+  situationText     String   @default("") @map("situation_text") @db.Text
+  absencesText      String?  @map("absences_text") @db.Text
+  updatedByUserId   String?  @map("updated_by_user_id")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  member            Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  updatedByUser     User?    @relation("RegistreCotisationUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([memberId, dateReference])
+  @@index([dateReference])
+  @@map("member_registre_cotisations")
 }
 
 model Mandat {
@@ -153,6 +173,8 @@ model Content {
   createdAt       DateTime        @default(now()) @map("created_at")
   updatedAt       DateTime        @updatedAt @map("updated_at")
   facebookPostId  String?         @map("facebook_post_id")
+  /** Images et PDF attachés (tableau JSON : [{ url, kind: IMAGE | DOCUMENT, label? }]) */
+  attachments     Json?           @map("attachments")
   comments        Comment[]
   approvedBy      User?           @relation("ContentApprovedBy", fields: [approvedById], references: [id])
   auteurPoste     Poste           @relation("ContentAuteurPoste", fields: [auteurPosteId], references: [id])

@@ -14,6 +14,10 @@ import { ImageUpload } from '@/components/ui/image-upload';
 import { Loader2, Save } from 'lucide-react';
 import SuccessModal from '@/components/ui/SuccessModal';
 import ErrorModal from '@/components/ui/ErrorModal';
+import {
+  BureauAttachmentsManager,
+  type BureauContentAttachmentDraft,
+} from '@/components/bureau/BureauAttachmentsManager';
 
 const contentCreateSchema = z.object({
   type: z.enum(['ACTIVITE', 'ACTUALITE', 'PARTAGE', 'ANNONCE']),
@@ -29,6 +33,7 @@ type ContentFormData = z.infer<typeof contentCreateSchema>;
 export default function BureauContentForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [attachments, setAttachments] = useState<BureauContentAttachmentDraft[]>([]);
   const [successModal, setSuccessModal] = useState<{ isOpen: boolean; message: string }>({ isOpen: false, message: '' });
   const [errorModal, setErrorModal] = useState<{ isOpen: boolean; message: string }>({ isOpen: false, message: '' });
 
@@ -57,6 +62,7 @@ export default function BureauContentForm() {
         imagePrincipale: data.imagePrincipale || '',
         visibiliteCible: data.visibiliteCible,
         tags: [],
+        attachments,
       };
 
       const response = await fetch('/api/bureau/contents', {
@@ -99,7 +105,7 @@ export default function BureauContentForm() {
               value={watch('type')}
               onValueChange={(value) => setValue('type', value as ContentFormData['type'])}
             >
-              <SelectTrigger id="type" className="bg-slate-900/50 border-slate-600 text-slate-100">
+              <SelectTrigger id="type" className="bg-slate-900/50 border-slate-600 text-slate-100 [&>span]:text-slate-100">
                 <SelectValue placeholder="Sélectionner un type" />
               </SelectTrigger>
               <SelectContent className="z-50 bg-slate-800 border-slate-700 text-slate-100">
@@ -155,13 +161,15 @@ export default function BureauContentForm() {
             />
           </div>
 
+          <BureauAttachmentsManager variant="content" items={attachments} onChange={setAttachments} />
+
           <div>
             <Label htmlFor="visibiliteCible" className="text-slate-300">Visibilité</Label>
             <Select
               value={watch('visibiliteCible')}
               onValueChange={(value) => setValue('visibiliteCible', value as ContentFormData['visibiliteCible'])}
             >
-              <SelectTrigger id="visibiliteCible" className="bg-slate-900/50 border-slate-600 text-slate-100">
+              <SelectTrigger id="visibiliteCible" className="bg-slate-900/50 border-slate-600 text-slate-100 [&>span]:text-slate-100">
                 <SelectValue placeholder="Sélectionner la visibilité" />
               </SelectTrigger>
               <SelectContent className="z-50 bg-slate-800 border-slate-700 text-slate-100">

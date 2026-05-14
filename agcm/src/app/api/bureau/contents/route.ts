@@ -116,6 +116,7 @@ export async function POST(request: NextRequest) {
         contenu: data.contenu || null,
         lienExterne: data.lienExterne || null,
         imagePrincipale: data.imagePrincipale || null,
+        attachments: data.attachments?.length ? data.attachments : [],
         tags: data.tags || [],
         visibiliteCible: data.visibiliteCible,
         statutWorkflow: 'BROUILLON',

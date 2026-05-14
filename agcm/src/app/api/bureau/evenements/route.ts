@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const data = eventCreateSchema.parse(body);
+    const medias = data.medias ?? [];
 
     // Déterminer le statut selon la date
     let statut: 'PASSE' | 'EN_COURS' | 'A_VENIR' = 'A_VENIR';
@@ -59,7 +60,17 @@ export async function POST(request: NextRequest) {
         afficheSite: data.afficheSite,
         createdByPosteId: ctx.primaryAffectation.posteId,
         mandatId: ctx.mandatId,
+        ...(medias.length > 0 && {
+          medias: {
+            create: medias.map((m, i) => ({
+              url: m.url,
+              isPrincipale: Boolean(m.isPrincipale),
+              ordre: m.ordre ?? i,
+            })),
+          },
+        }),
       },
+      include: { medias: true },
     });
 
     await logAction({

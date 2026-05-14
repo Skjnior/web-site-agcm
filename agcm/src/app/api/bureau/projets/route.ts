@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const data = projetCreateSchema.parse(body);
+    const medias = data.medias ?? [];
 
     // Générer le slug
     const slug = slugify(data.titre);
@@ -53,7 +54,17 @@ export async function POST(request: NextRequest) {
         visibiliteSite: data.visibiliteSite,
         responsablePosteId: ctx.primaryAffectation.posteId,
         mandatId: ctx.mandatId,
+        ...(medias.length > 0 && {
+          medias: {
+            create: medias.map((m, i) => ({
+              url: m.url,
+              type: m.type,
+              ordre: m.ordre ?? i,
+            })),
+          },
+        }),
       },
+      include: { medias: true },
     });
 
     await logAction({

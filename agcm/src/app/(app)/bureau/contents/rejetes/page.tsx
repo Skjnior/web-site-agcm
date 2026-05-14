@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function BureauContentsRejetesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; search?: string }>;
 }) {
   const params = await searchParams;
 
@@ -21,12 +21,20 @@ export default async function BureauContentsRejetesPage({
   const page = parseInt(params.page || '1');
   const limit = 20;
   const offset = (page - 1) * limit;
+  const search = params.search || '';
 
-  const where = {
+  const where: Record<string, unknown> = {
     auteurPosteId: { in: ctx.posteIds },
     mandatId: ctx.mandatId,
     statutWorkflow: 'REJETE' as const,
   };
+
+  if (search.trim()) {
+    where.OR = [
+      { titre: { contains: search.trim(), mode: 'insensitive' } },
+      { contenu: { contains: search.trim(), mode: 'insensitive' } },
+    ];
+  }
 
   const [total, contents] = await Promise.all([
     prisma.content.count({ where }),
@@ -67,6 +75,7 @@ export default async function BureauContentsRejetesPage({
         initialPage={page}
         initialTotalPages={totalPages}
         initialStatus="REJETE"
+        initialSearch={search}
         forceStatus="REJETE"
       />
     </div>

@@ -127,6 +127,30 @@ export async function requireBureauModule(module: BureauModule) {
 }
 
 /**
+ * Registre cotisations / absences : bureau avec module `paiements`, ou ADMIN / SUPER_ADMIN.
+ */
+export async function requireRegistreCotisationsAccess() {
+  const { error, session } = await requireAuth();
+  if (error) return { error, session: null };
+
+  const user = await prisma.user.findUnique({
+    where: { id: session!.user!.id! },
+  });
+  if (!user) {
+    return {
+      error: NextResponse.json({ error: 'Utilisateur introuvable' }, { status: 401 }),
+      session: null,
+    };
+  }
+
+  if (user.roleSysteme === 'ADMIN' || user.roleSysteme === 'SUPER_ADMIN') {
+    return { error: null, session };
+  }
+
+  return requireBureauModule('paiements');
+}
+
+/**
  * Admin, Super-admin ou membre du bureau (mandat actif). Les adhérents simples n'ont plus d'intranet sur le site.
  */
 export async function requireIntranetAccess() {

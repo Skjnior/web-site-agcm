@@ -73,69 +73,33 @@ export default function BureauContentsClient({
 }: BureauContentsClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [contents, setContents] = useState<Content[]>(initialContents);
-  const [total, setTotal] = useState(initialTotal);
-  const [page, setPage] = useState(initialPage);
-  const [totalPages, setTotalPages] = useState(initialTotalPages);
-  const [status, setStatus] = useState(forceStatus || initialStatus);
-  const [search, setSearch] = useState(searchParams.get('search') || initialSearch);
-  const [loading, setLoading] = useState(false);
+  const [searchDraft, setSearchDraft] = useState(initialSearch);
 
   useEffect(() => {
-    const statusValue = forceStatus || searchParams.get('status') || 'ALL';
-    const searchValue = searchParams.get('search') || '';
-    const pageValue = parseInt(searchParams.get('page') || '1');
-    setStatus(statusValue);
-    setSearch(searchValue);
-    setPage(pageValue);
-  }, [searchParams, forceStatus]);
+    setSearchDraft(initialSearch);
+  }, [initialSearch]);
 
-  useEffect(() => {
-    fetchContents();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, status]);
-
-  const fetchContents = async () => {
-    try {
-      setLoading(true);
-      const params = new URLSearchParams({
-        page: String(page),
-        limit: '20',
-        status: forceStatus || status,
-      });
-      const searchValue = searchParams.get('search') || '';
-      if (searchValue) params.set('search', searchValue);
-
-      const response = await fetch(`/api/bureau/contents?${params.toString()}`);
-      if (!response.ok) throw new Error('Erreur chargement');
-
-      const result = await response.json();
-      setContents(result.data || []);
-      setTotal(result.pagination?.total || 0);
-      setTotalPages(result.pagination?.totalPages || 1);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const contentsBasePath = forceStatus === 'REJETE' ? '/bureau/contents/rejetes' : '/bureau/contents';
+  const status = forceStatus || searchParams.get('status') || initialStatus || 'ALL';
+  const urlSearch = searchParams.get('search') || '';
 
   const handleFilterChange = (newStatus: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', '1');
     params.set('status', newStatus);
-    router.push(`/bureau/contents?${params.toString()}`);
+    router.push(`${contentsBasePath}?${params.toString()}`);
   };
 
   const handleSearch = () => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', '1');
-    if (search) params.set('search', search);
+    const term = searchDraft.trim();
+    if (term) params.set('search', term);
     else params.delete('search');
-    router.push(`/bureau/contents?${params.toString()}`);
+    router.push(`${contentsBasePath}?${params.toString()}`);
   };
 
-  const hasActiveFilters = search || (status && status !== 'ALL');
+  const hasActiveFilters = Boolean(urlSearch) || (!forceStatus && status !== 'ALL');
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -151,8 +115,8 @@ export default function BureauContentsClient({
                 <Input
                   id="bureau-content-search"
                   placeholder="Titre ou contenu..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  value={searchDraft}
+                  onChange={(e) => setSearchDraft(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   className="border-slate-600 bg-slate-900/50 pl-10 text-slate-100"
                 />
@@ -188,7 +152,7 @@ export default function BureauContentsClient({
             {hasActiveFilters && (
               <Button
                 variant="outline"
-                onClick={() => router.push('/bureau/contents')}
+                onClick={() => router.push(contentsBasePath)}
                 size="sm"
                 className="w-full shrink-0 sm:ml-auto sm:w-auto"
               >
@@ -220,22 +184,27 @@ export default function BureauContentsClient({
         </div>
       </div>
 
-      {loading ? (
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-12 text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto" />
-          <p className="mt-4 text-slate-400">Chargement...</p>
-        </div>
-      ) : (
-        <ContentsList
-          contents={contents}
-          currentPage={page}
-          totalPages={totalPages}
-          total={total}
-          isSuperAdmin={false}
-          basePath={forceStatus === 'REJETE' ? '/bureau/contents/rejetes' : '/bureau/contents'}
-          pageSize={20}
-        />
-      )}
+      <ContentsList
+        contents={initialContents}
+        currentPage={initialPage}
+        totalPages={initialTotalPages}
+        total={initialTotal}
+        isSuperAdmin={false}
+        basePath={contentsBasePath}
+        pageSize={20}
+        getPaginationHref={(pageNum) => {
+          const p = new URLSearchParams(searchParams.toString());
+          p.set('page', String(pageNum));
+          if (forceStatus) {
+            p.delete('status');
+          } else if (status && status !== 'ALL') {
+            p.set('status', status);
+          }
+          const q = p.get('search');
+          if (!q) p.delete('search');
+          return `${contentsBasePath}?${p.toString()}`;
+        }}
+      />
     </div>
   );
 }

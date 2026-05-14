@@ -4,7 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireBureauModule } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
-import { getAffectationActive } from '@/lib/rbac';
+import { getBureauMandatContext } from '@/lib/rbac';
 import { logAction } from '@/lib/audit';
 
 export async function POST(
@@ -17,12 +17,9 @@ export async function POST(
   const { id } = await params;
 
   try {
-    const affectation = await getAffectationActive(session!.user.id);
-    if (!affectation) {
-      return NextResponse.json(
-        { error: 'Vous devez avoir un poste actif' },
-        { status: 403 }
-      );
+    const ctx = await getBureauMandatContext(session!.user.id);
+    if (!ctx) {
+      return NextResponse.json({ error: 'Vous devez avoir un poste actif sur le mandat en cours' }, { status: 403 });
     }
 
     const projet = await prisma.projet.findUnique({
@@ -30,17 +27,11 @@ export async function POST(
     });
 
     if (!projet) {
-      return NextResponse.json(
-        { error: 'Projet introuvable' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Projet introuvable' }, { status: 404 });
     }
 
-    if (projet.responsablePosteId !== affectation.posteId) {
-      return NextResponse.json(
-        { error: 'Vous n\'êtes pas le responsable de ce projet' },
-        { status: 403 }
-      );
+    if (!ctx.posteIds.includes(projet.responsablePosteId) || projet.mandatId !== ctx.mandatId) {
+      return NextResponse.json({ error: 'Vous n\'êtes pas le responsable de ce projet sur ce mandat' }, { status: 403 });
     }
 
     // Le projet reste avec visibiliteSite=false jusqu'à approbation président

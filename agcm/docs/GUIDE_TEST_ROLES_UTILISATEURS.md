@@ -61,10 +61,20 @@ Liste détaillée des 9 comptes bureau : **`docs/COMPTES_BUREAU_SEED.md`**.
 
 | À tester | Détail |
 |----------|--------|
-| Sidebar | **Utilisateurs**, **Mandats**, **Postes**, **Affectations**, **Logs** |
+| Sidebar | **Utilisateurs**, **Mandats**, **Postes**, **Affectations**, **Logs**, **Registre cotisations** |
 | `/admin/users`, mandats, postes, affectations | Accès |
 | `/admin/approbations` | Approbations contenus |
+| `/admin/registre-cotisations` | Registre cotisations / absences (membre × date de situation), export CSV |
 | Déconnexion | Retour site public |
+
+---
+
+## Registre cotisations / absences
+
+- **Président** : **`/admin/registre-cotisations`**
+- **Formation-finances ou Trésorier** : **`/bureau/registre-cotisations`** (menu « Registre cotisations »)
+
+Après migration `member_registre_cotisations`, vérifier édition d’une ligne et export CSV.
 
 ---
 
@@ -77,7 +87,7 @@ Liste détaillée des 9 comptes bureau : **`docs/COMPTES_BUREAU_SEED.md`**.
 |---------|--------|
 | Redirection | Vers **`/bureau`** si poste bureau **ACTIF** sur mandat actif |
 | `/bureau` | Tableau de bord bureau |
-| Sous-routes | `/bureau/contents`, `/bureau/evenements`, `/bureau/projets` selon menus |
+| Sous-routes | `/bureau/contents`, `/bureau/evenements`, `/bureau/projets`, **`/bureau/registre-cotisations`** pour les postes avec module **paiements** (formation-finances, trésorier) |
 | `/admin` | Refus ou redirection si pas **ADMIN** / **SUPER_ADMIN** |
 
 ---

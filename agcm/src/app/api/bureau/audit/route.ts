@@ -7,6 +7,18 @@ import { prisma } from '@/lib/prisma';
 import { getBureauMandatContext } from '@/lib/rbac';
 import { parsePagination, createPaginatedResponse } from '@/lib/pagination';
 
+const AUDIT_ACTION_VALUES = [
+  'CREATE',
+  'UPDATE',
+  'DELETE',
+  'APPROVE',
+  'REJECT',
+  'SUBMIT',
+  'ASSIGN',
+  'INACTIVATE',
+  'ARCHIVE',
+] as const;
+
 export async function GET(request: NextRequest) {
   const { error, session } = await requireBureauModule('traces');
   if (error) return error;
@@ -19,6 +31,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const entityType = searchParams.get('entityType'); // Content, Projet, Event
   const entityId = searchParams.get('entityId');
+  const actionFilter = searchParams.get('action');
   const { page, limit, offset } = parsePagination(request);
 
   try {
@@ -67,11 +80,22 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(createPaginatedResponse([], 0, page, limit));
     }
 
-    const where: { entityId: { in: string[] }; entityType?: string } = {
+    const where: {
+      entityId: { in: string[] };
+      entityType?: string;
+      action?: (typeof AUDIT_ACTION_VALUES)[number];
+    } = {
       entityId: { in: entityIds },
     };
     if (entityType && entityType !== 'all') {
       where.entityType = entityType;
+    }
+    if (
+      actionFilter &&
+      actionFilter !== 'all' &&
+      (AUDIT_ACTION_VALUES as readonly string[]).includes(actionFilter)
+    ) {
+      where.action = actionFilter as (typeof AUDIT_ACTION_VALUES)[number];
     }
 
     const [total, logs] = await Promise.all([

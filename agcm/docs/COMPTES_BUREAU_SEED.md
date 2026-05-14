@@ -33,6 +33,17 @@ Assurez-vous que **`DATABASE_URL`** dans `.env` pointe vers cette même base (le
 
 Seul le **Président** a le rôle **SUPER_ADMIN** dans ce jeu de données (accès super-admin + approbations). Les autres titulaires de poste ont **MEMBER** mais une **affectation ACTIF** sur un poste **bureau** : ils accèdent à l’espace bureau (contenus, projets, etc.) selon le RBAC.
 
+## Registre cotisations & absences
+
+Les postes du bureau dont le périmètre inclut le module **`paiements`** (voir `src/lib/bureau-poste-perimetre.ts`) peuvent ouvrir **`/bureau/registre-cotisations`** :
+
+- **Secrétaire chargé à la formation et directeur des finances** (`formation.finance@seed.agcm.local`)
+- **Trésorier** (`tresorier@seed.agcm.local`)
+
+Il s’agit du registre type Excel/PDF (situation des cotisations à une **date de référence**, absences aux réunions), avec export CSV. Les données sont stockées en base (`member_registre_cotisations`).
+
+Le **Président** (`SUPER_ADMIN`) utilise **`/admin/registre-cotisations`** (même écran, même API).
+
 ## Utilisateurs de démonstration (hors bureau)
 
 - `user10@agcm.gn` … `user600@agcm.gn` — même mot de passe `AGCM-Bureau-Test-2026!`, rôle **MEMBER**, sans poste actif sur le mandat en cours (sauf coïncidence dans d’anciennes bases).

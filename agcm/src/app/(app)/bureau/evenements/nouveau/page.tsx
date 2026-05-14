@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { assertBureauModuleOrRedirect } from '@/lib/bureau-page-guard';
-import BureauEvenementForm from './BureauEvenementForm';
+import BureauEvenementForm from '@/components/bureau/BureauEvenementForm';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';

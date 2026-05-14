@@ -111,6 +111,7 @@ export function bureauHrefToModule(href: string): BureauModule | null {
     ['/bureau/projets', 'projets'],
     ['/bureau/evenements', 'evenements'],
     ['/bureau/traces', 'traces'],
+    ['/bureau/registre-cotisations', 'paiements'],
     ['/dashboard/paiements', 'paiements'],
     ['/app/notifications', 'notifications'],
     ['/app/chat', 'chat'],

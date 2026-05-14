@@ -6,7 +6,7 @@ import { getBureauMandatContext, isBureauActif } from '@/lib/rbac';
 import { bureauMemberHasModule, getBureauPerimetreForPostes } from '@/lib/bureau-poste-perimetre';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Plus, FileText, FolderOpen, Calendar, History } from 'lucide-react';
+import { Plus, FileText, FolderOpen, Calendar, History, ClipboardList } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Dashboard Bureau - AGCM',
@@ -50,6 +50,7 @@ export default async function BureauDashboardPage() {
   const canProjets = bureauMemberHasModule(user.roleSysteme, posteNoms, 'projets');
   const canEvenements = bureauMemberHasModule(user.roleSysteme, posteNoms, 'evenements');
   const canTraces = bureauMemberHasModule(user.roleSysteme, posteNoms, 'traces');
+  const canPaiements = bureauMemberHasModule(user.roleSysteme, posteNoms, 'paiements');
 
   let myContents = 0;
   let myProjets = 0;
@@ -94,6 +95,40 @@ export default async function BureauDashboardPage() {
     });
   }
 
+  let registreHubTeaser: {
+    totalMembres: number;
+    situationRenseignee: number;
+    dateLabel: string | null;
+  } | null = null;
+
+  if (canPaiements) {
+    const latestReg = await prisma.memberRegistreCotisation.findFirst({
+      orderBy: { dateReference: 'desc' },
+      select: { dateReference: true },
+    });
+    const dateRef = latestReg?.dateReference ?? null;
+    const [totalMembres, situationRenseignee] = await Promise.all([
+      prisma.member.count(),
+      dateRef
+        ? prisma.memberRegistreCotisation.count({
+            where: { dateReference: dateRef, NOT: { situationText: '' } },
+          })
+        : Promise.resolve(0),
+    ]);
+    registreHubTeaser = {
+      totalMembres,
+      situationRenseignee,
+      dateLabel: dateRef
+        ? new Intl.DateTimeFormat('fr-FR', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            timeZone: 'UTC',
+          }).format(dateRef)
+        : null,
+    };
+  }
+
   return (
     <div className="mx-auto max-w-7xl space-y-6">
       <div>
@@ -115,6 +150,44 @@ export default async function BureauDashboardPage() {
           </div>
         )}
       </div>
+
+      {canPaiements && registreHubTeaser && (
+        <Link href="/bureau/registre-cotisations" className="block">
+          <div className="group relative overflow-hidden rounded-2xl border border-emerald-500/35 bg-gradient-to-r from-emerald-950/40 via-slate-900/80 to-slate-900/50 p-6 shadow-lg transition-all hover:border-emerald-400/45 hover:shadow-emerald-900/20">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-4">
+                <div className="rounded-xl bg-emerald-500/15 p-3 ring-1 ring-emerald-400/30">
+                  <ClipboardList className="h-7 w-7 text-emerald-400" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-emerald-400/90">
+                    Hub central — cotisations & absences
+                  </p>
+                  <h2 className="mt-1 text-xl font-bold text-slate-50">Registre général des membres</h2>
+                  <p className="mt-2 max-w-2xl text-sm text-slate-400">
+                    Tableau de synthèse pour toute l’association : situation à une date donnée, absences aux réunions,
+                    filtres et export CSV — même logique que votre fichier Excel/PDF.
+                  </p>
+                  {registreHubTeaser.dateLabel ? (
+                    <p className="mt-2 text-xs text-slate-500">
+                      Dernière date de situation en base :{' '}
+                      <span className="text-slate-300">{registreHubTeaser.dateLabel}</span> ·{' '}
+                      {registreHubTeaser.situationRenseignee}/{registreHubTeaser.totalMembres} situations renseignées
+                    </p>
+                  ) : (
+                    <p className="mt-2 text-xs text-slate-500">
+                      Aucune date encore saisie — ouvrez le registre pour démarrer la première clôture.
+                    </p>
+                  )}
+                </div>
+              </div>
+              <span className="inline-flex shrink-0 items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white group-hover:bg-emerald-500">
+                Ouvrir le registre
+              </span>
+            </div>
+          </div>
+        </Link>
+      )}
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
         {canContents && (

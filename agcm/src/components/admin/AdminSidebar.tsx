@@ -48,6 +48,7 @@ export default function AdminSidebar({ role, allowedBureauModules }: SidebarProp
     const fullNavigation = [
         { name: 'Tableau de bord', href: '/admin', icon: LayoutDashboard },
         { name: 'Mon profil', href: '/admin/profil', icon: CircleUser },
+        { name: 'Registre cotisations', href: '/admin/registre-cotisations', icon: ClipboardList },
         { name: 'Approbations', href: '/admin/approbations', icon: CheckSquare },
         { name: 'Actualités', href: '/admin/actualites', icon: FileText },
         { name: 'Événements', href: '/admin/evenements', icon: Calendar },
@@ -68,6 +69,7 @@ export default function AdminSidebar({ role, allowedBureauModules }: SidebarProp
         { name: 'Événements', href: '/bureau/evenements', icon: Calendar },
         { name: 'Historique des actions', href: '/bureau/traces', icon: History },
         { name: 'Paiements', href: '/dashboard/paiements', icon: Settings },
+        { name: 'Registre cotisations', href: '/bureau/registre-cotisations', icon: ClipboardList },
     ];
 
     const superAdminExtras = [

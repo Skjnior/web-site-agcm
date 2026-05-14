@@ -220,6 +220,11 @@ export default function AppSidebar({
       href: '/dashboard/paiements',
       icon: Settings,
     },
+    {
+      label: 'Registre cotisations',
+      href: '/bureau/registre-cotisations',
+      icon: ClipboardList,
+    },
   ];
 
   // Menu Membre simple (non utilisé en pratique : les MEMBER sans bureau sont renvoyés au site public)

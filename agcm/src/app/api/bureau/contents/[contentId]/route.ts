@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma';
 import { canModifyContent, canDeleteContent } from '@/lib/rbac';
 import { logAction } from '@/lib/audit';
 import { z } from 'zod';
+import { contentAttachmentSchema } from '@/lib/validators/content';
 
 const updateSchema = z.object({
   type: z.enum(['ACTIVITE', 'ACTUALITE', 'PARTAGE', 'ANNONCE']).optional(),
@@ -20,6 +21,7 @@ const updateSchema = z.object({
     .or(z.literal('')),
   visibiliteCible: z.enum(['PRIVE_BUREAU', 'PUBLIC_SITE']).optional(),
   tags: z.array(z.string()).optional(),
+  attachments: z.array(contentAttachmentSchema).max(20).optional(),
 });
 
 export async function GET(
@@ -96,6 +98,9 @@ export async function PATCH(
         ...(data.imagePrincipale !== undefined && { imagePrincipale: data.imagePrincipale || null }),
         ...(data.visibiliteCible && { visibiliteCible: data.visibiliteCible }),
         ...(data.tags && { tags: data.tags }),
+        ...(data.attachments !== undefined && {
+          attachments: data.attachments.length ? data.attachments : [],
+        }),
       },
       include: {
         auteurPoste: { select: { id: true, nom: true } },

@@ -2,6 +2,7 @@
 // Script de seed pour générer 600 entrées dans CHAQUE table (21 tables)
 
 import { PrismaClient, Prisma } from '@prisma/client';
+import { randomUUID } from 'crypto';
 import bcrypt from 'bcryptjs';
 import { SITE_PUBLIC_DEFAULT_PAYLOAD } from '../src/config/site-public-default-payload';
 import {
@@ -829,6 +830,204 @@ async function main() {
     }
   }
   console.log(`✅ ${TARGET_COUNT} logs d'audit créés\n`);
+
+  // ============================================
+  // 19b. DÉMO BUREAU — contenus / projets / événements + audits réels par poste exécutif
+  // ============================================
+  console.log(
+    '🎯 Données de démo bureau (chaque poste exécutif : contenus variés, projets, événements, traces)...'
+  );
+  const demoSlug = (prefix: string) =>
+    `${prefix}-${randomUUID().replace(/-/g, '').slice(0, 12)}`.toLowerCase();
+
+  for (let b = 0; b < NOMBRE_POSTES_BUREAU; b++) {
+    const poste = postes[b];
+    const actor = users[b];
+    const shortNom = poste.nom.slice(0, 48);
+
+    const contentDefs: Array<{
+      statut: 'BROUILLON' | 'SOUMIS' | 'APPROUVE' | 'PUBLIE' | 'REJETE';
+      titre: string;
+      type?: 'ACTIVITE' | 'ACTUALITE' | 'PARTAGE' | 'ANNONCE';
+      visibilite?: 'PRIVE_BUREAU' | 'PUBLIC_SITE';
+      rejectionReason?: string;
+      withApproved?: boolean;
+    }> = [
+      {
+        statut: 'BROUILLON',
+        titre: `[Démo bureau] Brouillon — ${shortNom}`,
+        type: 'ACTIVITE',
+        visibilite: 'PRIVE_BUREAU',
+      },
+      {
+        statut: 'SOUMIS',
+        titre: `[Démo bureau] En attente validation — ${shortNom}`,
+        type: 'ACTUALITE',
+        visibilite: 'PUBLIC_SITE',
+      },
+      {
+        statut: 'APPROUVE',
+        titre: `[Démo bureau] Approuvé (site) — ${shortNom}`,
+        type: 'PARTAGE',
+        visibilite: 'PUBLIC_SITE',
+        withApproved: true,
+      },
+      {
+        statut: 'PUBLIE',
+        titre: `[Démo bureau] Publié — ${shortNom}`,
+        type: 'ACTIVITE',
+        visibilite: 'PUBLIC_SITE',
+        withApproved: true,
+      },
+      {
+        statut: 'REJETE',
+        titre: `[Démo bureau] Rejeté (à corriger) — ${shortNom}`,
+        type: 'ANNONCE',
+        visibilite: 'PUBLIC_SITE',
+        rejectionReason: 'Exemple seed : merci de préciser les dates et le lieu public.',
+      },
+    ];
+
+    for (const def of contentDefs) {
+      const c = await prisma.content.create({
+        data: {
+          type: (def.type || 'ACTIVITE') as any,
+          titre: def.titre,
+          contenu: `Contenu de démonstration pour le poste « ${poste.nom} » (mandat actif). Visible dans Mes activités et Traces.`,
+          visibiliteCible: (def.visibilite || 'PUBLIC_SITE') as any,
+          statutWorkflow: def.statut as any,
+          auteurPosteId: poste.id,
+          mandatId: mandatActifLatest.id,
+          approvedById: def.withApproved ? users[0].id : null,
+          approvedAt: def.withApproved ? new Date() : null,
+          rejectionReason: def.rejectionReason ?? null,
+          tags: ['demo-bureau', `poste-${b}`],
+        },
+      });
+      await prisma.auditLog.create({
+        data: {
+          userId: actor.id,
+          action: 'CREATE',
+          entityType: 'Content',
+          entityId: c.id,
+          afterData: { titre: c.titre, statutWorkflow: def.statut },
+        },
+      });
+      await prisma.auditLog.create({
+        data: {
+          userId: actor.id,
+          action: 'UPDATE',
+          entityType: 'Content',
+          entityId: c.id,
+          beforeData: { statutWorkflow: 'BROUILLON' },
+          afterData: { statutWorkflow: def.statut },
+        },
+      });
+    }
+
+    const projetDefs = [
+      {
+        statut: 'BROUILLON' as const,
+        visibiliteSite: false,
+        titre: `[Démo bureau] Projet brouillon — ${shortNom}`,
+      },
+      {
+        statut: 'EN_COURS' as const,
+        visibiliteSite: true,
+        titre: `[Démo bureau] Projet en cours (site) — ${shortNom}`,
+      },
+      {
+        statut: 'TERMINE' as const,
+        visibiliteSite: true,
+        titre: `[Démo bureau] Projet terminé — ${shortNom}`,
+      },
+    ];
+
+    for (const pd of projetDefs) {
+      const pr = await prisma.projet.create({
+        data: {
+          titre: pd.titre,
+          slug: demoSlug(`p-${b}`),
+          objectif: `Objectif de démonstration pour ${poste.nom}.`,
+          description: `Description seed — projet ${pd.statut.toLowerCase()}, visibilité site : ${pd.visibiliteSite ? 'oui' : 'non'}.`,
+          statut: pd.statut,
+          visibiliteSite: pd.visibiliteSite,
+          responsablePosteId: poste.id,
+          mandatId: mandatActifLatest.id,
+        },
+      });
+      await prisma.auditLog.create({
+        data: {
+          userId: actor.id,
+          action: 'CREATE',
+          entityType: 'Projet',
+          entityId: pr.id,
+          afterData: { titre: pr.titre, statut: pd.statut },
+        },
+      });
+      await prisma.auditLog.create({
+        data: {
+          userId: actor.id,
+          action: 'UPDATE',
+          entityType: 'Projet',
+          entityId: pr.id,
+          afterData: { visibiliteSite: pd.visibiliteSite },
+        },
+      });
+    }
+
+    const now = Date.now();
+    const eventDefs = [
+      {
+        statut: 'PASSE' as const,
+        afficheSite: true,
+        titre: `[Démo bureau] Événement passé — ${shortNom}`,
+        dateDebut: new Date(now - 45 * 86400000),
+        lieu: 'La Rochelle — salle de démo',
+      },
+      {
+        statut: 'EN_COURS' as const,
+        afficheSite: false,
+        titre: `[Démo bureau] Événement en cours — ${shortNom}`,
+        dateDebut: new Date(now - 3600000),
+        lieu: 'En ligne (seed)',
+      },
+      {
+        statut: 'A_VENIR' as const,
+        afficheSite: true,
+        titre: `[Démo bureau] Événement à venir — ${shortNom}`,
+        dateDebut: new Date(now + 21 * 86400000),
+        lieu: 'Lieu à confirmer',
+      },
+    ];
+
+    for (const ed of eventDefs) {
+      const ev = await prisma.event.create({
+        data: {
+          titre: ed.titre,
+          slug: demoSlug(`e-${b}`),
+          description: `Événement seed (${ed.statut}) pour le poste « ${poste.nom} ».`,
+          dateDebut: ed.dateDebut,
+          dateFin: ed.statut === 'EN_COURS' ? new Date(now + 7200000) : null,
+          lieu: ed.lieu,
+          statut: ed.statut,
+          afficheSite: ed.afficheSite,
+          createdByPosteId: poste.id,
+          mandatId: mandatActifLatest.id,
+        },
+      });
+      await prisma.auditLog.create({
+        data: {
+          userId: actor.id,
+          action: 'CREATE',
+          entityType: 'Event',
+          entityId: ev.id,
+          afterData: { titre: ev.titre, statut: ed.statut },
+        },
+      });
+    }
+  }
+  console.log('✅ Démo bureau créée (9 postes × contenus / projets / événements + audits)\n');
 
   // ============================================
   // 25. CRÉER PRESIDENT CITATIONS (2)
