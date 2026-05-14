@@ -31,7 +31,9 @@ Assurez-vous que **`DATABASE_URL`** dans `.env` pointe vers cette même base (le
 | Secrétaire chargé à la sécurité | securite@seed.agcm.local | MEMBER |
 | Secrétaire chargé aux sports, à la culture et à l'environnement | sports.culture.environnement@seed.agcm.local | MEMBER |
 
-Seul le **Président** a le rôle **SUPER_ADMIN** dans ce jeu de données (accès super-admin + approbations). Les autres titulaires de poste ont **MEMBER** mais une **affectation ACTIF** sur un poste **bureau** : ils accèdent à l’espace bureau (contenus, projets, etc.) selon le RBAC.
+Une **carte de couverture** (tous les comptes, modules réels, renvois aux étapes du guide de test) figure dans **`docs/GUIDE_TEST_ROLES_UTILISATEURS.md`** — section *Carte de couverture — les 9 comptes seed*.
+
+Seul le **Président** a le rôle **SUPER_ADMIN** dans ce jeu de données (accès super-admin + approbations). Les autres titulaires de poste ont **MEMBER** mais une **affectation ACTIF** sur un poste **bureau** : ils accèdent à l’espace bureau selon le **périmètre par poste** (`src/lib/bureau-poste-perimetre.ts`). Exemple : **`communication@seed.agcm.local`** a **contenus**, **événements**, **traces**, **chat**, **notifications**, mais **pas** le module **projets** ni **paiements** (voir aussi `docs/GUIDE_TEST_ROLES_UTILISATEURS.md`, étape 2bis).
 
 ## Registre cotisations & absences
 

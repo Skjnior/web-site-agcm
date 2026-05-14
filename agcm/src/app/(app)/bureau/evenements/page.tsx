@@ -1,7 +1,9 @@
 import { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { assertBureauModuleOrRedirect } from '@/lib/bureau-page-guard';
+import BureauClickableTableRow from '@/components/bureau/BureauClickableTableRow';
 import BureauRowEditDeleteActions from '@/components/bureau/BureauRowEditDeleteActions';
+import BureauTableActionsCell from '@/components/bureau/BureauTableActionsCell';
 import { Calendar, Plus, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -212,7 +214,10 @@ export default async function BureauEvenementsPage({
               </thead>
               <tbody className="divide-y divide-slate-700/50">
                 {evenements.map((event) => (
-                  <tr key={event.id} className="hover:bg-slate-700/20">
+                  <BureauClickableTableRow
+                    key={event.id}
+                    detailHref={`/bureau/evenements/${event.id}`}
+                  >
                     <td className="px-4 py-4 align-top">
                       <span className="font-medium text-slate-100">{event.titre}</span>
                       {event.lieu ? (
@@ -245,8 +250,9 @@ export default async function BureauEvenementsPage({
                     <td className="whitespace-nowrap px-4 py-4 align-top text-sm text-slate-400">
                       {event.afficheSite ? 'Oui' : 'Non'}
                     </td>
-                    <td className="px-4 py-4 align-middle text-right">
+                    <BureauTableActionsCell className="px-4 py-4 align-middle text-right">
                       <BureauRowEditDeleteActions
+                        detailHref={`/bureau/evenements/${event.id}`}
                         editHref={`/bureau/evenements/${event.id}/edit`}
                         deleteApiUrl={`/api/bureau/evenements/${event.id}`}
                         resourceKind="cet événement"
@@ -255,8 +261,8 @@ export default async function BureauEvenementsPage({
                           event.afficheSite ? `/evenements/${event.slug}` : undefined
                         }
                       />
-                    </td>
-                  </tr>
+                    </BureauTableActionsCell>
+                  </BureauClickableTableRow>
                 ))}
               </tbody>
             </table>

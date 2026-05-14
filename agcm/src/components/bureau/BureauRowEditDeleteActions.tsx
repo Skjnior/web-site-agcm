@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ExternalLink, Pencil, Trash2 } from 'lucide-react';
+import { ExternalLink, Eye, Pencil, Trash2 } from 'lucide-react';
 import BureauConfirmDialog from '@/components/bureau/BureauConfirmDialog';
 import {
   TableRowActionsMenu,
@@ -13,6 +13,8 @@ import {
  * Actions ligne bureau : menu ⋮ (comme super-admin), puis confirmation suppression.
  */
 export default function BureauRowEditDeleteActions({
+  /** Fiche bureau lecture seule */
+  detailHref,
   editHref,
   deleteApiUrl,
   resourceKind,
@@ -20,6 +22,7 @@ export default function BureauRowEditDeleteActions({
   /** Ex. `/evenements/mon-slug` — ouvre un nouvel onglet */
   publicPageHref,
 }: {
+  detailHref?: string;
   editHref: string;
   deleteApiUrl: string;
   resourceKind: string;
@@ -51,6 +54,14 @@ export default function BureauRowEditDeleteActions({
     resourceTitle.length > 48 ? `${resourceTitle.slice(0, 45)}…` : resourceTitle;
 
   const actions: TableRowAction[] = [];
+  if (detailHref) {
+    actions.push({
+      label: 'Voir',
+      icon: <Eye className="h-4 w-4 shrink-0" />,
+      variant: 'view',
+      onClick: () => router.push(detailHref),
+    });
+  }
   if (publicPageHref) {
     actions.push({
       label: 'Page publique',

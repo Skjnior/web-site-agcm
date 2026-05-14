@@ -47,6 +47,10 @@ type TableRowActionsMenuProps = {
   menuItemClassName?: string;
   align?: 'left' | 'right';
   triggerLabel?: string;
+  /** Afficher toujours le menu ⋮ (même une seule action), pour alignement bureau / super-admin */
+  alwaysDropdown?: boolean;
+  /** Texte visible à côté de ⋮ (ex. « Créer » sur le dashboard bureau) */
+  triggerText?: string;
 };
 
 export function TableRowActionsMenu({
@@ -56,6 +60,8 @@ export function TableRowActionsMenu({
   menuItemClassName,
   align = 'right',
   triggerLabel = 'Actions',
+  alwaysDropdown = false,
+  triggerText,
 }: TableRowActionsMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
@@ -112,7 +118,7 @@ export function TableRowActionsMenu({
 
   if (actions.length === 0) return null;
 
-  if (actions.length === 1) {
+  if (actions.length === 1 && !alwaysDropdown) {
     const isProcessing = actions[0].label.includes('...');
     return (
       <Button
@@ -175,10 +181,14 @@ export function TableRowActionsMenu({
           aria-label={triggerLabel}
           className={cn(
             'border-slate-300 dark:border-slate-600 dark:hover:bg-slate-800',
+            triggerText && 'gap-1 pr-3',
             triggerClassName
           )}
         >
-          <MoreVertical className="h-4 w-4" />
+          {triggerText ? (
+            <span className="mr-1 max-w-[10rem] truncate text-sm font-medium sm:max-w-none">{triggerText}</span>
+          ) : null}
+          <MoreVertical className="h-4 w-4 shrink-0" />
         </Button>
       </div>
       {mounted &&

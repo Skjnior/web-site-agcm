@@ -300,6 +300,7 @@ export default function ContentsList({
                   <TableRowActionsMenu
                     actions={buildRowActions(content)}
                     triggerClassName={actionsTriggerClass}
+                    alwaysDropdown={!isSuperAdmin}
                   />
                 </div>
               </div>
@@ -383,6 +384,7 @@ export default function ContentsList({
                       <TableRowActionsMenu
                         actions={buildRowActions(content)}
                         triggerClassName={actionsTriggerClass}
+                        alwaysDropdown={!isSuperAdmin}
                       />
                     </div>
                   </td>

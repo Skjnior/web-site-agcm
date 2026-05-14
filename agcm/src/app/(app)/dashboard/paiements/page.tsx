@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import MemberPageShell from '@/components/app/MemberPageShell';
+import { PaiementsRegistreHubActions } from '@/components/bureau/PaiementsRegistreHubActions';
 
 export const metadata: Metadata = {
   title: 'Mes paiements - AGCM',
@@ -153,9 +154,7 @@ export default async function PaiementsPage() {
                   ) : null}
                 </ul>
               </div>
-              <Button asChild className="shrink-0 bg-emerald-600 text-white hover:bg-emerald-500">
-                <Link href="/bureau/registre-cotisations">Ouvrir le registre</Link>
-              </Button>
+              <PaiementsRegistreHubActions />
             </div>
           </div>
         )}

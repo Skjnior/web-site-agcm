@@ -6,7 +6,8 @@ import { getBureauMandatContext, isBureauActif } from '@/lib/rbac';
 import { bureauMemberHasModule, getBureauPerimetreForPostes } from '@/lib/bureau-poste-perimetre';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Plus, FileText, FolderOpen, Calendar, History, ClipboardList } from 'lucide-react';
+import { FileText, FolderOpen, Calendar, History, ClipboardList } from 'lucide-react';
+import { BureauDashboardQuickActions } from '@/components/bureau/BureauDashboardQuickActions';
 
 export const metadata: Metadata = {
   title: 'Dashboard Bureau - AGCM',
@@ -286,44 +287,11 @@ export default async function BureauDashboardPage() {
       </div>
 
       {(canContents || canProjets || canEvenements) && (
-        <div className="admin-glass rounded-2xl p-6">
-          <h2 className="mb-4 text-lg font-semibold text-slate-100">Actions rapides</h2>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            {canContents && (
-              <Link href="/bureau/contents/nouveau">
-                <Button
-                  className="w-full border-slate-600 bg-slate-900/50 text-slate-100 hover:bg-slate-800 hover:text-white"
-                  variant="outline"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Créer une activité
-                </Button>
-              </Link>
-            )}
-            {canProjets && (
-              <Link href="/bureau/projets/nouveau">
-                <Button
-                  className="w-full border-slate-600 bg-slate-900/50 text-slate-100 hover:bg-slate-800 hover:text-white"
-                  variant="outline"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Créer un projet
-                </Button>
-              </Link>
-            )}
-            {canEvenements && (
-              <Link href="/bureau/evenements/nouveau">
-                <Button
-                  className="w-full border-slate-600 bg-slate-900/50 text-slate-100 hover:bg-slate-800 hover:text-white"
-                  variant="outline"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Créer un événement
-                </Button>
-              </Link>
-            )}
-          </div>
-        </div>
+        <BureauDashboardQuickActions
+          canContents={canContents}
+          canProjets={canProjets}
+          canEvenements={canEvenements}
+        />
       )}
 
       {canContents && (

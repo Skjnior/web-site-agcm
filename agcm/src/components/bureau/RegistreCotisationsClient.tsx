@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -26,7 +27,13 @@ import {
   LayoutDashboard,
   ExternalLink,
 } from 'lucide-react';
+import {
+  TableRowActionsMenu,
+  type TableRowAction,
+} from '@/components/ui/table-row-actions-menu';
 
+const actionsTriggerClass =
+  'border-slate-600 bg-slate-950/50 text-slate-100 hover:bg-slate-800 dark:border-slate-600';
 export type RegistreRow = {
   rowNum: number;
   memberId: string;
@@ -112,6 +119,7 @@ export default function RegistreCotisationsClient({
   /** Alignée sur la logique API : dernière date en base ou aujourd’hui */
   initialDateReference: string;
 }) {
+  const router = useRouter();
   const [dateReference, setDateReference] = useState(initialDateReference);
   const [q, setQ] = useState('');
   const [qDebounced, setQDebounced] = useState('');
@@ -284,6 +292,21 @@ export default function RegistreCotisationsClient({
       ? Math.round((stats.situationRenseignee / stats.totalMembres) * 100)
       : 0;
 
+  const hubQuickActions: TableRowAction[] = [
+    {
+      label: 'Ma situation (adhérent)',
+      variant: 'view',
+      icon: <ExternalLink className="h-4 w-4 shrink-0" />,
+      onClick: () => router.push('/dashboard/paiements'),
+    },
+    {
+      label: 'Exporter CSV',
+      variant: 'outline',
+      icon: <Download className="h-4 w-4 shrink-0" />,
+      onClick: () => void exportCsv(),
+    },
+  ];
+
   return (
     <div className="mx-auto max-w-[1440px] space-y-6 text-slate-100 pb-10">
       {/* Bandeau hub */}
@@ -308,27 +331,15 @@ export default function RegistreCotisationsClient({
               situation au 17 avril 2026 »).
             </p>
           </div>
-          <div className="flex flex-shrink-0 flex-wrap gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              className="border-slate-600 bg-slate-950/50 text-slate-100 hover:bg-slate-800"
-              asChild
-            >
-              <Link href="/dashboard/paiements">
-                <ExternalLink className="mr-2 h-4 w-4" />
-                Ma situation (adhérent)
-              </Link>
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="border-slate-600 bg-slate-950/50 text-slate-100 hover:bg-slate-800"
-              onClick={() => void exportCsv()}
-            >
-              <Download className="mr-2 h-4 w-4" />
-              Exporter CSV
-            </Button>
+          <div className="flex flex-shrink-0 justify-end">
+            <TableRowActionsMenu
+              actions={hubQuickActions}
+              triggerLabel="Actions registre"
+              align="right"
+              triggerClassName={actionsTriggerClass}
+              menuClassName="dark:border-slate-700 dark:bg-slate-900"
+              menuItemClassName="dark:focus:bg-slate-800"
+            />
           </div>
         </div>
         {resolvedDateRef ? (
@@ -481,7 +492,7 @@ export default function RegistreCotisationsClient({
                 <th className="px-3 py-3 font-medium">Contact</th>
                 <th className="px-3 py-3 font-medium">Situation cotisation</th>
                 <th className="px-3 py-3 font-medium">Absences</th>
-                <th className="w-24 px-3 py-3 font-medium">Éditer</th>
+                <th className="w-24 px-3 py-3 text-right font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -521,16 +532,25 @@ export default function RegistreCotisationsClient({
                       <td className="max-w-[200px] px-3 py-2 text-slate-400 whitespace-pre-wrap break-words">
                         {r.absencesText || '—'}
                       </td>
-                      <td className="px-3 py-2">
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
-                          className="text-blue-400 hover:bg-slate-800 hover:text-blue-300"
-                          onClick={() => openEdit(r)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
+                      <td className="px-3 py-2 text-right">
+                        <div className="flex justify-end">
+                          <TableRowActionsMenu
+                            alwaysDropdown
+                            actions={[
+                              {
+                                label: 'Modifier',
+                                variant: 'edit',
+                                icon: <Pencil className="h-4 w-4 shrink-0" />,
+                                onClick: () => openEdit(r),
+                              },
+                            ]}
+                            triggerLabel={`Actions — ${r.prenom} ${r.nom}`}
+                            align="right"
+                            triggerClassName={actionsTriggerClass}
+                            menuClassName="dark:border-slate-700 dark:bg-slate-900"
+                            menuItemClassName="dark:focus:bg-slate-800"
+                          />
+                        </div>
                       </td>
                     </tr>
                   );

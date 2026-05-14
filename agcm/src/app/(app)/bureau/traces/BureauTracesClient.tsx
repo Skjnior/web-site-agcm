@@ -54,13 +54,27 @@ interface TraceLogRow {
   } | null;
 }
 
-export default function BureauTracesClient() {
+const DEFAULT_ENTITY_TYPES = ['all', 'Content', 'Projet', 'Event'];
+
+export default function BureauTracesClient({
+  entityTypes = DEFAULT_ENTITY_TYPES,
+}: {
+  /** Filtre entités selon les modules bureau du poste (ex. Organisation : sans Contenu) */
+  entityTypes?: string[];
+}) {
   const [logs, setLogs] = useState<TraceLogRow[]>([]);
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
   const [loading, setLoading] = useState(true);
   const [entityType, setEntityType] = useState<string>('all');
   const [actionFilter, setActionFilter] = useState<string>('all');
   const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    if (!entityTypes.includes(entityType)) {
+      setEntityType('all');
+      setPage(1);
+    }
+  }, [entityTypes, entityType]);
 
   useEffect(() => {
     fetchLogs();
@@ -101,25 +115,28 @@ export default function BureauTracesClient() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4 rounded-xl border border-slate-700/50 bg-slate-800/50 p-4 sm:flex-row sm:flex-wrap sm:items-end">
-        <div className="space-y-2">
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Type d&apos;entité</p>
-          <div className="flex flex-wrap gap-2">
-            {['all', 'Content', 'Projet', 'Event'].map((type) => (
-              <Button
-                key={type}
-                type="button"
-                variant={entityType === type ? 'default' : 'outline'}
-                size="sm"
-                className="border-slate-600"
-                onClick={() => {
-                  setEntityType(type);
-                  setPage(1);
-                }}
-              >
-                {type === 'all' ? 'Tout' : entityLabels[type] || type}
-              </Button>
-            ))}
-          </div>
+        <div className="w-full min-w-[200px] sm:w-56">
+          <label htmlFor="trace-entity" className="mb-1.5 block text-xs font-medium text-slate-400">
+            Type d&apos;entité
+          </label>
+          <Select
+            value={entityType}
+            onValueChange={(v) => {
+              setEntityType(v);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger id="trace-entity" className="border-slate-600 bg-slate-900/50 text-slate-100">
+              <SelectValue placeholder="Entité" />
+            </SelectTrigger>
+            <SelectContent className="z-[100] border-slate-600 bg-slate-900 text-slate-100">
+              {entityTypes.map((type) => (
+                <SelectItem key={type} value={type}>
+                  {type === 'all' ? 'Toutes' : entityLabels[type] || type}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="w-full sm:w-56">
@@ -136,7 +153,7 @@ export default function BureauTracesClient() {
             <SelectTrigger id="trace-action" className="border-slate-600 bg-slate-900/50 text-slate-100">
               <SelectValue placeholder="Action" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-[100] border-slate-600 bg-slate-900 text-slate-100">
               {ACTION_OPTIONS.map((a) => (
                 <SelectItem key={a} value={a}>
                   {a === 'all' ? 'Toutes' : actionLabels[a] || a}

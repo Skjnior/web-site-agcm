@@ -2,7 +2,9 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { assertBureauModuleOrRedirect } from '@/lib/bureau-page-guard';
+import BureauClickableTableRow from '@/components/bureau/BureauClickableTableRow';
 import BureauRowEditDeleteActions from '@/components/bureau/BureauRowEditDeleteActions';
+import BureauTableActionsCell from '@/components/bureau/BureauTableActionsCell';
 import { FolderOpen, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
@@ -214,7 +216,7 @@ export default async function BureauProjetsPage({
               </thead>
               <tbody className="divide-y divide-slate-700/50">
                 {projets.map((projet) => (
-                  <tr key={projet.id} className="hover:bg-slate-700/20">
+                  <BureauClickableTableRow key={projet.id} detailHref={`/bureau/projets/${projet.id}`}>
                     <td className="px-4 py-4 align-top">
                       <div className="flex items-start gap-2">
                         <FolderOpen className="mt-0.5 h-4 w-4 shrink-0 text-violet-400" />
@@ -237,15 +239,16 @@ export default async function BureauProjetsPage({
                     <td className="whitespace-nowrap px-4 py-4 align-top text-sm text-slate-400">
                       {format(new Date(projet.createdAt), 'dd MMM yyyy', { locale: fr })}
                     </td>
-                    <td className="px-4 py-4 align-middle text-right">
+                    <BureauTableActionsCell className="px-4 py-4 align-middle text-right">
                       <BureauRowEditDeleteActions
+                        detailHref={`/bureau/projets/${projet.id}`}
                         editHref={`/bureau/projets/${projet.id}/edit`}
                         deleteApiUrl={`/api/bureau/projets/${projet.id}`}
                         resourceKind="ce projet"
                         resourceTitle={projet.titre}
                       />
-                    </td>
-                  </tr>
+                    </BureauTableActionsCell>
+                  </BureauClickableTableRow>
                 ))}
               </tbody>
             </table>

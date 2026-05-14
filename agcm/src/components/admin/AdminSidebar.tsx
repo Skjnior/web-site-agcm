@@ -21,6 +21,7 @@ import {
     XCircle,
     History,
     Settings,
+    LayoutTemplate,
 } from 'lucide-react';
 import { signOutWithConfirmation } from '@/lib/sign-out-confirm';
 import {
@@ -79,6 +80,7 @@ export default function AdminSidebar({ role, allowedBureauModules }: SidebarProp
         { name: 'Affectations', href: '/admin/affectations', icon: ClipboardList },
         { name: 'Logs système', href: '/admin/logs', icon: ShieldAlert },
         { name: 'Visites', href: '/admin/logs/visits', icon: Activity },
+        { name: 'Site vitrine', href: '/admin/site-vitrine', icon: LayoutTemplate },
     ];
 
     const navigation =
