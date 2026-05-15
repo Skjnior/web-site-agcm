@@ -22,6 +22,7 @@ import {
     History,
     Settings,
     LayoutTemplate,
+    CreditCard,
 } from 'lucide-react';
 import { signOutWithConfirmation } from '@/lib/sign-out-confirm';
 import {
@@ -54,6 +55,7 @@ export default function AdminSidebar({ role, allowedBureauModules }: SidebarProp
         { name: 'Actualités', href: '/admin/actualites', icon: FileText },
         { name: 'Événements', href: '/admin/evenements', icon: Calendar },
         { name: 'Membres', href: '/admin/membres', icon: Users },
+        { name: 'Cartes adhérent', href: '/admin/carte-membres', icon: CreditCard },
         { name: 'Demandes', href: '/admin/demandes', icon: ClipboardList },
         { name: 'Messages contact', href: '/admin/messages-contact', icon: Mail },
     ];

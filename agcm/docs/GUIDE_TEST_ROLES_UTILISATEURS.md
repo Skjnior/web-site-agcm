@@ -34,7 +34,7 @@ Liste détaillée des 9 comptes bureau : **`docs/COMPTES_BUREAU_SEED.md`**.
 |------|--------|--------------------------------------|
 | **SUPER_ADMIN** (Président) | `president@seed.agcm.local` | Redirection vers **`/admin`** + entrées Super Admin ; peut approuver les contenus |
 | **MEMBRE** avec poste bureau actif | Ex. `tresorier@seed.agcm.local`, `communication@seed.agcm.local`, etc. | **`/dashboard`** → **`/bureau`** (affectation **ACTIF**, poste **bureau**, mandat actif) |
-| **MEMBRE** sans poste bureau actif | Ex. `user10@agcm.gn` | **`/dashboard`** → **`/app/dashboard`** |
+| **MEMBRE** sans poste bureau actif | Compte **non fourni** par le seed par défaut (voir **Étape 3**) | **`/dashboard`** → **`/app/dashboard`** |
 
 > Le seed ne crée plus de rôles **ADMIN** « user2–user6 » : seul le Président porte **SUPER_ADMIN** pour couvrir validation + configuration. Pour tester un compte **ADMIN** pur, promouvoir manuellement un utilisateur en base ou via super-admin.
 
@@ -197,10 +197,14 @@ Compte **MEMBER** avec poste **« Secrétaire chargé aux sports, à la culture 
 
 ---
 
-## Étape 3 — MEMBRE simple (`user10@agcm.gn`)
+## Étape 3 — MEMBRE simple (sans bureau actif)
 
-1. Connexion **`user10@agcm.gn`** / `AGCM-Bureau-Test-2026!`.
-2. Aller sur **`/dashboard`**.
+Le seed standard importe les **adhérents du registre PDF** avec des emails techniques **`registre-pdf-*@import.agcm.local`** et **sans compte de connexion** (`userId` nul). Pour tester un **MEMBRE** avec `/app/dashboard` :
+
+1. **Option A** — ancien jeu massif : `npm run seed:legacy-600`, puis connexion **`user10@agcm.gn`** / `AGCM-Bureau-Test-2026!`.
+2. **Option B** — base « actuelle » : créer un **`User`** avec rôle **MEMBER**, sans **`AffectationPoste`** active sur le mandat courant (SQL, script ou procédure métier à votre convenance).
+
+Ensuite : aller sur **`/dashboard`**.
 
 | Attendu | Détail |
 |---------|--------|

@@ -46,9 +46,19 @@ Il s’agit du registre type Excel/PDF (situation des cotisations à une **date 
 
 Le **Président** (`SUPER_ADMIN`) utilise **`/admin/registre-cotisations`** (même écran, même API).
 
-## Utilisateurs de démonstration (hors bureau)
+## Masses de données « démo » (obsolète dans le seed par défaut)
 
-- `user10@agcm.gn` … `user600@agcm.gn` — même mot de passe `AGCM-Bureau-Test-2026!`, rôle **MEMBER**, sans poste actif sur le mandat en cours (sauf coïncidence dans d’anciennes bases).
+Le script **`npm run seed`** charge désormais les **adhérents du registre PDF** (extraits du fichier associé, situation au **17 avril 2026**) et **ne crée plus** les 600 utilisateurs `user10@agcm.gn` … `user600@agcm.gn`.
+
+Pour rejouer l’ancien jeu massif (600 entrées / table), utilisez :
+
+```bash
+npm run seed:legacy-600
+```
+
+(Voir `prisma/seed.legacy-600-bulk.ts`.)
+
+Les membres issus du PDF ont un email technique **`registre-pdf-{numéro de ligne}@import.agcm.local`** (pas de compte de connexion ; gestion bureau / registre cotisations).
 
 ## Source des intitulés
 

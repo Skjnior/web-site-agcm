@@ -340,3 +340,11 @@ section[id] {
 .prose em {
   font-style: italic;
 }
+
+/* Impression depuis l’admin : masquer chrome latéral et entête */
+@media print {
+  aside[class*='backdrop-blur'],
+  header[class*='backdrop-blur'] {
+    display: none !important;
+  }
+}

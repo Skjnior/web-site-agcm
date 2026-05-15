@@ -1,0 +1,167 @@
+num NOM PRENOM CONTACT situation au 17 avril 2026 absence
+1 BAH Imam 06 61 55 13 49 35 ( oct nov 25 fev marsavril 26 3 mois
+2 BAH Ramatoulaye 06 52 30 91 01 ok
+3 BAH Mamadou Big 06 02 31 32 13 55(sept oct dec 25 janv mars avril 26
+4 BAH Amadou bobo escale 07 80 36 19 53 exc
+5 BAH Mamadou Moussa 06 44 76 88 63 45( sept dec 25 janv mars avril 26 4 mois
+6 BAH Abdoul 07 67 43 24 42 10( avril 26)
+7 BAH Mamadou Radiaye 07 84 70 99 54 65( oct dec 25 janv fev mars avril26 10 mois
+8 BAH Souleymane etdt 07 74 67 31 89 n a 7 mois
+9 BAH Thierno Amadou pedro 07 80 49 61 30 n a 7 mois
+10 BAH Ibrahima 07 58 97 31 21 n a 6 mois
+11 BAH Djibril sahib 06 05 99 37 02 ok
+12 BARRY Falilou Mireuil 07 67 49 89 66 OK
+13 BAH Mamadou Kalil 07 51 01 90 11 ok
+14 BAH Simbé Baillo 07 80 87 35 82 n a 3 mois
+15 BAH Maimouna sidy w
+16 BAH Sidy Wansan 07 53 57 31 62 20( mars avril 26)
+17 BAH souleymane 07 81 58 14 56 40( dec 25 janv mars avril 26 )
+18 BAH Alpha oumar big 07 73 62 69 49 ok
+19 BAH barkindho 06 04 13 44 10 10( avril 26)
+20 BAH idrissa 06 02 34 95 26 ok+10(60 cotis spec- dec 25 janv fev mars avril 26)
+21 BAH Ousmane 07 80 52 26 56 10( avril 26)
+22 BAH Alseny 06 04 01 05 06 ok
+23 BAH elh Mamadou 07 58 63 79 36 ok
+24 BAH Alpha oumar vilnve 06 37 34 49 39 10( avril 26)
+25 BAH Alpha Amadou 07 80 17 60 07 maj 110 en mars 2026+ avril 26
+26 BAH Mamoudou 07 80 43 93 18 210(de 23+ja fe ma avr mai jun jul aou sep oct nov dec 24 janv fev mar avri mai juin juil aou sept oct nov dec 25 janv fev mars 26)	2 ans
+27 BAH Mamadou moustapha 06 38 39 02 86 95( jan avr mai jun aou sept oct nov dec 24 janv fev avril juil aout sept 25
+28 BAH Mamadou djoulde koloma 06 51 20 61 49 ok+10
+29 BAH Alpha Amadou Nesta 07 80 12 29 97 exc 4 mois
+30 BAH Elh Oumar 07 58 01 47 94 exc 14 mois
+31 BALDE alpha oumar 06 43 10 13 82 ok +30 cotis spec-fev mars avril 26)
+32 BALDE Ibrahim Kalil 07 73 17 07 07 30 (fev mars avril 26)
+33 BALDE Hadja Halimatou 07 77 80 48 62 25( juil aou oct nov nov 24 )
+34 BALDE Oumou 07 51 39 65 94 ok+15
+35 BALDE Nassirou 07 73 17 87 55 10( fev 26)
+36 BALDE Alpha Parker 06 06 40 06 84 100(avril mai jui juil aout sept oct nov dec 25 janv fev mars avril 26-10 cot 11 mois
+37 BALDE Fatima issiagha 07 80 38 02 19 ok
+38 BALDE Abdoulaye Kalash 06 04 12 32 10 40(cot spec 15-juill aout sept oct nov dec 25 janv 26)
+39 BALDE Mamadou Hady 07 80 23 92 82 n a 5 mois
+40 BALDE Ousmane 06 05 67 50 13 10( avril 26)
+41 BALDE Amadou diouldé 224 654 24 58 31 n a 3 mois
+42 BALDE Hadja Hawa mme oury 06 10 44 11 35 n a
+43 BALDE mamadou oury 06 03 99 49 72 ok
+44 BALDE Abdoulaye 07 51 01 90 03 155(oct nov 23+avr mai juil aou sept octnov dec 24 janv fev mar juill aout sept dec 25 janv fev mars avril 26)
+45 BANGOURA Mohamed Lucio 07 51 05 63 62 20( fmars avril 26)
+46 BANGOURA Mariame 07 59 30 75 52 n a
+47 BARRY Housseinatou 06 35 92 86 84 ok
+48 BARRY Siradjo 07 68 18 89 12 120( juin juil aout sept oct nov 24 avr mai juin juillet aout sept oct 25 janv fev mars avril 26
+49 BARRY Mamadou Adama 07 83 75 80 53 ok+40 (cotis spec-fev avril 26)
+50 BARRY Oumar 07 58 34 07 51 50(cotis spec 10-oct nov dec 25 janv fev avril 26)
+51 BARRY Ibrahim le mail 06 06 44 92 05 100( avril mai juin juil aout sept oct nov dec 25 janv fev mars avril 26 5 mois
+52 BARRY alpha oumar ( 2) 06 23 52 43 67 N A plus a la rochelle
+53 BARRY Mouctar mougnaré 07 80 33 91 18 ok
+54 BARRY Alpha Oumar petit 06 02 39 43 01 20(janv mars 26)
+55 BARRY Mohamed Lamine escale 07 45 82 15 25 n a 10 mois
+56 BARRY Thierno Mamoudou 07 80 62 24 02 n a 15 mois
+57 BARRY Oumou salamata 07 53 21 64 98 ok
+58 BARRY Abdourahamane 07 59 31 46 51 n a
+59 BARRY Mouctar escale 34 634 03 27 81 n a
+60 BARRY Boubacar Sidy escale 07 74 55 65 10 n a 6 mois
+61 BARRY Mamadou Adama escale 212 774 42 00 50 n a 7 mois
+62 BARRY Alpha Boubacar 07 82 85 84 17 n a
+63 BARRY Mamadou djoulde 224 624 08 24 72 4 mois
+64 BARRY Hadiatoulaye mme alasane
+65 BARRY Kadiatou mme djibril n a
+66 BARRY boubacar 06 48 68 20 90 ok
+67 BARRY Amadou abdoulaye 06 02 30 01 27 35 ( sept oct 25 mars avril 26)
+68 BARRY Alassane lanbawel 06 48 68 09 14 ok +20 ( cotis sp-janv fev mars avril 26)
+69 BARRY Alpha oumar 07 80 57 80 79 ok
+70 BARRY Amadou bouliwel 06 04 11 93 58 ok
+71 BARRY Mohamed F 07 80 60 01 80 ok
+72 BARRY Illiass 07 53 71 05 70 20( mars avril 26)
+73 BARRY Saliou Lacrim 07 73 81 18 36 ok
+74 BARRY Alseny 07 80 50 64 70 10( janv 26
+75 BARRY Amadou escale exc 10 mois
+76 BIAYE Lamine 07 51 90 90 18 125 ( oct dec 24 janv fev mar avril mai juin juill aout sept oct nov dec 25 janv fev mars avril 26) 10 mois
+77 CAMARA Fode Abass 07 51 49 25 31 n a
+78 CAMARA Daouda 224 627 02 28 61 n a
+79 CAMARA Sadio escale 07 58 51 58 65 n a 7 mois
+80 CAMARA Abraham Kalil 07 45 38 26 94 n a 3 mois
+81 CAMARA abdoulaye 06 64 38 74 34 ok+10
+82 CAMARA Djibril 07 80 38 78 45 85(10 cot spec-dec 24 janv mai juil sept oct nov dec 25 janv 26 mars avril 26)
+83 CISSE Mamadou 07 80 46 46 49 195(de 23+ja fe ma av mai jun jul sep oct 24 mars avril mai juin juill aout sept oct nov dec 25 janv fev marsavril 26	6 mois
+84 DIABY Lamine sadokou 06 47 98 18 83 100( mar avr 24+ JUIN juil aout sept nov dec 25 janv fev mars avril 26 6 MOIS
+85 DIABY Souhaibou 06 52 03 07 73 N A
+86 DIABY Alhassane 07 53 77 16 83 N A 9 mois
+87 DIAKITE Yacine 07 53 62 86 27 n a
+88 DIALLO Alhassane 06 71 30 96 15 ok 3 mois
+89 DIALLO Aboubacar aytre 06 04 04 12 38 100(mai juin juil aou dec 24 janv avr juill sept oct dec 25 janv avril 26
+90 DIALLO Alpha Oumar pallice 07 84 61 67 85 10( avril 26)
+91 DIALLO Amadou nez nez flow 06 05 68 25 59 ok
+92 DIALLO Alpha Aytre 07 51 03 05 65 10( avril 26)
+93 DIALLO Alpha Good 07 62 64 74 66 40( janv fev mars avril 26)
+94 DIALLO Fatima Tasdon 06 35 93 36 02 40( aout sept nov dec 25 janv fev mars avril 26 3 mois
+95 DIALLO Abdoulaye Oncle 06 05 75 76 17 10(oct 25
+96 DIALLO Said 125(10 cot spec-juil sept oct nov dec 24 fev avr mai juin juil aout sept oct nov dec 25 janv fev mars avril 26 ) 9 mois
+97 DIALLO Alpha Mireuil 07 80 16 91 57 10( avril 26)
+98 DIALLO Mamadou Habib 351 920 158 099 60( juin juill aout sept oct nov dec 25 janv 26-20 c s=40) en deplacement
+99 DIALLO Djoulde 07 73 99 91 44 45( sept nov25 janv FEV avril 26
+100 DIALLO Mamadou Saliou 07 59 76 53 01 demissionne demission
+101 DIALLO Mamadou Sadjo 06 52 42 67 79 ok
+102 DIALLO Harouna 07 45 82 22 70 85(mai juin juill aout sept oct nov dec 25 janv fev mars 26 12 mois
+103 DIALLO Djibril 07 80 23 37 88 n a 5 mois
+104 DIALLO Elh Mamadou buskets 06 04 02 24 70 n a 5 mois
+105 DIALLO Abdourahamane 07 45 85 23 65 N A
+106 DIALLO Mohamed Ramadane 07 80 34 49 88 30 ( janv fev avril 26)
+107 DIALLO Alpha Oumar mediat 241 62 31 60 60 n a
+108 DIALLO Souleymane 07 59 23 08 56 n a 5 mois
+109 DIALLO Aliou escale 224 626 50 17 40 n a 6 mois
+110 DIALLO Elh Ibrahima escale 07 59 29 18 86 n a 6 mois
+111 DIALLO Abdoul Salam 06 50 99 16 28 n a 3 mois
+112 DIALLO Abdoulaye Telly 07 80 60 94 72 30 (fev mars avril 26) 3 mois
+113 DIALLO Abdoulaye sy 07 53 50 56 20 10( avril 26)
+114 DIALLO Kadiatou Sy
+115 DIALLO abdoulaye peintre 06 89 95 26 18 ok +10 (20 cotis spec-avril 26)
+116 DIALLO mamadou oury 06 19 81 46 47 ok+ 40 (60cotis spec -mars avril 26) 4 mois
+117 DIALLO alpha issiagha 07 67 64 92 87 ok(60 cotis spe- oct nov dec 25 janv mars avril 26)
+118 DIALLO thierno lamine 06 62 24 06 16 ok
+119 DIALLO djouma 07 74 36 69 76 10( avril 26)
+120 DIALLO Ibrahim affelay 07 58 75 20 36 ok
+121 DIALLO Oumar 07 73 63 76 43 N A
+122 DIALLO Mamadou aliou luxe 07 66 26 04 54 10( avril 26)
+123 DIALLO Mamadou Aliou petit 07 49 31 97 18 ok
+124 DIALLO Thierno amadou nodjo 07 53 37 74 89 N A
+125 DIALLO Alpha Oumar port neuf 07 80 63 42 68 N A
+126 DIALLO Ibrahima 07 53 39 71 69 20 (janv avril 26)
+127 DIALLO Lamarana che black 06 06 45 37 75 absence + de 1 an 21 mois
+128 DIALLO Saikou Yaya 07 43 50 70 49 n a
+129 FOFANA Souleymane 07 58 96 44 69 n a
+130 JALLOH Oury 07 80 58 75 71 20( oct 25 avril 26)
+131 KABA Mamadi 07 51 27 68 14 10( fev 26)
+132 KABA Mohamed 07 67 95 89 56 n a 5 mois
+133 KABA Fode Mohamed 07 74 49 13 96
+134 KAKORO Mohamed escale 07 80 36 19 52 exc 12 mois
+135 KEITA Mohamed 07 80 30 47 60 70 mise à jour janv 26 (70-40)+fev mars avril 26 3 mois
+136 KEITA Kalilou ibrahim 06 03 64 92 00 100( a voir ) 18 mois
+137 KEITA Mohamed Minos 07 83 15 64 24 80( aout sept oct nov dec 25 janv fev mars avril 26 9 mois
+138 KEITA Sadio 07 53 09 06 89 70( aout sept oct nov dec 25 janv fev mars 26
+139 KONATE Tidiane 06 02 26 04 86 absence + de 1 an 21 mois
+140 LOUA Roland etudiant 07 51 44 88 90 n a
+141 LY Ousmane ok
+142 MANE Saliou 07 80 22 77 67 65( aout nov dec 25 janv fev mars avril 26) 6 mois
+143 Mme bah idrissa ( mariam 07 80 44 71 84 n a
+144 Mme BAH Aissata alpha amadou 07 58 34 38 08
+145 Mme BAH Mariam djoulde sautel 07 80 47 05 44 ok
+146 Mme Diallo tiguidanke abdoulaye n a 4 mois
+147 SACKHO N'famara 06 23 87 80 84 10(mars 26)
+148 SOW Abdoulaye Djibril 06 05 96 34 38 45( juin juil aout sept + moitié oct25 nov dec 25( na depuis janv 26)
+149 SOW mamadou lamarana 06 04 44 81 84 ok
+150 SOW elh amadou macka 07 53 36 22 25 40( sept oct nov dec 25 janv fev mars avril 26)
+151 SOW Aliou 06 04 12 56 11 demissionne demission
+152 SOW Mamadou Alpha N A inconnu
+153 SOW Ramata 07 60 45 71 22 5 ( avril 26)
+154 SOW Mamadou Bella esc 06 02 90 56 27 10( avril 26)
+155 SOW Souaib Roumi exc 14 mois
+156 SOW Aboubacar 07 53 20 56 90 70(aout sept nov dec 25 janv fev mars avril 26 6 mois
+157 SOW Ibrahima 07 58 69 58 17 n a
+158 SOW Mamadou MS 06 29 55 90 60 7 mois
+159 SOW Thierno Aguibou 224 626 53 55 10 n a 6 mois
+160 SOW Oumar 07 80 36 40 50 n a
+161 SOW Ousmane 07 53 89 21 19
+162 SYLLA Abdoulaye 07 58 22 05 85 OK+20(60cotis spec-dec 25 janv mars avril 26
+163 Mamadou diouldé 07 80 63 25 05 exc
+164 KOITA Ousmane 34 657 40 48 74
+165 DIALLO Boubacar 07 75 48 08 44
+166 DIALLO Mariama Cire fallou

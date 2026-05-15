@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client';
  * Sinon `next dev` peut conserver un singleton `PrismaClient` généré *avant* `prisma generate` :
  * les nouveaux delegates sont alors `undefined` (ex. `prisma.memberRegistreCotisation.findMany`).
  */
-const PRISMA_SCHEMA_REV = 3;
+const PRISMA_SCHEMA_REV = 4;
 
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
@@ -13,8 +13,11 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function buildClient() {
+  const devLogs: ('query' | 'error' | 'warn')[] =
+    process.env.PRISMA_LOG_QUERIES === '1' ? ['query', 'error', 'warn'] : ['error', 'warn'];
+
   return new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    log: process.env.NODE_ENV === 'development' ? devLogs : ['error'],
   });
 }
 

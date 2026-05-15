@@ -70,6 +70,9 @@ model Member {
   dateNaissance DateTime?          @map("date_naissance") @db.Date
   profession    String?
   adresse       String?
+  /// Position pour la carte « atlas territorial » (géocodage ville/pays, OpenStreetMap Nominatim)
+  geoLat        Float?             @map("geo_lat")
+  geoLng        Float?             @map("geo_lng")
   affectations              AffectationPoste[]
   user                      User?                      @relation(fields: [userId], references: [id], onDelete: Cascade)
   registreCotisations       MemberRegistreCotisation[]
