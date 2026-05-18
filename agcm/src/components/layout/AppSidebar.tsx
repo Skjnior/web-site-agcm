@@ -26,6 +26,7 @@ import {
   Handshake,
   Heart,
   X,
+  Images,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -209,6 +210,16 @@ export default function AppSidebar({
       label: 'Événements',
       href: '/bureau/evenements',
       icon: Calendar,
+    },
+    {
+      label: 'Galerie site',
+      href: '/bureau/galerie',
+      icon: Images,
+    },
+    {
+      label: 'Partenaires',
+      href: '/bureau/partenaires',
+      icon: Handshake,
     },
     {
       label: 'Historique des actions',

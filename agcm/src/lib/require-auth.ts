@@ -176,5 +176,65 @@ export async function requireIntranetAccess() {
   return { error: null, session };
 }
 
+/**
+ * Galerie site public : super admin ou bureau (module galerie).
+ */
+export async function requireGalerieManage() {
+  const { error, session } = await requireAuth();
+  if (error) return { error, session: null };
 
+  const user = await prisma.user.findUnique({
+    where: { id: session!.user!.id! },
+  });
+  if (!user) {
+    return {
+      error: NextResponse.json({ error: 'Utilisateur introuvable' }, { status: 401 }),
+      session: null,
+    };
+  }
+
+  const { canManageSiteGalerie } = await import('@/lib/site-media-access');
+  if (!(await canManageSiteGalerie(user))) {
+    return {
+      error: NextResponse.json(
+        { error: 'Accès refusé : gestion de la galerie non autorisée pour votre poste' },
+        { status: 403 },
+      ),
+      session: null,
+    };
+  }
+
+  return { error: null, session };
+}
+
+/**
+ * Partenaires site public : super admin ou bureau (module partenaires).
+ */
+export async function requirePartenairesManage() {
+  const { error, session } = await requireAuth();
+  if (error) return { error, session: null };
+
+  const user = await prisma.user.findUnique({
+    where: { id: session!.user!.id! },
+  });
+  if (!user) {
+    return {
+      error: NextResponse.json({ error: 'Utilisateur introuvable' }, { status: 401 }),
+      session: null,
+    };
+  }
+
+  const { canManageSitePartenaires } = await import('@/lib/site-media-access');
+  if (!(await canManageSitePartenaires(user))) {
+    return {
+      error: NextResponse.json(
+        { error: 'Accès refusé : gestion des partenaires non autorisée pour votre poste' },
+        { status: 403 },
+      ),
+      session: null,
+    };
+  }
+
+  return { error: null, session };
+}
 

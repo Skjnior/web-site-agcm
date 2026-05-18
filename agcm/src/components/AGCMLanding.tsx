@@ -25,6 +25,7 @@ import BureauSectionCompact from './BureauSectionCompact'
 import ProjetsGuineeSection from './ProjetsGuineeSection'
 import ActualitesSection from './ActualitesSection'
 import GalerieSection from './GalerieSection'
+import PartnersCarouselSection from './PartnersCarouselSection'
 import SectionDivider from './SectionDivider'
 import Footer from './layout/Footer'
 import PresidentMessageSection from './PresidentMessageSection'
@@ -431,33 +432,12 @@ export default function AGCMLanding() {
 
 
       {/* Galerie */}
-      <GalerieSection images={site.gallery} />
+      <GalerieSection />
 
-      {/* Partenaires & mécènes */}
-      <section id="partenaires" className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-6">
-            <span className="text-red-600 font-semibold text-sm uppercase">{site.partenaires.eyebrow}</span>
-            <h2 className="text-3xl font-bold text-agcm-900">{site.partenaires.title}</h2>
-          </div>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm text-slate-700">
-            {site.partenaires.items.map((p, i) => (
-              <div key={i} className="bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-sm flex gap-2">
-                <HeartHandshake size={16} className="text-red-500 mt-1" />
-                <span>{p}</span>
-              </div>
-            ))}
-          </div>
-          <div className="text-center mt-4">
-            <button
-              onClick={() => setShowPartenaireModal(true)}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white px-5 py-3 rounded-lg shadow hover:-translate-y-0.5 transition"
-            >
-              Devenir partenaire <ArrowRight size={16} />
-            </button>
-          </div>
-        </div>
-      </section>
+      <PartnersCarouselSection
+        eyebrow={site.partenaires.eyebrow}
+        title={site.partenaires.title}
+      />
 
       {/* FAQ */}
       <section id="faq" className="py-8 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-agcm-900 via-agcm-800 to-agcm-900 text-white">

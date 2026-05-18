@@ -6,49 +6,29 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
-    // Compter les membres actifs
-    const membresActifs = await prisma.member.count({
-      where: {
-        statutMembre: 'ACTIF',
-      },
-    });
-
-    // Compter les événements de l'année en cours (affichés sur le site)
     const currentYear = new Date().getFullYear();
-    const evenementsCount = await prisma.event.count({
-      where: {
-        afficheSite: true,
-        dateDebut: {
-          gte: new Date(currentYear, 0, 1),
-          lte: new Date(currentYear, 11, 31),
-        },
-      },
-    });
+    const yearStart = new Date(currentYear, 0, 1);
+    const yearEnd = new Date(currentYear, 11, 31, 23, 59, 59, 999);
 
-    // Compter les projets actifs (visibles sur le site et non brouillons)
-    const projetsCount = await prisma.projet.count({
-      where: {
-        visibiliteSite: true,
-        statut: {
-          in: ['EN_COURS', 'TERMINE'],
+    const [membresActifs, evenementsAnnee, projetsActifs] = await Promise.all([
+      prisma.member.count({
+        where: { statutMembre: 'ACTIF' },
+      }),
+      prisma.event.count({
+        where: {
+          dateDebut: { gte: yearStart, lte: yearEnd },
         },
-      },
-    });
-
-    // Compter les contenus publiés
-    const actualitesCount = await prisma.content.count({
-      where: {
-        statutWorkflow: 'PUBLIE',
-        visibiliteCible: 'PUBLIC_SITE',
-      },
-    });
+      }),
+      prisma.projet.count({
+        where: { statut: 'EN_COURS' },
+      }),
+    ]);
 
     return NextResponse.json({
       stats: [
         { label: 'Membres', value: `+${membresActifs}` },
-        { label: 'Événements / an', value: `+${evenementsCount}` },
-        { label: 'Projets actifs', value: `${projetsCount}+` },
-        { label: 'Actualités', value: `${actualitesCount}+` },
+        { label: 'Événements / an', value: `+${evenementsAnnee}` },
+        { label: 'Projets actifs', value: `${projetsActifs}+` },
       ],
     });
   } catch (error) {

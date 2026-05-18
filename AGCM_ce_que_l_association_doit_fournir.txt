@@ -1,0 +1,67 @@
+================================================================================
+AGCM — Ce que l’association doit fournir au projet (checklist)
+================================================================================
+
+1. Identité et contenu du site
+--------------------------------------------------------------------------------
+Élément                                                          Pourquoi
+--------------------------------------------------------------------------------
+Chiffres officiels pour la page d’accueil (nombre de membres,   Remplacer les placeholders du hero
+formations, événements, etc.)
+
+Coordonnées à jour : adresse en Guinée, téléphone, email         Footer et pages contact
+officiel
+
+Liens réseaux sociaux (Facebook, Instagram, LinkedIn, etc.)      Footer et éventuellement intégration Meta
+
+Montants / règles de cotisation (adulte, étudiant, etc.)         Section types de membres
+
+Texte / dates si vous validez l’histoire de l’asso               Hero et page À propos
+(ex. loi 1986, enregistrement 2003)
+
+
+2. Technique et hébergement (accès ou décisions)
+--------------------------------------------------------------------------------
+Élément                                                          Pourquoi
+--------------------------------------------------------------------------------
+URL définitive du site (ex. https://…)                           NEXTAUTH_URL en production
+
+Base PostgreSQL : URL de connexion (ou compte Vercel/Neon/etc.)   Variable agcm_db_DATABASE_URL (ou équivalent sur leur plateforme)
+
+Confirmation de la variable utilisée en prod (Vercel peut        Éviter les mismatches entre doc et dashboard
+préfixer le nom)
+
+Compte email transactionnel (Resend ou autre) + API key si vous   Mot de passe oublié, notifications futures
+envoyez les mails depuis l’app
+
+Adresse d’expéditeur (EMAIL_FROM) validée (domaine + SPF/DKIM      Délivrabilité des mails
+si besoin)
+
+
+3. Réseaux et intégrations (si l’asso les veut)
+--------------------------------------------------------------------------------
+Élément                                                          Pourquoi
+--------------------------------------------------------------------------------
+Page Facebook + Meta App (Page ID, token d’accès longue durée)   Publication / sync Facebook (si activé)
+
+Décision : oui / non pour Facebook, emails automatiques, etc.    Prioriser le développement
+
+
+4. Gouvernance et exploitation
+--------------------------------------------------------------------------------
+Élément                                                          Pourquoi
+--------------------------------------------------------------------------------
+Qui est SUPER_ADMIN (email ou compte à créer en premier)         Première connexion et gestion des comptes
+
+Liste des contacts pour les demandes (adhésion, partenariat,    Process métier, pas seulement technique
+contact) : qui répond, quels délais
+
+Mentions légales / politique de confidentialité / cookies        Obligations légales site public
+(texte ou validation d’un brouillon)
+
+Logo haute définition (PNG/SVG) si le logo n’est pas final        Favicon, réseaux, PDF
+
+
+================================================================================
+Fin du document
+================================================================================

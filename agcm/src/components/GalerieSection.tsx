@@ -11,8 +11,10 @@ export interface GalerieImage {
 }
 
 type GalerieSectionProps = {
-  /** Si fourni (ex. landing), évite un second appel API. */
+  /** @deprecated Utiliser l’API /api/public/galerie (images visibles uniquement). */
   images?: GalerieImage[];
+  /** Limite d’affichage sur l’accueil (0 = toutes les visibles). */
+  maxDisplay?: number;
 };
 
 interface GalerieModalProps {
@@ -119,22 +121,22 @@ function GalerieModal({ images, currentIndex, isOpen, onClose, onNext, onPrev }:
   );
 }
 
-export default function GalerieSection({ images: imagesProp }: GalerieSectionProps) {
+export default function GalerieSection({ images: imagesProp, maxDisplay = 12 }: GalerieSectionProps) {
   const [fetched, setFetched] = useState<GalerieImage[] | null>(null);
 
   useEffect(() => {
     if (imagesProp?.length) return;
-    fetch('/api/public/site-public-page')
+    fetch('/api/public/galerie')
       .then((r) => r.json())
       .then((d) => {
-        const g = d.payload?.gallery;
-        if (Array.isArray(g)) setFetched(g.slice(0, 8));
+        if (Array.isArray(d.images)) setFetched(d.images);
         else setFetched([]);
       })
       .catch(() => setFetched([]));
   }, [imagesProp]);
 
-  const images = (imagesProp?.length ? imagesProp : fetched ?? []).slice(0, 8);
+  const allImages = imagesProp?.length ? imagesProp : fetched ?? [];
+  const images = maxDisplay > 0 ? allImages.slice(0, maxDisplay) : allImages;
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);

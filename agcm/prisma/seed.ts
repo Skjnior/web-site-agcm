@@ -1,9 +1,12 @@
 /**
- * Seed AGCM — données réelles utiles + registre adhérents issu du PDF
- * « ajcm dettes +absences avril 26 » (situation au 17 avril 2026).
+ * Seed AGCM — RÉINITIALISATION COMPLÈTE (efface toute la base).
  *
- * L’ancien seed « 600 entrées par table » est conservé dans
- * `seed.legacy-600-bulk.ts` (npm run seed:legacy-600).
+ * ⚠️ Ne pas lancer en production ni pour conserver des données existantes.
+ * Préférer : npm run db:trim
+ *
+ * Commande : npm run seed:fresh
+ *
+ * L’ancien seed « 600 entrées par table » : npm run seed:legacy-600
  */
 
 import { PrismaClient, Prisma } from '@prisma/client';
@@ -41,6 +44,7 @@ async function main() {
   await prisma.projetPartner.deleteMany();
   await prisma.projetMedia.deleteMany();
   await prisma.projet.deleteMany();
+  await prisma.galerieImage.deleteMany();
   await prisma.partner.deleteMany();
   await prisma.comment.deleteMany();
   await prisma.content.deleteMany();
@@ -654,6 +658,21 @@ async function main() {
   });
   console.log('✅ Site vitrine (SitePublicPage)\n');
 
+  console.log('🖼️ Galerie (images de démo, masquées par défaut sauf les 4 premières)...');
+  const galleryItems = SITE_PUBLIC_DEFAULT_PAYLOAD.gallery ?? [];
+  for (let i = 0; i < galleryItems.length; i++) {
+    const g = galleryItems[i]!;
+    await prisma.galerieImage.create({
+      data: {
+        url: g.url,
+        alt: g.alt,
+        visibleSite: i < 4,
+        ordre: i,
+      },
+    });
+  }
+  console.log(`✅ ${galleryItems.length} images galerie\n`);
+
   console.log('\n📊 Résumé');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   const counts = {
@@ -667,6 +686,8 @@ async function main() {
     projets: await prisma.projet.count(),
     events: await prisma.event.count(),
     citationsPresident: await prisma.presidentCitation.count(),
+    galerieImages: await prisma.galerieImage.count(),
+    partners: await prisma.partner.count(),
   };
   Object.entries(counts).forEach(([k, v]) => console.log(`   ${k}: ${v}`));
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');

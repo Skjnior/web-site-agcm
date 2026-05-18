@@ -32,8 +32,8 @@ export default function StatsSection() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[...Array(4)].map((_, i) => (
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {[...Array(3)].map((_, i) => (
           <div key={i} className="bg-white/10 border border-white/10 rounded-xl p-4 animate-pulse">
             <div className="h-8 bg-white/20 rounded mb-2"></div>
             <div className="h-6 bg-white/20 rounded w-1/2"></div>
@@ -52,7 +52,7 @@ export default function StatsSection() {
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
       {stats.map((stat, i) => (
         <div
           key={i}

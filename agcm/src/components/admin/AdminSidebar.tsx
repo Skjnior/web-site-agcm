@@ -23,6 +23,8 @@ import {
     Settings,
     LayoutTemplate,
     CreditCard,
+    Images,
+    Handshake,
 } from 'lucide-react';
 import { signOutWithConfirmation } from '@/lib/sign-out-confirm';
 import {
@@ -54,6 +56,8 @@ export default function AdminSidebar({ role, allowedBureauModules }: SidebarProp
         { name: 'Approbations', href: '/admin/approbations', icon: CheckSquare },
         { name: 'Actualités', href: '/admin/actualites', icon: FileText },
         { name: 'Événements', href: '/admin/evenements', icon: Calendar },
+        { name: 'Galerie site', href: '/admin/galerie', icon: Images },
+        { name: 'Partenaires', href: '/admin/partenaires', icon: Handshake },
         { name: 'Membres', href: '/admin/membres', icon: Users },
         { name: 'Cartes adhérent', href: '/admin/carte-membres', icon: CreditCard },
         { name: 'Demandes', href: '/admin/demandes', icon: ClipboardList },
@@ -70,6 +74,8 @@ export default function AdminSidebar({ role, allowedBureauModules }: SidebarProp
         { name: 'Contenus rejetés', href: '/bureau/contents/rejetes', icon: XCircle },
         { name: 'Projets', href: '/bureau/projets', icon: FolderOpen },
         { name: 'Événements', href: '/bureau/evenements', icon: Calendar },
+        { name: 'Galerie site', href: '/bureau/galerie', icon: Images },
+        { name: 'Partenaires', href: '/bureau/partenaires', icon: Handshake },
         { name: 'Historique des actions', href: '/bureau/traces', icon: History },
         { name: 'Paiements', href: '/dashboard/paiements', icon: Settings },
         { name: 'Registre cotisations', href: '/bureau/registre-cotisations', icon: ClipboardList },

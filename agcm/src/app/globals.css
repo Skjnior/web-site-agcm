@@ -183,6 +183,27 @@ section[id] {
   }
 }
 
+@keyframes partners-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-partners-scroll {
+  animation: partners-scroll 40s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-partners-scroll {
+    animation: none;
+    flex-wrap: wrap;
+    width: 100% !important;
+  }
+}
+
 @keyframes blob {
   0% {
     transform: translate(0px, 0px) scale(1);
