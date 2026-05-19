@@ -171,6 +171,30 @@ section[id] {
   .admin-glass {
     @apply border border-slate-700/50 bg-slate-900/75 shadow-none backdrop-blur-xl;
   }
+  /* Champs de formulaire admin (fond sombre) : texte toujours lisible */
+  .admin-page input:not([type='checkbox']):not([type='radio']),
+  .admin-page select,
+  .admin-page textarea {
+    @apply pointer-events-auto text-slate-100;
+  }
+  .admin-page textarea,
+  .admin-page input:not([type='checkbox']):not([type='radio']),
+  .admin-page select {
+    @apply border-slate-600 bg-slate-800/80 placeholder:text-slate-500;
+  }
+  /* Éditeur riche TipTap dans l'admin : .prose force du texte noir sinon invisible */
+  .admin-rich-text .ProseMirror {
+    color: rgb(241 245 249) !important;
+    caret-color: rgb(241 245 249);
+    min-height: 12rem;
+  }
+  .admin-rich-text .ProseMirror p.is-editor-empty:first-child::before {
+    color: rgb(100 116 139);
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
   /* Bandeaux feedback (espace membre / admin sombre) */
   .app-banner-error {
     @apply rounded-xl border border-red-900/50 bg-red-950/50 px-4 py-3 text-sm text-red-200;

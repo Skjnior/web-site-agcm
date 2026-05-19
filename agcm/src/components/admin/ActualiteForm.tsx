@@ -218,7 +218,7 @@ export default function ActualiteForm({ actualiteId, initialData }: ActualiteFor
               placeholder="Un bref résumé qui apparaîtra dans les listes d'actualités..."
             />
           </div>
-          <div className="md:col-span-2 space-y-2 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-900">
+          <div className="admin-rich-text md:col-span-2 space-y-2 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-900">
             <div className="border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-600 dark:bg-slate-800/50">
               <label htmlFor="content" className="block text-sm font-medium text-slate-700">
                 Contenu détaillé <span className="text-red-500">*</span>

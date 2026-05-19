@@ -30,13 +30,29 @@ type EvenementFormProps = {
   initialData?: Partial<EvenementFormData>;
 };
 
+/** Texte lisible dans l’admin sombre ; évite texte noir sur fond sombre. */
+function toPlainTextField(value: string | undefined): string {
+  if (!value) return '';
+  if (!value.includes('<')) return value;
+  return value
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+const adminTextareaClass =
+  'pointer-events-auto relative z-[1] w-full resize-y rounded-xl border border-slate-600 bg-slate-800 px-4 py-3 text-slate-100 placeholder:text-slate-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50';
+
 export default function EvenementForm({ evenementId, initialData }: EvenementFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<EvenementFormData>({
     titre: initialData?.titre || '',
     slug: initialData?.slug || '',
-    description: initialData?.description || '',
+    description: toPlainTextField(initialData?.description),
     type: initialData?.type || 'CONFERENCE',
     dateEvenement: initialData?.dateEvenement || '',
     heureDebut: initialData?.heureDebut || '09:00',
@@ -46,7 +62,7 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
     inscriptionRequise: initialData?.inscriptionRequise ?? false,
     placesMax: initialData?.placesMax,
     dateInscriptionFin: initialData?.dateInscriptionFin || '',
-    programme: initialData?.programme || '',
+    programme: toPlainTextField(initialData?.programme),
     intervenants: initialData?.intervenants || '',
     imageUrl: initialData?.imageUrl || '',
     status: initialData?.status || 'A_VENIR',
@@ -102,7 +118,7 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <form onSubmit={handleSubmit} className="pointer-events-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="admin-glass rounded-3xl p-8 shadow-sm space-y-8">
         <h2 className="text-xl font-semibold text-slate-900 border-b border-slate-200/50 pb-4 dark:border-slate-700 dark:text-slate-100">Informations générales</h2>
         <div className="grid md:grid-cols-2 gap-6">
@@ -140,11 +156,12 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
             </label>
             <textarea
               id="description"
+              name="description"
               required
               rows={6}
               value={formData.description}
               onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100 resize-y"
+              className={adminTextareaClass}
               placeholder="Décrivez l'événement..."
             />
           </div>
@@ -314,10 +331,11 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
             </label>
             <textarea
               id="programme"
+              name="programme"
               rows={8}
               value={formData.programme || ''}
               onChange={(e) => setFormData((prev) => ({ ...prev, programme: e.target.value }))}
-              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100 resize-y"
+              className={adminTextareaClass}
               placeholder="Détaillez le programme de l'événement..."
             />
           </div>

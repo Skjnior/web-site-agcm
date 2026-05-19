@@ -29,7 +29,8 @@ export function RichTextEditor({ content, onChange, placeholder, className = '' 
     },
     editorProps: {
       attributes: {
-        class: `prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[200px] p-4 ${className}`,
+        class: `focus:outline-none min-h-[200px] w-full max-w-none p-4 ${className}`,
+        ...(placeholder ? { 'data-placeholder': placeholder } : {}),
       },
     },
   });
@@ -72,7 +73,7 @@ export function RichTextEditor({ content, onChange, placeholder, className = '' 
 
   if (!isMounted || !editor) {
     return (
-      <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-600">
+      <div className="admin-rich-text overflow-hidden rounded-lg border border-slate-200 dark:border-slate-600">
         <div className="flex flex-wrap gap-2 border-b border-slate-200 bg-gray-50 p-2 dark:border-slate-600 dark:bg-slate-800/80">
           <div className="h-8 w-16 bg-gray-200 rounded animate-pulse" />
           <div className="h-8 w-16 bg-gray-200 rounded animate-pulse" />
@@ -84,7 +85,7 @@ export function RichTextEditor({ content, onChange, placeholder, className = '' 
   }
 
   return (
-      <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-600">
+      <div className="admin-rich-text overflow-hidden rounded-lg border border-slate-200 dark:border-slate-600">
         <div className="flex flex-wrap gap-2 border-b border-slate-200 bg-gray-50 p-2 dark:border-slate-600 dark:bg-slate-800/80">
           <button
           type="button"
