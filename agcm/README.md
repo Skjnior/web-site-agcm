@@ -247,6 +247,8 @@ agcm/
 - **Vote** : Votes internes
 - **AuditLog** : Logs d'audit
 
+Voir aussi **`docs/NETTOYAGE_BASE_PROD_REGISTRE.md`** — script pour ne conserver que le registre PDF + bureau sur une base donnée (`DATABASE_URL`).
+
 ### Relations
 
 Le schéma Prisma définit 24 tables avec des relations complexes pour gérer :

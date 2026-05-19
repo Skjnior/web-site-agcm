@@ -13,7 +13,6 @@ import AdminDeleteResourceButton from '@/components/admin/AdminDeleteResourceBut
 interface Actualite {
   id: string;
   titre: string;
-  slug: string;
   imagePrincipale: string | null;
   statutWorkflow: string;
   createdAt: Date;
@@ -99,7 +98,7 @@ export default function ActualitesTable({ actualites, isSuperAdmin }: Actualites
                         Modifier
                       </Button>
                     </Link>
-                    <Link href={`/actualites/${actualite.slug}`} target="_blank">
+                    <Link href={`/actualites/${actualite.id}`} target="_blank">
                       <Button variant="view" size="sm" className="h-8 shadow-sm">
                         <Eye className="h-3.5 w-3.5 mr-1" />
                         Voir
