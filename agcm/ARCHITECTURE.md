@@ -12,10 +12,10 @@ Cette plateforme implémente le cahier des charges complet pour l'Association de
 
 #### Entités principales :
 
-- **User** : Comptes utilisateurs (SUPER_ADMIN, ADMIN, MEMBER)
-- **Member** : Profils membres (1-1 avec User)
+- **User** : Comptes de connexion (**ADMIN** / **SUPER_ADMIN** et, le cas échéant, comptes liés au **bureau**). Les **adhérent·es n’ont pas de compte** : ils passent par le formulaire public uniquement.
+- **Member** : Fiche personne (annuaire, cotisations, etc.). Un·e adhérent·e accepté·e est enregistré·e comme **Member** avec `userId` nul et un **email de contact** ; toute la gestion se fait côté bureau / admin. Si l’on crée un **User** avec le même e-mail (super-admin), la fiche est **reliée** et le champ `member.email` est vidé.
 - **Mandat** : Périodes de gouvernance (ACTIF, EXPIRE, ARCHIVE)
-- **Poste** : Fonctions du bureau (Président, Secrétaire, etc.)
+- **Poste** : Fonctions du bureau ; le seed officiel reprend les **9** postes du règlement intérieur (voir `prisma/bureau-reglement-seed.ts`), dont le poste fusionné *Secrétaire chargé à la formation et directeur des finances*.
 - **AffectationPoste** : Attribution d'un poste à un membre pour un mandat
 - **Content** : Publications/activités avec workflow d'approbation
 - **Projet** : Projets de l'association
@@ -104,10 +104,11 @@ Cette plateforme implémente le cahier des charges complet pour l'Association de
 - ❌ Créer un compte
 - ❌ Accéder aux espaces privés
 
-### Membre
-- ✅ Voir salon public (membres)
-- ✅ Commenter / Noter les contenus approuvés
-- ✅ Voir son profil
+### Adhérent (MEMBER sans poste bureau) — hors intranet web
+Les adhérents **conservent un compte** (gestion par l’admin / super-admin) mais **n’ont plus d’espace connecté** sur le site : pas de tableau de bord, pas de salon, pas de votes / notifications applicatifs. La vie associative au quotidien se fait **hors plateforme** (ex. groupe WhatsApp, réunions). Après connexion, ils sont **renvoyés vers l’accueil** (`/`).
+
+- ✅ Voir le site public (comme tout visiteur), se déconnecter
+- ❌ `/bureau`, `/app/*`, profil intranet, commentaires API réservés intranet
 - ❌ Créer du contenu
 - ❌ Accéder au salon bureau
 

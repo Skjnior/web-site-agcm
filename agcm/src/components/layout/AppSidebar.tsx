@@ -7,7 +7,6 @@ import {
   MessageSquare,
   FileText,
   Calendar,
-  Vote,
   FolderOpen,
   Users,
   User,
@@ -27,8 +26,14 @@ import {
   Handshake,
   Heart,
   X,
+  Images,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  ALL_BUREAU_MODULES,
+  isBureauSidebarHrefAllowed,
+  type BureauModule,
+} from '@/lib/bureau-poste-perimetre';
 
 interface SidebarItem {
   label: string;
@@ -43,38 +48,44 @@ interface AppSidebarProps {
   userRole: 'SUPER_ADMIN' | 'ADMIN' | 'MEMBER';
   isBureau?: boolean;
   posteNom?: string;
+  /** Modules bureau autorisés (membres du bureau) ; absent = tout */
+  allowedBureauModules?: BureauModule[];
   mobileOpen?: boolean;
   onMobileClose?: () => void;
 }
 
-export default function AppSidebar({ userRole, isBureau, posteNom, mobileOpen, onMobileClose }: AppSidebarProps) {
+export default function AppSidebar({
+  userRole,
+  isBureau,
+  posteNom,
+  allowedBureauModules,
+  mobileOpen,
+  onMobileClose,
+}: AppSidebarProps) {
   const pathname = usePathname();
 
   const isActive = (href: string) => {
     // Extraire le chemin sans les query strings
     const hrefPath = href.split('?')[0];
 
-    // Cas spécial pour la racine du dashboard
+    // Cas spécial pour la racine du dashboard (routeur)
     if (hrefPath === '/dashboard') {
-      return pathname === '/dashboard' || pathname === '/';
+      return pathname === '/dashboard';
     }
 
-    // Cas spécial pour la racine /super-admin pour ne pas tout highlighter
     if (hrefPath === '/super-admin') {
       return pathname === '/super-admin';
     }
 
-    // Cas spécial pour la racine /admin pour ne pas tout highlighter
     if (hrefPath === '/admin') {
       return pathname === '/admin';
     }
 
-    // Cas spécial pour la racine /bureau
     if (hrefPath === '/bureau') {
       return pathname === '/bureau';
     }
 
-    // Cas spécial pour /app/dashboard (ne pas tout highlighter)
+    // Ancien chemin : conservé pour compat éventuelle des favoris
     if (hrefPath === '/app/dashboard') {
       return pathname === '/app/dashboard';
     }
@@ -91,7 +102,7 @@ export default function AppSidebar({ userRole, isBureau, posteNom, mobileOpen, o
     if (userRole === 'SUPER_ADMIN') return '/admin';
     if (userRole === 'ADMIN') return '/admin';
     if (isBureau) return '/bureau';
-    return '/app/dashboard';
+    return '/';
   };
 
   // Salon chat : bureau = privé, admin = privé, membre = pas d'accès
@@ -112,11 +123,6 @@ export default function AppSidebar({ userRole, isBureau, posteNom, mobileOpen, o
       label: 'Notifications',
       href: '/app/notifications',
       icon: Bell,
-    },
-    {
-      label: 'Votes',
-      href: '/app/votes',
-      icon: Vote,
     },
   ];
 
@@ -180,6 +186,11 @@ export default function AppSidebar({ userRole, isBureau, posteNom, mobileOpen, o
       icon: MessageSquare,
     },
     {
+      label: 'Mon profil',
+      href: '/admin/profil',
+      icon: User,
+    },
+    {
       label: 'Mes activités',
       href: '/bureau/contents',
       icon: FileText,
@@ -201,37 +212,52 @@ export default function AppSidebar({ userRole, isBureau, posteNom, mobileOpen, o
       icon: Calendar,
     },
     {
+      label: 'Galerie site',
+      href: '/bureau/galerie',
+      icon: Images,
+    },
+    {
+      label: 'Partenaires',
+      href: '/bureau/partenaires',
+      icon: Handshake,
+    },
+    {
       label: 'Historique des actions',
       href: '/bureau/traces',
       icon: History,
     },
     {
       label: 'Paiements',
-      href: '/app/dashboard/paiements',
+      href: '/dashboard/paiements',
       icon: Settings,
+    },
+    {
+      label: 'Registre cotisations',
+      href: '/bureau/registre-cotisations',
+      icon: ClipboardList,
     },
   ];
 
-  // Menu Membre simple
+  // Menu Membre simple (non utilisé en pratique : les MEMBER sans bureau sont renvoyés au site public)
   const memberMenu: SidebarItem[] = [
     {
       label: 'Mon profil',
-      href: '/app/dashboard/profil',
+      href: '/dashboard/profil',
       icon: User,
     },
     {
-      label: 'Mes événements',
-      href: '/app/dashboard/mes-evenements',
+      label: 'Événements',
+      href: '/evenements',
       icon: Calendar,
     },
     {
-      label: 'Actualités & activités',
-      href: '/app/dashboard/mes-activites',
+      label: 'Formations',
+      href: '/formations',
       icon: FileText,
     },
     {
       label: 'Paiements',
-      href: '/app/dashboard/paiements',
+      href: '/dashboard/paiements',
       icon: Settings,
     },
   ];
@@ -251,9 +277,14 @@ export default function AppSidebar({ userRole, isBureau, posteNom, mobileOpen, o
   } else if (userRole === 'ADMIN') {
     menuItems = [...commonMenu, ...adminMenu];
   } else if (isBureau) {
-    // Pour Bureau, remplacer "Salon public" par "Salon privé bureau" dans le menu
-    const commonMenuForBureau = commonMenu.filter(item => item.href !== '/app/chat');
-    menuItems = [...commonMenuForBureau, ...bureauMenu];
+    const modSet = new Set(allowedBureauModules ?? ALL_BUREAU_MODULES);
+    const commonMenuForBureau = commonMenu
+      .filter((item) => item.href !== '/app/chat')
+      .filter((item) => isBureauSidebarHrefAllowed(item.href, modSet));
+    const bureauMenuFiltered = bureauMenu.filter((item) =>
+      isBureauSidebarHrefAllowed(item.href, modSet),
+    );
+    menuItems = [...commonMenuForBureau, ...bureauMenuFiltered];
   } else {
     menuItems = [...commonMenu, ...memberMenu];
   }

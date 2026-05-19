@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { loginSchema, type LoginInput } from '@/lib/validations/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Logo from '@/components/Logo';
@@ -20,7 +21,6 @@ export default function ConnexionPage() {
   const router = useRouter();
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -47,7 +47,11 @@ export default function ConnexionPage() {
         return;
       }
 
-      router.push('/dashboard');
+      const params = new URLSearchParams(window.location.search);
+      const raw = params.get('callbackUrl');
+      const destination =
+        raw && raw.startsWith('/') && !raw.startsWith('//') ? raw : '/dashboard';
+      router.push(destination);
       router.refresh();
     } catch {
       setError('Une erreur est survenue. Veuillez réessayer plus tard.');
@@ -195,35 +199,17 @@ export default function ConnexionPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                   </div>
-                  <Input
+                  <PasswordInput
                     id="password"
-                    type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     {...register('password')}
-                    className={`h-12 pl-10 pr-10 text-base text-gray-900 transition-all ${
+                    className={`h-12 pl-10 text-base text-gray-900 transition-all ${
                       errors.password 
                         ? 'border-red-500 focus-visible:ring-red-500' 
                         : 'focus-visible:ring-red-500'
                     }`}
                     disabled={isLoading}
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                    tabIndex={-1}
-                  >
-                    {showPassword ? (
-                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.29 3.29m0 0L3 3m3.29 3.29L12 12m-5.71-5.71L12 12" />
-                      </svg>
-                    ) : (
-                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                    )}
-                  </button>
                 </div>
                 {errors.password && (
                   <p className="text-sm text-red-600 flex items-center gap-1">

@@ -2,9 +2,11 @@ import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import MembersTable from '@/components/admin/MembersTable';
-import { canActOnUser } from '@/lib/permissions';
+import { canActOnMemberRecord } from '@/lib/permissions';
+import { listMembersForAdmin } from '@/lib/membres-admin-list';
 import MembresPageClient from './MembresPageClient';
+import type { Prisma } from '@prisma/client';
+import type { StatutMembre } from '@prisma/client';
 
 export const metadata: Metadata = {
   title: 'Gestion des membres - Admin AGCM',
@@ -38,58 +40,41 @@ export default async function MembresPage({ searchParams }: MembresPageProps) {
   const statusFilter = parseParam(params.status);
   const typeFilter = parseParam(params.type);
   const search = parseParam(params.q);
+  const bureauOnly = parseParam(params.bureau) === '1';
   const page = parseInt(parseParam(params.page) || '1');
   const limit = 20;
   const offset = (page - 1) * limit;
 
-  // Construire la clause where
-  const where: any = {};
-  if (statusFilter) {
-    where.statutMembre = statusFilter;
+  const baseWhere: Prisma.MemberWhereInput = {};
+  if (statusFilter && statusFilter !== 'all') {
+    baseWhere.statutMembre = statusFilter as StatutMembre;
   }
   if (typeFilter) {
-    // Note: memberType n'existe pas dans le schéma, on peut l'ignorer ou le mapper
+    // memberType n'existe pas dans le schéma
   }
   if (search) {
-    where.OR = [
+    baseWhere.OR = [
       { prenom: { contains: search, mode: 'insensitive' } },
       { nom: { contains: search, mode: 'insensitive' } },
+      { email: { contains: search, mode: 'insensitive' } },
       { user: { email: { contains: search, mode: 'insensitive' } } },
       { telephone: { contains: search, mode: 'insensitive' } },
     ];
   }
 
-  const [total, members] = await Promise.all([
-    prisma.member.count({ where }),
-    prisma.member.findMany({
-      where,
-      include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-            roleSysteme: true,
-          },
-        },
-      },
-      orderBy: {
-        dateAdhesion: 'desc',
-      },
-      skip: offset,
-      take: limit,
-    }),
-  ]);
+  const { total, members } = await listMembersForAdmin({
+    baseWhere,
+    skip: offset,
+    take: limit,
+    bureauOnly,
+  });
 
-  // Ajouter l'information de permission pour chaque membre
   const membersWithPermissions = members.map((member) => ({
     ...member,
-    memberType: null, // Removed from schema
-    user: {
-      id: member.user.id,
-      email: member.user.email,
-      role: member.user.roleSysteme,
-    },
-    canAct: canActOnUser(userRole, member.user.roleSysteme),
+    memberType: null as string | null,
+    canAct: canActOnMemberRecord(userRole, {
+      user: member.user ? { roleSysteme: member.user.role } : null,
+    }),
   }));
 
   const stats = {
@@ -109,6 +94,7 @@ export default async function MembresPage({ searchParams }: MembresPageProps) {
       initialStatusFilter={statusFilter}
       initialTypeFilter={typeFilter}
       initialSearch={search}
+      initialBureauOnly={bureauOnly}
       currentUserRole={userRole}
       currentUserId={session.user.id}
     />

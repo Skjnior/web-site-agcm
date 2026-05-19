@@ -4,6 +4,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { getAffectationActive } from '@/lib/rbac';
 import { getMandatActif } from '@/lib/mandat';
+import { normalizeEventStatut } from '@/lib/admin/event-map';
 
 export async function POST(req: NextRequest) {
   try {
@@ -61,13 +62,27 @@ export async function POST(req: NextRequest) {
         description: data.description || '',
         dateDebut,
         dateFin,
-        lieu: data.lieu,
-        statut: data.status || 'A_VENIR',
+        lieu: data.lieu || null,
+        statut: normalizeEventStatut(data.status ?? 'A_VENIR'),
         afficheSite: data.published || false,
         createdByPosteId: posteId,
         mandatId: mandatId,
       },
     });
+
+    if (
+      typeof data.imageUrl === 'string' &&
+      data.imageUrl.trim() !== ''
+    ) {
+      await prisma.eventMedia.create({
+        data: {
+          eventId: evenement.id,
+          url: data.imageUrl.trim(),
+          isPrincipale: true,
+          ordre: 0,
+        },
+      });
+    }
 
     return NextResponse.json({ success: true, evenement });
   } catch (error) {

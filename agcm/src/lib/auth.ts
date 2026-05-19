@@ -4,6 +4,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { prisma } from './prisma';
 import { authRateLimit } from './rate-limit';
+import { getAuthSecret } from './auth-secret';
 
 export const authConfig = {
   providers: [
@@ -35,7 +36,7 @@ export const authConfig = {
             include: { member: true }
           });
 
-          if (!user || !user.isActive) {
+          if (!user || !user.isActive || user.deletedAt) {
             return null;
           }
 
@@ -53,21 +54,31 @@ export const authConfig = {
             return null;
           }
 
-          // Mettre à jour lastLogin
-          await prisma.user.update({
-            where: { id: user.id },
-            data: { lastLogin: new Date() }
-          });
+          void prisma.user
+            .update({
+              where: { id: user.id },
+              data: { lastLogin: new Date() },
+            })
+            .catch((err) => console.error('lastLogin update failed:', err));
 
-          // Retourner les infos utilisateur
+          let canAccessIntranet =
+            user.roleSysteme === 'SUPER_ADMIN' || user.roleSysteme === 'ADMIN';
+          if (!canAccessIntranet && user.roleSysteme === 'MEMBER') {
+            const { isBureauActif } = await import('./rbac');
+            canAccessIntranet = await isBureauActif(user.id);
+          }
+
           return {
             id: user.id,
             email: user.email,
-            name: user.member?.prenom && user.member?.nom
-              ? `${user.member.prenom} ${user.member.nom}`
-              : user.email,
+            name:
+              user.member?.prenom && user.member?.nom
+                ? `${user.member.prenom} ${user.member.nom}`
+                : user.email,
             role: user.roleSysteme,
+            roleSysteme: user.roleSysteme,
             memberId: user.member?.id || null,
+            canAccessIntranet,
           };
         } catch (error) {
           console.error('Auth error:', error);
@@ -80,22 +91,44 @@ export const authConfig = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async jwt({ token, user }: any) {
       if (user) {
-        const u = user as { id?: string; role?: string; roleSysteme?: string; memberId?: string };
+        const u = user as {
+          id?: string;
+          role?: string;
+          roleSysteme?: string;
+          memberId?: string | null;
+          email?: string;
+          name?: string;
+          canAccessIntranet?: boolean;
+        };
         token.id = u.id;
-        token.role = u.role;
+        token.role = u.roleSysteme || u.role;
         token.roleSysteme = u.roleSysteme || u.role;
         token.memberId = u.memberId;
+        token.name = u.name;
+        if (u.email) token.email = u.email;
+        token.canAccessIntranet = u.canAccessIntranet === true;
       }
       return token;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async session({ session, token }: any) {
-      if (session.user) {
-        const u = session.user as { id?: string; role?: string; roleSysteme?: string; memberId?: string | null };
+      if (session?.user && token?.id) {
+        const u = session.user as {
+          id?: string;
+          email?: string;
+          name?: string;
+          role?: string;
+          roleSysteme?: string;
+          memberId?: string | null;
+          canAccessIntranet?: boolean;
+        };
         u.id = token.id as string;
-        u.role = token.role as string;
-        u.roleSysteme = (token.roleSysteme || token.role) as string;
-        u.memberId = token.memberId as string | null;
+        u.email = (token.email as string) || '';
+        u.name = (token.name as string) || u.email || 'Utilisateur';
+        u.role = (token.roleSysteme || token.role) as string;
+        u.roleSysteme = u.role;
+        u.memberId = (token.memberId as string | null) ?? null;
+        u.canAccessIntranet = token.canAccessIntranet === true;
       }
       return session;
     },
@@ -108,8 +141,8 @@ export const authConfig = {
     signIn: '/connexion',
     error: '/connexion',
   },
-  secret: process.env.NEXTAUTH_SECRET,
-  trustHost: true, // Important pour NextAuth v5
+  secret: getAuthSecret(),
+  trustHost: true,
 };
 
 // @ts-expect-error NextAuth v5 default export type resolution

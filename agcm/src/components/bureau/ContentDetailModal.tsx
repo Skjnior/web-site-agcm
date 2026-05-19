@@ -82,13 +82,13 @@ export default function ContentDetailModal({
     >
       <div className="fixed inset-0 bg-black/50" />
       <div
-        className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+        className="relative mx-4 max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-xl border border-slate-700 bg-slate-900 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between z-10">
-          <h2 className="text-2xl font-bold text-gray-900">Détails du contenu</h2>
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-700 bg-slate-900 px-6 py-4">
+          <h2 className="text-2xl font-bold text-slate-100">Détails du contenu</h2>
           <div className="flex items-center gap-2">
-            <Link href={isSuperAdmin ? `/super-admin/contents/${content.id}/edit` : `/bureau/contents/${content.id}/edit`}>
+            <Link href={isSuperAdmin ? `/admin/contents/${content.id}/edit` : `/bureau/contents/${content.id}/edit`}>
               <Button variant="edit" size="sm">
                 <Edit className="h-4 w-4 mr-1" />
                 Modifier
@@ -100,10 +100,10 @@ export default function ContentDetailModal({
           </div>
         </div>
 
-        <div className="p-6 space-y-6 text-gray-900">
+        <div className="space-y-6 p-6 text-slate-100">
           {/* En-tête */}
-          <div className="border-b pb-4">
-            <h1 className="text-3xl font-bold text-gray-900 mb-3">{content.titre}</h1>
+          <div className="border-b border-slate-700 pb-4">
+            <h1 className="mb-3 text-3xl font-bold text-slate-100">{content.titre}</h1>
             <div className="flex items-center gap-3 flex-wrap">
               <Badge variant={getStatusBadge(content.statutWorkflow)}>
                 {content.statutWorkflow}
@@ -117,27 +117,27 @@ export default function ContentDetailModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {isSuperAdmin && (
               <div className="flex items-start gap-3">
-                <User className="h-5 w-5 text-gray-400 mt-0.5" />
+                <User className="mt-0.5 h-5 w-5 text-slate-500" />
                 <div>
-                  <p className="text-sm text-gray-500">Auteur</p>
-                  <p className="font-medium text-gray-900">{content.auteurPoste?.nom || 'N/A'}</p>
+                  <p className="text-sm text-slate-400">Auteur</p>
+                  <p className="font-medium text-slate-100">{content.auteurPoste?.nom || 'N/A'}</p>
                 </div>
               </div>
             )}
             {isSuperAdmin && content.mandat && (
               <div className="flex items-start gap-3">
-                <Calendar className="h-5 w-5 text-gray-400 mt-0.5" />
+                <Calendar className="mt-0.5 h-5 w-5 text-slate-500" />
                 <div>
-                  <p className="text-sm text-gray-500">Mandat</p>
-                  <p className="font-medium text-gray-900">{content.mandat.titre}</p>
+                  <p className="text-sm text-slate-400">Mandat</p>
+                  <p className="font-medium text-slate-100">{content.mandat.titre}</p>
                 </div>
               </div>
             )}
             <div className="flex items-start gap-3">
-              <Calendar className="h-5 w-5 text-gray-400 mt-0.5" />
+              <Calendar className="mt-0.5 h-5 w-5 text-slate-500" />
               <div>
-                <p className="text-sm text-gray-500">Date de création</p>
-                <p className="font-medium text-gray-900">
+                <p className="text-sm text-slate-400">Date de création</p>
+                <p className="font-medium text-slate-100">
                   {new Date(content.createdAt).toLocaleDateString('fr-FR', {
                     day: '2-digit',
                     month: 'long',
@@ -148,12 +148,12 @@ export default function ContentDetailModal({
             </div>
             {content.approvedBy && (
               <div className="flex items-start gap-3">
-                <User className="h-5 w-5 text-gray-400 mt-0.5" />
+                <User className="mt-0.5 h-5 w-5 text-slate-500" />
                 <div>
-                  <p className="text-sm text-gray-500">Approuvé par</p>
-                  <p className="font-medium text-gray-900">{content.approvedBy.email}</p>
+                  <p className="text-sm text-slate-400">Approuvé par</p>
+                  <p className="font-medium text-slate-100">{content.approvedBy.email}</p>
                   {content.approvedAt && (
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-slate-500">
                       {new Date(content.approvedAt).toLocaleDateString('fr-FR')}
                     </p>
                   )}
@@ -164,7 +164,7 @@ export default function ContentDetailModal({
 
           {/* Image principale */}
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">Image principale</h2>
+            <h2 className="mb-3 text-xl font-semibold text-slate-100">Image principale</h2>
             <img
               src={content.imagePrincipale || 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80'}
               alt={content.titre}
@@ -175,11 +175,11 @@ export default function ContentDetailModal({
           {/* Contenu */}
           {content.contenu && (
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <h2 className="mb-3 flex items-center gap-2 text-xl font-semibold text-slate-100">
                 <FileText className="h-5 w-5" />
                 Contenu
               </h2>
-              <div className="prose max-w-none text-gray-700 whitespace-pre-wrap bg-gray-50 p-4 rounded-lg">
+              <div className="max-w-none whitespace-pre-wrap rounded-lg bg-slate-800/80 p-4 text-slate-200">
                 {content.contenu}
               </div>
             </div>
@@ -188,7 +188,7 @@ export default function ContentDetailModal({
           {/* Lien externe */}
           {content.lienExterne && (
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <h2 className="mb-3 flex items-center gap-2 text-xl font-semibold text-slate-100">
                 <ExternalLink className="h-5 w-5" />
                 Lien externe
               </h2>
@@ -196,7 +196,7 @@ export default function ContentDetailModal({
                 href={content.lienExterne}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline break-all"
+                className="break-all text-blue-400 hover:text-blue-300 hover:underline"
               >
                 {content.lienExterne}
               </a>
@@ -206,7 +206,7 @@ export default function ContentDetailModal({
           {/* Tags */}
           {content.tags && content.tags.length > 0 && (
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-3">Tags</h2>
+              <h2 className="mb-3 text-xl font-semibold text-slate-100">Tags</h2>
               <div className="flex flex-wrap gap-2">
                 {content.tags.map((tag, index) => (
                   <Badge key={index} variant="outline">
@@ -219,9 +219,9 @@ export default function ContentDetailModal({
 
           {/* Motif de rejet */}
           {content.rejectionReason && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <h2 className="text-lg font-semibold text-red-900 mb-2">Motif du rejet</h2>
-              <p className="text-red-700">{content.rejectionReason}</p>
+            <div className="rounded-lg border border-red-900/50 bg-red-950/40 p-4">
+              <h2 className="mb-2 text-lg font-semibold text-red-300">Motif du rejet</h2>
+              <p className="text-red-200/90">{content.rejectionReason}</p>
             </div>
           )}
         </div>

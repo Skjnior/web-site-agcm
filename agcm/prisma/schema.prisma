@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("agcm_db_DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -16,6 +16,7 @@ model User {
   lastLogin                    DateTime?            @map("last_login")
   createdAt                    DateTime             @default(now()) @map("created_at")
   updatedAt                    DateTime             @updatedAt @map("updated_at")
+  deletedAt                    DateTime?            @map("deleted_at")
   auditLogs                    AuditLog[]
   bureauMessages               BureauMessage[]
   comments                     Comment[]
@@ -24,6 +25,11 @@ model User {
   demandesPartenariatProcessed DemandePartenariat[] @relation("DemandePartenariatProcessedBy")
   member                       Member?
   notifications                Notification[]
+  pageViews                    PageView[]
+  dmPeerForBureauMessages      BureauMessage[]      @relation("BureauMessageDmPeer")
+  bureauMessagesDeletedAsActor BureauMessage[]      @relation("BureauMessageDeletedBy")
+  registreCotisationsUpdated   MemberRegistreCotisation[] @relation("RegistreCotisationUpdatedBy")
+  galerieImagesCreated         GalerieImage[]             @relation("GalerieImageCreatedBy")
 
   @@map("users")
 }
@@ -45,24 +51,53 @@ model Notification {
 }
 
 model Member {
-  id           String             @id @default(cuid())
-  userId       String             @unique @map("user_id")
-  prenom       String
-  nom          String
-  telephone    String?
-  ville        String?
-  pays         String?
-  photoUrl     String?            @map("photo_url")
-  bio          String?
-  statutMembre StatutMembre       @default(ACTIF) @map("statut_membre")
-  dateAdhesion DateTime           @default(now()) @map("date_adhesion")
-  createdAt    DateTime           @default(now()) @map("created_at")
-  updatedAt    DateTime           @updatedAt @map("updated_at")
-  affectations AffectationPoste[]
-  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String             @id @default(cuid())
+  /// Compte de connexion : null = adhérent inscrit en base sans accès au site (gestion par le bureau)
+  userId        String?            @unique @map("user_id")
+  /// Email de contact pour les adhérents sans compte ; les membres avec `userId` utilisent en priorité `user.email`
+  email         String?            @unique @map("email")
+  prenom        String
+  nom           String
+  telephone     String?
+  ville         String?
+  pays          String?
+  photoUrl      String?            @map("photo_url")
+  bio           String?
+  statutMembre  StatutMembre       @default(ACTIF) @map("statut_membre")
+  dateAdhesion  DateTime           @default(now()) @map("date_adhesion")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+  genre         GenreMembre?       @map("genre")
+  dateNaissance DateTime?          @map("date_naissance") @db.Date
+  profession    String?
+  adresse       String?
+  /// Position pour la carte « atlas territorial » (géocodage ville/pays, OpenStreetMap Nominatim)
+  geoLat        Float?             @map("geo_lat")
+  geoLng        Float?             @map("geo_lng")
+  affectations              AffectationPoste[]
+  user                      User?                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  registreCotisations       MemberRegistreCotisation[]
 
   @@index([nom, prenom])
   @@map("members")
+}
+
+/// Registre type Excel/PDF « situation cotisation au … » + absences aux réunions
+model MemberRegistreCotisation {
+  id                String   @id @default(cuid())
+  memberId          String   @map("member_id")
+  dateReference     DateTime @map("date_reference") @db.Date
+  situationText     String   @default("") @map("situation_text") @db.Text
+  absencesText      String?  @map("absences_text") @db.Text
+  updatedByUserId   String?  @map("updated_by_user_id")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  member            Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  updatedByUser     User?    @relation("RegistreCotisationUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([memberId, dateReference])
+  @@index([dateReference])
+  @@map("member_registre_cotisations")
 }
 
 model Mandat {
@@ -142,6 +177,8 @@ model Content {
   createdAt       DateTime        @default(now()) @map("created_at")
   updatedAt       DateTime        @updatedAt @map("updated_at")
   facebookPostId  String?         @map("facebook_post_id")
+  /** Images et PDF attachés (tableau JSON : [{ url, kind: IMAGE | DOCUMENT, label? }]) */
+  attachments     Json?           @map("attachments")
   comments        Comment[]
   approvedBy      User?           @relation("ContentApprovedBy", fields: [approvedById], references: [id])
   auteurPoste     Poste           @relation("ContentAuteurPoste", fields: [auteurPosteId], references: [id])
@@ -228,6 +265,31 @@ model ProjetPartner {
 
   @@id([projetId, partnerId])
   @@map("projets_partners")
+}
+
+/// Photos de la galerie publique (visibilité contrôlée par le bureau communication / super admin).
+model GalerieImage {
+  id              String   @id @default(cuid())
+  url             String
+  alt             String   @default("")
+  visibleSite     Boolean  @default(false) @map("visible_site")
+  ordre           Int      @default(0)
+  createdByUserId String?  @map("created_by_user_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  createdBy       User?    @relation("GalerieImageCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  @@index([visibleSite, ordre])
+  @@map("galerie_images")
+}
+
+/// Contenu éditorial du site vitrine (accueil, sections statiques). Clé fixe `default` en seed.
+model SitePublicPage {
+  id        String   @id
+  payload   Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("site_public_page")
 }
 
 model Event {
@@ -341,19 +403,29 @@ model MessageContact {
 }
 
 model BureauMessage {
-  id           String                 @id @default(cuid())
-  auteurUserId String                 @map("auteur_user_id")
-  mandatId     String?                @map("mandat_id")
+  id           String                    @id @default(cuid())
+  auteurUserId String                    @map("auteur_user_id")
+  mandatId     String?                   @map("mandat_id")
+  /// Salon général ou discussion 1:1 entre deux membres du bureau
+  threadKind   BureauThreadKind          @default(SALON) @map("thread_kind")
+  /// Message utilisateur ou annonce système (ex. lien visioconférence)
+  messageKind  BureauMessageKind         @default(USER) @map("message_kind")
+  /// Destinataire d’un message DIRECT (l’interlocuteur 1:1, pas l’auteur)
+  dmPeerUserId String?                   @map("dm_peer_user_id")
   texte        String
-  createdAt    DateTime               @default(now()) @map("created_at")
-  deletedAt    DateTime?              @map("deleted_at")
-  deletedBy    String?                @map("deleted_by")
-  auteur       User                   @relation(fields: [auteurUserId], references: [id])
-  mandat       Mandat?                @relation(fields: [mandatId], references: [id])
+  createdAt    DateTime                  @default(now()) @map("created_at")
+  editedAt     DateTime?                 @map("edited_at")
+  deletedAt    DateTime?                 @map("deleted_at")
+  deletedBy    String?                   @map("deleted_by")
   attachments  BureauMessageAttachment[]
+  auteur       User                      @relation(fields: [auteurUserId], references: [id])
+  mandat       Mandat?                   @relation(fields: [mandatId], references: [id])
+  dmPeer       User?                     @relation("BureauMessageDmPeer", fields: [dmPeerUserId], references: [id], onDelete: SetNull)
+  deletedByUser User?                   @relation("BureauMessageDeletedBy", fields: [deletedBy], references: [id], onDelete: SetNull)
 
   @@index([createdAt])
   @@index([mandatId])
+  @@index([mandatId, threadKind, createdAt])
   @@map("bureau_messages")
 }
 
@@ -361,7 +433,7 @@ model BureauMessageAttachment {
   id        String        @id @default(cuid())
   messageId String        @map("message_id")
   url       String
-  type      String        // IMAGE | VIDEO | DOCUMENT
+  type      String
   fileName  String        @map("file_name")
   fileSize  Int           @map("file_size")
   mimeType  String        @map("mime_type")
@@ -373,17 +445,46 @@ model BureauMessageAttachment {
 
 model AuditLog {
   id         String      @id @default(cuid())
-  userId     String      @map("user_id")
+  userId     String?     @map("user_id")
   action     AuditAction
   entityType String      @map("entity_type")
   entityId   String      @map("entity_id")
   beforeData Json?       @map("before_data")
   afterData  Json?       @map("after_data")
   createdAt  DateTime    @default(now()) @map("created_at")
-  user       User        @relation(fields: [userId], references: [id])
+  /// Email de l’acteur conservé après suppression du compte utilisateur (traçabilité)
+  actorEmail String?     @map("actor_email")
+  user       User?       @relation(fields: [userId], references: [id])
 
   @@index([entityType, entityId, createdAt])
+  @@index([actorEmail])
   @@map("audit_logs")
+}
+
+model PageView {
+  id          String   @id @default(cuid())
+  path        String
+  method      String   @default("GET")
+  ipAddress   String?  @map("ip_address")
+  userAgent   String?  @map("user_agent")
+  referer     String?
+  country     String?
+  countryCode String?  @map("country_code")
+  city        String?
+  region      String?
+  isp         String?
+  isProxy     Boolean  @default(false) @map("is_proxy")
+  sessionId   String?  @map("session_id")
+  userId      String?  @map("user_id")
+  statusCode  Int?     @map("status_code")
+  createdAt   DateTime @default(now()) @map("created_at")
+  user        User?    @relation(fields: [userId], references: [id])
+
+  @@index([path, createdAt])
+  @@index([userId, createdAt])
+  @@index([ipAddress, createdAt])
+  @@index([createdAt])
+  @@map("page_views")
 }
 
 model PresidentCitation {
@@ -394,7 +495,7 @@ model PresidentCitation {
   finMandat   DateTime? @map("fin_mandat")
   photoUrl    String?   @map("photo_url")
   createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at")
 
   @@map("president_citations")
 }
@@ -409,6 +510,15 @@ enum StatutMembre {
   ACTIF
   SUSPENDU
   RADIE
+  INACTIF
+}
+
+/// Genre déclaré (optionnel)
+enum GenreMembre {
+  FEMME
+  HOMME
+  AUTRE
+  NE_PAS_DIRE
 }
 
 enum StatutMandat {
@@ -499,4 +609,14 @@ enum AuditAction {
   ASSIGN
   INACTIVATE
   ARCHIVE
+}
+
+enum BureauThreadKind {
+  SALON
+  DIRECT
+}
+
+enum BureauMessageKind {
+  USER
+  SYSTEM
 }

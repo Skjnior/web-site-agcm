@@ -8,6 +8,7 @@ declare module "next-auth" {
       name: string;
       role: string;
       memberId: string | null;
+      canAccessIntranet: boolean;
     }
   }
 
@@ -24,5 +25,6 @@ declare module "next-auth/jwt" {
   interface JWT {
     role: string;
     memberId: string | null;
+    email?: string;
   }
 }

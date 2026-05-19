@@ -93,15 +93,15 @@ export default async function ContentDetailPage({ params }: ContentDetailPagePro
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 text-gray-900">
+    <div className="mx-auto max-w-4xl space-y-6 text-slate-100">
       <div className="flex items-center justify-between">
-        <Link href="/super-admin/contents">
+        <Link href="/admin/contents">
           <Button variant="outline">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Retour
           </Button>
         </Link>
-        <Link href={`/super-admin/contents/${id}/edit`}>
+        <Link href={`/admin/contents/${id}/edit`}>
           <Button variant="edit">
             <Edit className="h-4 w-4 mr-2" />
             Modifier
@@ -109,12 +109,12 @@ export default async function ContentDetailPage({ params }: ContentDetailPagePro
         </Link>
       </div>
 
-      <div className="bg-white border rounded-xl p-6 space-y-6">
+      <div className="admin-panel space-y-6 rounded-xl p-6">
         {/* En-tête */}
-        <div className="border-b pb-4">
+        <div className="border-b border-slate-700 pb-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{content.titre}</h1>
+              <h1 className="mb-2 text-3xl font-bold text-slate-100">{content.titre}</h1>
               <div className="flex items-center gap-3 flex-wrap">
                 <Badge variant={getStatusBadge(content.statutWorkflow)}>
                   {content.statutWorkflow}
@@ -129,24 +129,24 @@ export default async function ContentDetailPage({ params }: ContentDetailPagePro
         {/* Informations générales */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex items-start gap-3">
-            <User className="h-5 w-5 text-gray-400 mt-0.5" />
+            <User className="mt-0.5 h-5 w-5 text-slate-500" />
             <div>
-              <p className="text-sm text-gray-500">Auteur</p>
-              <p className="font-medium text-gray-900">{content.auteurPoste?.nom || 'N/A'}</p>
+              <p className="text-sm text-slate-400">Auteur</p>
+              <p className="font-medium text-slate-100">{content.auteurPoste?.nom || 'N/A'}</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <Calendar className="h-5 w-5 text-gray-400 mt-0.5" />
+            <Calendar className="mt-0.5 h-5 w-5 text-slate-500" />
             <div>
-              <p className="text-sm text-gray-500">Mandat</p>
-              <p className="font-medium text-gray-900">{content.mandat?.titre || 'N/A'}</p>
+              <p className="text-sm text-slate-400">Mandat</p>
+              <p className="font-medium text-slate-100">{content.mandat?.titre || 'N/A'}</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <Calendar className="h-5 w-5 text-gray-400 mt-0.5" />
+            <Calendar className="mt-0.5 h-5 w-5 text-slate-500" />
             <div>
-              <p className="text-sm text-gray-500">Date de création</p>
-              <p className="font-medium text-gray-900">
+              <p className="text-sm text-slate-400">Date de création</p>
+              <p className="font-medium text-slate-100">
                 {new Date(content.createdAt).toLocaleDateString('fr-FR', {
                   day: '2-digit',
                   month: 'long',
@@ -157,12 +157,12 @@ export default async function ContentDetailPage({ params }: ContentDetailPagePro
           </div>
           {content.approvedBy && (
             <div className="flex items-start gap-3">
-              <User className="h-5 w-5 text-gray-400 mt-0.5" />
+              <User className="mt-0.5 h-5 w-5 text-slate-500" />
               <div>
-                <p className="text-sm text-gray-500">Approuvé par</p>
-                <p className="font-medium text-gray-900">{content.approvedBy.email}</p>
+                <p className="text-sm text-slate-400">Approuvé par</p>
+                <p className="font-medium text-slate-100">{content.approvedBy.email}</p>
                 {content.approvedAt && (
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-slate-500">
                     {new Date(content.approvedAt).toLocaleDateString('fr-FR')}
                   </p>
                 )}
@@ -174,8 +174,8 @@ export default async function ContentDetailPage({ params }: ContentDetailPagePro
         {/* Contenu */}
         {content.contenu && (
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">Contenu</h2>
-            <div className="prose max-w-none text-gray-700 whitespace-pre-wrap">
+            <h2 className="mb-3 text-xl font-semibold text-slate-100">Contenu</h2>
+            <div className="max-w-none whitespace-pre-wrap text-slate-300 leading-relaxed">
               {content.contenu}
             </div>
           </div>
@@ -184,12 +184,12 @@ export default async function ContentDetailPage({ params }: ContentDetailPagePro
         {/* Lien externe */}
         {content.lienExterne && (
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">Lien externe</h2>
+            <h2 className="mb-3 text-xl font-semibold text-slate-100">Lien externe</h2>
             <a
               href={content.lienExterne}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
+              className="text-blue-400 hover:underline"
             >
               {content.lienExterne}
             </a>
@@ -199,7 +199,7 @@ export default async function ContentDetailPage({ params }: ContentDetailPagePro
         {/* Image principale */}
         {content.imagePrincipale && (
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">Image principale</h2>
+            <h2 className="mb-3 text-xl font-semibold text-slate-100">Image principale</h2>
             <img
               src={content.imagePrincipale}
               alt={content.titre}
@@ -211,7 +211,7 @@ export default async function ContentDetailPage({ params }: ContentDetailPagePro
         {/* Tags */}
         {content.tags && content.tags.length > 0 && (
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">Tags</h2>
+            <h2 className="mb-3 text-xl font-semibold text-slate-100">Tags</h2>
             <div className="flex flex-wrap gap-2">
               {content.tags.map((tag, index) => (
                 <Badge key={index} variant="outline">
@@ -224,9 +224,9 @@ export default async function ContentDetailPage({ params }: ContentDetailPagePro
 
         {/* Motif de rejet */}
         {content.rejectionReason && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <h2 className="text-lg font-semibold text-red-900 mb-2">Motif du rejet</h2>
-            <p className="text-red-700">{content.rejectionReason}</p>
+          <div className="rounded-lg border border-red-900/50 bg-red-950/40 p-4">
+            <h2 className="mb-2 text-lg font-semibold text-red-300">Motif du rejet</h2>
+            <p className="text-red-200/90">{content.rejectionReason}</p>
           </div>
         )}
       </div>

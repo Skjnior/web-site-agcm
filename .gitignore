@@ -1,10 +1,13 @@
 # Dependencies
 node_modules/
 
-# Environment
-.env
-.env.local
-.env.*.local
+# Environment (les secrets ne sont jamais versionnés — modèle : agcm/.env.example)
+**/.env
+!**/.env.example
+**/.env.*
+!**/.env.example
+/.env.local
+/.env.*.local
 
 # IDE
 .idea/
@@ -18,3 +21,5 @@ Thumbs.db
 out/
 build/
 *.tsbuildinfo
+
+/generated/prisma

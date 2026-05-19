@@ -22,9 +22,5 @@ export default async function NotificationsPage() {
     take: 50,
   });
 
-  return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <NotificationsClient initialNotifications={notifications} />
-    </div>
-  );
+  return <NotificationsClient initialNotifications={notifications} />;
 }

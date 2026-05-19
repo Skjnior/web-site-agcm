@@ -2,7 +2,7 @@
 // Soumettre un contenu au Président (BROUILLON -> SOUMIS)
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireBureau } from '@/lib/require-auth';
+import { requireBureauModule } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
 import { canSubmitContent } from '@/lib/rbac';
 
@@ -10,7 +10,7 @@ export async function POST(
   _request: NextRequest,
   context: { params: Promise<{ contentId: string }> }
 ) {
-  const { error, session } = await requireBureau();
+  const { error, session } = await requireBureauModule('contents');
   if (error) return error;
 
   const { contentId } = await context.params;

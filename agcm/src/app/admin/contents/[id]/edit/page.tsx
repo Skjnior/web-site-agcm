@@ -102,7 +102,7 @@ export default function EditContentPage() {
 
       setSuccessModal({ isOpen: true, message: 'Contenu modifié avec succès !' });
       setTimeout(() => {
-        router.push(`/super-admin/contents/${contentId}`);
+        router.push(`/admin/contents/${contentId}`);
         router.refresh();
       }, 1500);
     } catch (err: any) {
@@ -122,21 +122,21 @@ export default function EditContentPage() {
 
   return (
     <>
-      <div className="max-w-4xl mx-auto space-y-6 text-gray-900">
+      <div className="mx-auto max-w-4xl space-y-6 text-slate-100">
         <div className="flex items-center gap-4">
-          <Link href={`/super-admin/contents/${contentId}`}>
+          <Link href={`/admin/contents/${contentId}`}>
             <Button variant="outline" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Retour
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Modifier le contenu</h1>
-            <p className="text-gray-600 mt-1">Super Admin : Modifiez tous les aspects du contenu</p>
+            <h1 className="text-3xl font-bold text-slate-100">Modifier le contenu</h1>
+            <p className="mt-1 text-slate-400">Super Admin : Modifiez tous les aspects du contenu</p>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg shadow p-6 space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="admin-panel-form">
           <div className="space-y-4">
             <div>
               <Label htmlFor="type">Type de contenu</Label>
@@ -144,14 +144,14 @@ export default function EditContentPage() {
                 value={watch('type')}
                 onValueChange={(value) => setValue('type', value as any)}
               >
-                <SelectTrigger id="type" className="text-gray-900">
+                <SelectTrigger id="type" className="border-slate-600 bg-slate-800/50 text-slate-100">
                   <SelectValue placeholder="Sélectionner un type" />
                 </SelectTrigger>
-                <SelectContent className="z-50">
-                  <SelectItem value="ACTIVITE" className="text-gray-900">Activité</SelectItem>
-                  <SelectItem value="ACTUALITE" className="text-gray-900">Actualité</SelectItem>
-                  <SelectItem value="PARTAGE" className="text-gray-900">Partage</SelectItem>
-                  <SelectItem value="ANNONCE" className="text-gray-900">Annonce</SelectItem>
+                <SelectContent className="z-50 border-slate-700 bg-slate-900 text-slate-100">
+                  <SelectItem value="ACTIVITE">Activité</SelectItem>
+                  <SelectItem value="ACTUALITE">Actualité</SelectItem>
+                  <SelectItem value="PARTAGE">Partage</SelectItem>
+                  <SelectItem value="ANNONCE">Annonce</SelectItem>
                 </SelectContent>
               </Select>
               {errors.type && (
@@ -164,7 +164,7 @@ export default function EditContentPage() {
               <Input
                 id="titre"
                 {...register('titre')}
-                className={`text-gray-900 ${errors.titre ? 'border-red-500' : ''}`}
+                className={`border-slate-600 bg-slate-800/50 text-slate-100 placeholder:text-slate-500 ${errors.titre ? 'border-red-500' : ''}`}
                 placeholder="Titre du contenu"
               />
               {errors.titre && (
@@ -178,7 +178,7 @@ export default function EditContentPage() {
                 id="contenu"
                 {...register('contenu')}
                 rows={10}
-                className="text-gray-900"
+                className="border-slate-600 bg-slate-800/50 text-slate-100 placeholder:text-slate-500"
                 placeholder="Contenu détaillé..."
               />
             </div>
@@ -189,7 +189,7 @@ export default function EditContentPage() {
                 id="lienExterne"
                 type="url"
                 {...register('lienExterne')}
-                className={`text-gray-900 ${errors.lienExterne ? 'border-red-500' : ''}`}
+                className={`border-slate-600 bg-slate-800/50 text-slate-100 placeholder:text-slate-500 ${errors.lienExterne ? 'border-red-500' : ''}`}
                 placeholder="https://..."
               />
               {errors.lienExterne && (
@@ -202,6 +202,7 @@ export default function EditContentPage() {
                 value={watch('imagePrincipale') || ''}
                 onChange={(url) => setValue('imagePrincipale', url)}
                 label="Image principale"
+                hideUrlOption
               />
               {errors.imagePrincipale && (
                 <p className="text-red-500 text-sm mt-1">{errors.imagePrincipale.message}</p>
@@ -214,12 +215,12 @@ export default function EditContentPage() {
                 value={watch('visibiliteCible')}
                 onValueChange={(value) => setValue('visibiliteCible', value as any)}
               >
-                <SelectTrigger id="visibiliteCible" className="text-gray-900">
+                <SelectTrigger id="visibiliteCible" className="border-slate-600 bg-slate-800/50 text-slate-100">
                   <SelectValue placeholder="Sélectionner la visibilité" />
                 </SelectTrigger>
-                <SelectContent className="z-50">
-                  <SelectItem value="PRIVE_BUREAU" className="text-gray-900">Privé Bureau</SelectItem>
-                  <SelectItem value="PUBLIC_SITE" className="text-gray-900">Public Site</SelectItem>
+                <SelectContent className="z-50 border-slate-700 bg-slate-900 text-slate-100">
+                  <SelectItem value="PRIVE_BUREAU">Privé Bureau</SelectItem>
+                  <SelectItem value="PUBLIC_SITE">Public Site</SelectItem>
                 </SelectContent>
               </Select>
               {errors.visibiliteCible && (
@@ -233,16 +234,16 @@ export default function EditContentPage() {
                 value={watch('statutWorkflow')}
                 onValueChange={(value) => setValue('statutWorkflow', value as any)}
               >
-                <SelectTrigger id="statutWorkflow" className="text-gray-900">
+                <SelectTrigger id="statutWorkflow" className="border-slate-600 bg-slate-800/50 text-slate-100">
                   <SelectValue placeholder="Sélectionner le statut" />
                 </SelectTrigger>
-                <SelectContent className="z-50">
-                  <SelectItem value="BROUILLON" className="text-gray-900">Brouillon</SelectItem>
-                  <SelectItem value="SOUMIS" className="text-gray-900">Soumis</SelectItem>
-                  <SelectItem value="APPROUVE" className="text-gray-900">Approuvé</SelectItem>
-                  <SelectItem value="PUBLIE" className="text-gray-900">Publié</SelectItem>
-                  <SelectItem value="REJETE" className="text-gray-900">Rejeté</SelectItem>
-                  <SelectItem value="ARCHIVE" className="text-gray-900">Archivé</SelectItem>
+                <SelectContent className="z-50 border-slate-700 bg-slate-900 text-slate-100">
+                  <SelectItem value="BROUILLON">Brouillon</SelectItem>
+                  <SelectItem value="SOUMIS">Soumis</SelectItem>
+                  <SelectItem value="APPROUVE">Approuvé</SelectItem>
+                  <SelectItem value="PUBLIE">Publié</SelectItem>
+                  <SelectItem value="REJETE">Rejeté</SelectItem>
+                  <SelectItem value="ARCHIVE">Archivé</SelectItem>
                 </SelectContent>
               </Select>
               {errors.statutWorkflow && (
@@ -251,8 +252,8 @@ export default function EditContentPage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-4 pt-4 border-t">
-            <Link href={`/super-admin/contents/${contentId}`}>
+          <div className="flex items-center justify-end gap-4 border-t border-slate-700 pt-4">
+            <Link href={`/admin/contents/${contentId}`}>
               <Button type="button" variant="outline">
                 Annuler
               </Button>

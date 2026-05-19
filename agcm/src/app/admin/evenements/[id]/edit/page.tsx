@@ -4,6 +4,7 @@ import { redirect, notFound } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import EvenementForm from '@/components/admin/EvenementForm';
+import { formatDateLocal, formatTimeLocal } from '@/lib/admin/event-map';
 
 export const metadata: Metadata = {
   title: 'Modifier événement - Admin AGCM',
@@ -22,53 +23,61 @@ export default async function EditEvenementPage({ params }: EditEvenementPagePro
     redirect('/connexion');
   }
 
-  const userRole = (session?.user as any)?.roleSysteme || session?.user?.role;
+  const userRole = (session?.user as { roleSysteme?: string } | undefined)?.roleSysteme || session?.user?.role;
   if (!['ADMIN', 'SUPER_ADMIN'].includes(userRole as string)) {
     redirect('/dashboard');
   }
 
   const evenement = await prisma.event.findUnique({
     where: { id },
+    include: {
+      medias: {
+        orderBy: [{ isPrincipale: 'desc' }, { ordre: 'asc' }],
+      },
+    },
   });
 
   if (!evenement) {
     notFound();
   }
 
-  const formatDateForInput = (date: Date) => {
-    return new Date(date).toISOString().split('T')[0];
-  };
+  const debut = evenement.dateDebut;
+  const fin = evenement.dateFin ?? evenement.dateDebut;
 
+  const principal =
+    evenement.medias.find((m) => m.isPrincipale) ?? evenement.medias[0];
+
+  /** Champs présents en base ; le reste du formulaire reste indicatif tant qu’ils ne sont pas modélisés. */
   const initialData = {
     titre: evenement.titre,
     slug: evenement.slug,
-    description: evenement.description,
-    type: 'CONFERENCE',
-    dateEvenement: formatDateForInput(evenement.dateDebut),
-    heureDebut: new Date(evenement.dateDebut).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
-    heureFin: evenement.dateFin ? new Date(evenement.dateFin).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '17:00',
-    lieu: evenement.lieu || '',
+    description: evenement.description ?? '',
+    type: 'AUTRE',
+    dateEvenement: formatDateLocal(debut),
+    heureDebut: formatTimeLocal(debut),
+    heureFin: formatTimeLocal(fin),
+    lieu: evenement.lieu ?? '',
     lienVisio: '',
     inscriptionRequise: false,
-    placesMax: undefined,
-    dateInscriptionFin: undefined,
+    placesMax: undefined as number | undefined,
+    dateInscriptionFin: '',
     programme: '',
     intervenants: '',
-    imageUrl: '',
+    imageUrl: principal?.url ?? '',
     status: evenement.statut,
     published: evenement.afficheSite,
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col pointer-events-auto">
-      <main className="flex-1 p-4 md:p-8 w-full max-w-[1600px] mx-auto overflow-x-hidden">
-        <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-3xl p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="admin-page pointer-events-auto flex flex-col">
+      <main className="mx-auto w-full max-w-[1600px] flex-1 overflow-x-hidden p-4 md:p-8">
+        <div className="mx-auto max-w-5xl animate-in space-y-8 fade-in slide-in-from-bottom-4 duration-700">
+          <div className="admin-glass flex flex-col justify-between gap-4 rounded-3xl p-8 shadow-sm md:flex-row md:items-center">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
-                Modifier l'événement
+              <h1 className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-3xl font-bold text-transparent">
+                Modifier l&apos;événement
               </h1>
-              <p className="text-slate-500 mt-1 transition-colors hover:text-slate-700">{evenement.titre}</p>
+              <p className="mt-1 text-slate-500 transition-colors hover:text-slate-700">{evenement.titre}</p>
             </div>
           </div>
 
@@ -78,4 +87,3 @@ export default async function EditEvenementPage({ params }: EditEvenementPagePro
     </div>
   );
 }
-

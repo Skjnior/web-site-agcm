@@ -34,9 +34,13 @@ async function main() {
     take: 20,
   });
 
-  if (!superAdmin || !admin) {
-    console.error('❌ Exécutez seed: npx prisma db seed');
+  if (!superAdmin) {
+    console.error('❌ Aucun SUPER_ADMIN — exécutez : npx prisma db seed');
     process.exit(1);
+  }
+
+  if (!admin) {
+    console.log('ℹ️  Aucun utilisateur ADMIN en base (seed actuel : Président = SUPER_ADMIN uniquement).\n');
   }
 
   // Identifier un membre bureau (affectation ACTIF sur mandat actif, poste bureau)
@@ -56,17 +60,17 @@ async function main() {
     if (memberBureau && memberSimple) break;
   }
 
-  // user16@agcm.gn = index 15 dans la liste users (seed: i=15, isCurrentBureau=false)
-  const user16 = await prisma.user.findUnique({
-    where: { email: 'user16@agcm.gn' },
+  // Premier membre sans affectation bureau ACTIF sur mandat actif (ex. user10@ après seed)
+  const userSimple = await prisma.user.findUnique({
+    where: { email: 'user10@agcm.gn' },
     include: { member: { include: { affectations: { include: { poste: true, mandat: true } } } } },
   });
 
-  const tests: Array<{ name: string; user: typeof superAdmin; role: string }> = [
+  const tests: Array<{ name: string; user: typeof superAdmin | null; role: string }> = [
     { name: 'SUPER_ADMIN', user: superAdmin, role: 'SUPER_ADMIN' },
-    { name: 'ADMIN', user: admin, role: 'ADMIN' },
+    ...(admin ? [{ name: 'ADMIN', user: admin, role: 'ADMIN' }] : []),
     { name: 'MEMBER BUREAU', user: memberBureau || members[0], role: 'MEMBER (bureau)' },
-    { name: 'MEMBER SIMPLE', user: memberSimple || user16 || members[15], role: 'MEMBER (simple)' },
+    { name: 'MEMBER SIMPLE', user: memberSimple || userSimple || members[9], role: 'MEMBER (simple)' },
   ];
 
   for (const { name, user } of tests) {

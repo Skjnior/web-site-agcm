@@ -24,31 +24,32 @@ export default function SuccessModal({
         className="fixed inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 z-50">
+      <div className="relative z-50 mx-4 w-full max-w-md rounded-lg border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900">
         <div className="p-6">
           <div className="flex items-start gap-4">
             <div className="flex-shrink-0">
-              <CheckCircle className="h-6 w-6 text-green-600" />
+              <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-slate-100">
                 {title}
               </h3>
-              <p className="text-sm text-gray-600 whitespace-pre-wrap">
+              <p className="whitespace-pre-wrap text-sm text-gray-600 dark:text-slate-400">
                 {message}
               </p>
             </div>
             <button
+              type="button"
               onClick={onClose}
-              className="flex-shrink-0 p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+              className="flex-shrink-0 rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-300"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
-          <div className="flex items-center justify-end mt-6 pt-4 border-t border-gray-200">
+          <div className="mt-6 flex items-center justify-end border-t border-gray-200 pt-4 dark:border-slate-700">
             <Button
               onClick={onClose}
-              className="bg-green-600 hover:bg-green-700 text-white"
+              className="bg-green-600 text-white hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-500"
             >
               OK
             </Button>

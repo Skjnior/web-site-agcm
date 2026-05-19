@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from './button';
 import { Input } from './input';
 import { Label } from './label';
@@ -24,6 +24,8 @@ export interface FilterConfig {
   label: string;
   options?: FilterOption[];
   placeholder?: string;
+  /** Valeur affichée quand aucun paramètre dans l’URL (select uniquement) */
+  selectDefault?: string;
 }
 
 interface FiltersProps {
@@ -34,12 +36,61 @@ interface FiltersProps {
   className?: string;
 }
 
+/** Champ texte avec debounce pour limiter les requêtes à l’API */
+function DebouncedTextFilter({
+  filterKey,
+  value,
+  placeholder,
+  onCommit,
+}: {
+  filterKey: string;
+  value: string;
+  placeholder?: string;
+  onCommit: (key: string, v: string) => void;
+}) {
+  const [inner, setInner] = useState(value ?? '');
+  const skipFirstDebounce = useRef(true);
+
+  useEffect(() => {
+    setInner(value ?? '');
+  }, [value]);
+
+  useEffect(() => {
+    if (skipFirstDebounce.current) {
+      skipFirstDebounce.current = false;
+      return;
+    }
+    const t = setTimeout(() => {
+      if (inner !== (value ?? '')) {
+        onCommit(filterKey, inner);
+      }
+    }, 400);
+    return () => clearTimeout(t);
+  }, [inner, filterKey, onCommit, value]);
+
+  return (
+    <Input
+      id={filterKey}
+      placeholder={placeholder}
+      value={inner}
+      onChange={(e) => setInner(e.target.value)}
+    />
+  );
+}
+
 export function Filters({ filters, values, onChange, onReset, className = '' }: FiltersProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const hasActiveFilters = Object.values(values).some(v => v !== '' && v !== null && v !== undefined);
+  const valuesRef = useRef(values);
+  valuesRef.current = values;
+
+  const hasActiveFilters = Object.values(values).some((v) => v !== '' && v !== null && v !== undefined);
 
   const handleChange = (key: string, value: any) => {
-    onChange({ ...values, [key]: value });
+    onChange({ ...valuesRef.current, [key]: value });
+  };
+
+  const commitText = (key: string, v: string) => {
+    onChange({ ...valuesRef.current, [key]: v });
   };
 
   return (
@@ -48,7 +99,7 @@ export function Filters({ filters, values, onChange, onReset, className = '' }: 
         <Button
           variant="outline"
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 border-slate-300 dark:border-slate-600 dark:hover:bg-slate-800"
         >
           <Filter className="h-4 w-4" />
           Filtres
@@ -59,7 +110,7 @@ export function Filters({ filters, values, onChange, onReset, className = '' }: 
           )}
         </Button>
         {hasActiveFilters && (
-          <Button variant="ghost" size="sm" onClick={onReset}>
+          <Button variant="ghost" size="sm" onClick={onReset} className="dark:text-slate-300 dark:hover:bg-slate-800">
             <X className="h-4 w-4 mr-1" />
             Réinitialiser
           </Button>
@@ -67,28 +118,34 @@ export function Filters({ filters, values, onChange, onReset, className = '' }: 
       </div>
 
       {isOpen && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 border rounded-lg bg-white">
+        <div className="grid grid-cols-1 gap-4 rounded-lg border border-slate-200 bg-white p-4 md:grid-cols-2 lg:grid-cols-3 dark:border-slate-600 dark:bg-slate-900/90">
           {filters.map((filter) => (
             <div key={filter.key} className="space-y-2">
-              <Label htmlFor={filter.key}>{filter.label}</Label>
+              <Label htmlFor={filter.key} className="text-slate-700 dark:text-slate-300">
+                {filter.label}
+              </Label>
               {filter.type === 'text' && (
-                <Input
-                  id={filter.key}
-                  placeholder={filter.placeholder || `Rechercher ${filter.label.toLowerCase()}...`}
+                <DebouncedTextFilter
+                  filterKey={filter.key}
                   value={values[filter.key] || ''}
-                  onChange={(e) => handleChange(filter.key, e.target.value)}
+                  placeholder={filter.placeholder || `Rechercher ${filter.label.toLowerCase()}...`}
+                  onCommit={commitText}
                 />
               )}
               {filter.type === 'select' && (
                 <Select
-                  value={values[filter.key] || ''}
-                  onValueChange={(value) => handleChange(filter.key, value)}
+                  value={
+                    values[filter.key] !== undefined && values[filter.key] !== ''
+                      ? String(values[filter.key])
+                      : (filter.selectDefault ?? 'ALL')
+                  }
+                  onValueChange={(v) => handleChange(filter.key, v)}
                 >
                   <SelectTrigger id={filter.key}>
                     <SelectValue placeholder={filter.placeholder || `Sélectionner ${filter.label.toLowerCase()}...`} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Tous</SelectItem>
+                    <SelectItem value="ALL">Tous</SelectItem>
                     {filter.options?.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
@@ -107,14 +164,25 @@ export function Filters({ filters, values, onChange, onReset, className = '' }: 
               )}
               {filter.type === 'boolean' && (
                 <Select
-                  value={values[filter.key] === undefined ? '' : values[filter.key] ? 'true' : 'false'}
-                  onValueChange={(value) => handleChange(filter.key, value === '' ? undefined : value === 'true')}
+                  value={
+                    values[filter.key] === undefined
+                      ? 'ALL'
+                      : values[filter.key]
+                        ? 'true'
+                        : 'false'
+                  }
+                  onValueChange={(value) =>
+                    handleChange(
+                      filter.key,
+                      value === 'ALL' ? undefined : value === 'true'
+                    )
+                  }
                 >
                   <SelectTrigger id={filter.key}>
                     <SelectValue placeholder={filter.placeholder || `Sélectionner ${filter.label.toLowerCase()}...`} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Tous</SelectItem>
+                    <SelectItem value="ALL">Tous</SelectItem>
                     <SelectItem value="true">Oui</SelectItem>
                     <SelectItem value="false">Non</SelectItem>
                   </SelectContent>

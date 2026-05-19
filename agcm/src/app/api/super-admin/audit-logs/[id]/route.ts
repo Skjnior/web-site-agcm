@@ -1,16 +1,66 @@
 // src/app/api/super-admin/audit-logs/[id]/route.ts
-// Supprimer un log d'audit (SuperAdmin uniquement)
+// Détail et suppression d’un log d’audit (SuperAdmin uniquement)
 
 import { NextRequest, NextResponse } from 'next/server';
 import { requireSuperAdmin } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
-import { logAction } from '@/lib/audit';
 
-export async function DELETE(
-  request: NextRequest,
+export async function GET(
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { error, session } = await requireSuperAdmin();
+  const { error } = await requireSuperAdmin();
+  if (error) return error;
+
+  const { id } = await params;
+
+  try {
+    const log = await prisma.auditLog.findUnique({
+      where: { id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            roleSysteme: true,
+            member: {
+              select: { prenom: true, nom: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!log) {
+      return NextResponse.json({ error: 'Log introuvable' }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      log: {
+        id: log.id,
+        userId: log.userId,
+        actorEmail: log.actorEmail,
+        action: log.action,
+        entityType: log.entityType,
+        entityId: log.entityId,
+        beforeData: log.beforeData ?? null,
+        afterData: log.afterData ?? null,
+        createdAt: log.createdAt,
+        user: log.user,
+      },
+    });
+  } catch (e) {
+    console.error('Erreur lors de la récupération du log:', e);
+    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { error } = await requireSuperAdmin();
   if (error) return error;
 
   const { id } = await params;

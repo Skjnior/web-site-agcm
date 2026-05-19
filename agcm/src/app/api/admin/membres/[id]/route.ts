@@ -5,16 +5,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
 import { logAction } from '@/lib/audit';
-import { canActOnUser } from '@/lib/permissions';
+import { canActOnMemberRecord } from '@/lib/permissions';
 import { z } from 'zod';
+import type { Prisma } from '@prisma/client';
 
 const updateMemberSchema = z.object({
   prenom: z.string().min(1).optional(),
   nom: z.string().min(1).optional(),
+  genre: z.enum(['FEMME', 'HOMME', 'AUTRE', 'NE_PAS_DIRE']).nullable().optional(),
+  /** Format YYYY-MM-DD ou ISO */
+  dateNaissance: z.string().nullable().optional(),
+  profession: z.string().nullable().optional(),
+  adresse: z.string().nullable().optional(),
   telephone: z.string().nullable().optional(),
   ville: z.string().nullable().optional(),
   pays: z.string().nullable().optional(),
   bio: z.string().nullable().optional(),
+  photoUrl: z.string().nullable().optional(),
   statutMembre: z.enum(['ACTIF', 'SUSPENDU', 'RADIE']).optional(),
 });
 
@@ -50,8 +57,7 @@ export async function PATCH(
 
     // Vérifier les permissions
     const userRole = (session!.user as any).roleSysteme || session!.user.role;
-    const targetRole = memberBefore.user.roleSysteme || (memberBefore.user as any).role;
-    if (!canActOnUser(userRole, targetRole)) {
+    if (!canActOnMemberRecord(userRole, memberBefore)) {
       return NextResponse.json(
         { error: 'Vous n\'avez pas la permission de modifier ce membre' },
         { status: 403 }
@@ -59,7 +65,21 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const data = updateMemberSchema.parse(body);
+    const parsed = updateMemberSchema.parse(body);
+
+    const data: Prisma.MemberUpdateInput = { ...parsed };
+    if (parsed.dateNaissance !== undefined) {
+      if (parsed.dateNaissance === null || parsed.dateNaissance === '') {
+        data.dateNaissance = null;
+      } else {
+        const d = new Date(parsed.dateNaissance);
+        data.dateNaissance = Number.isNaN(d.getTime()) ? null : d;
+      }
+    }
+    if (parsed.photoUrl !== undefined) {
+      data.photoUrl =
+        parsed.photoUrl === null || parsed.photoUrl === '' ? null : parsed.photoUrl;
+    }
 
     const member = await prisma.member.update({
       where: { id },
@@ -135,7 +155,7 @@ export async function DELETE(
     }
 
     // Empêcher la suppression de soi-même
-    if (memberBefore.user.id === session!.user.id) {
+    if (memberBefore.user?.id === session!.user.id) {
       return NextResponse.json(
         { error: 'Vous ne pouvez pas supprimer votre propre compte' },
         { status: 400 }
@@ -144,8 +164,7 @@ export async function DELETE(
 
     // Vérifier les permissions
     const userRole = (session!.user as any).roleSysteme || session!.user.role;
-    const targetRole = memberBefore.user.roleSysteme || (memberBefore.user as any).role;
-    if (!canActOnUser(userRole, targetRole)) {
+    if (!canActOnMemberRecord(userRole, memberBefore)) {
       return NextResponse.json(
         { error: 'Vous n\'avez pas la permission de supprimer ce membre' },
         { status: 403 }
@@ -161,10 +180,16 @@ export async function DELETE(
       beforeData: memberBefore,
     });
 
-    // Supprimer le membre (cascade supprimera aussi l'utilisateur)
-    await prisma.member.delete({
-      where: { id },
-    });
+    // Supprimer la fiche membre (et l'utilisateur associé s'il existe, via cascade Prisma)
+    if (memberBefore.userId) {
+      await prisma.user.delete({
+        where: { id: memberBefore.userId },
+      });
+    } else {
+      await prisma.member.delete({
+        where: { id },
+      });
+    }
 
     return NextResponse.json({
       success: true,

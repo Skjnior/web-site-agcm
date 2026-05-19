@@ -4,7 +4,7 @@ const timeline = [
     description:
       "L'Association des Guinéens de La Charente-Maritime est créée, marquant le début d'une aventure de solidarité et d'entraide entre les Guinéens de la région.",
     accent: "bg-guinea-red/20",
-    icon: <span className="text-2xl font-bold text-guinea-red">2023</span>,
+    icon: <span className="text-2xl font-bold text-guinea-red">2003</span>,
   },
   {
     title: "Développement et croissance",

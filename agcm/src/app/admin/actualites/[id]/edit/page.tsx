@@ -40,13 +40,20 @@ export default async function EditActualitePage({ params }: EditActualitePagePro
     return new Date(date).toISOString().split('T')[0];
   };
 
+  const resumeFromContenu = (raw: string | null) => {
+    if (!raw) return '';
+    const plain = raw.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    const max = 400;
+    return plain.length <= max ? plain : `${plain.slice(0, max)}…`;
+  };
+
   const initialData: Partial<ActualiteFormData> = {
     titre: actualite.titre,
     slug: actualite.id,
-    resume: '',
+    resume: resumeFromContenu(actualite.contenu),
     content: actualite.contenu || '',
     categorie: actualite.type,
-    tags: actualite.tags.join(', ') || '',
+    tags: actualite.tags?.length ? actualite.tags.join(', ') : '',
     imageUrl: actualite.imagePrincipale || '',
     auteur: '',
     published: actualite.statutWorkflow === 'PUBLIE',

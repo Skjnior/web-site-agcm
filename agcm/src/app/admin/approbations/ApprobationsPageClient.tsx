@@ -20,7 +20,8 @@ interface Content {
       member: {
         prenom: string;
         nom: string;
-        user: { email: string };
+        email: string | null;
+        user: { email: string } | null;
       };
     }>;
   };
@@ -124,7 +125,7 @@ export default function ApprobationsPageClient({
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto" />
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
+        <div className="admin-panel overflow-hidden rounded-xl">
           <ApprobationsList
             contents={contents}
             currentPage={page}

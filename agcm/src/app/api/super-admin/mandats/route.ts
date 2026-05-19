@@ -2,6 +2,7 @@
 // Gestion des mandats (SuperAdmin uniquement)
 
 import { NextRequest, NextResponse } from 'next/server';
+import type { Prisma, StatutMandat } from '@prisma/client';
 import { requireSuperAdmin } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
 import { logAction } from '@/lib/audit';
@@ -35,20 +36,27 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const search = searchParams.get('search') || '';
   const statut = searchParams.get('statut') || '';
+  /** Liste restreinte pour créer une affectation : mandat actif dont la période n’est pas terminée */
+  const pourAffectation = searchParams.get('pourAffectation') === '1';
 
   try {
     // Construire le filtre
-    const where: any = {};
-    
+    const where: Prisma.MandatWhereInput = {};
+
     if (search) {
       where.titre = {
         contains: search,
-        mode: 'insensitive' as const,
+        mode: 'insensitive',
       };
     }
-    
-    if (statut) {
-      where.statut = statut;
+
+    if (pourAffectation) {
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+      where.statut = 'ACTIF';
+      where.dateFin = { gte: startOfToday };
+    } else if (statut) {
+      where.statut = statut as StatutMandat;
     }
 
     const [total, mandats] = await Promise.all([

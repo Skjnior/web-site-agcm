@@ -7,6 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, MapPin, Clock, ChevronRight, Facebook } from 'lucide-react';
 import Footer from '@/components/layout/Footer';
+import { isLikelyImageAssetUrl, pickFirstImageMediaUrl } from '@/lib/media-display-url';
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -56,8 +57,9 @@ export default async function EvenementDetailPage({ params }: PageProps) {
   }
 
   const statutInfo = STATUT_LABELS[event.statut] || STATUT_LABELS.A_VENIR;
-  const mainImage = event.medias.find((m) => m.isPrincipale)?.url || event.medias[0]?.url;
-  const galleryImages = event.medias.filter((m) => !m.isPrincipale).slice(0, 6);
+  const mainImage = pickFirstImageMediaUrl(event.medias);
+  const imageMedias = event.medias.filter((m) => isLikelyImageAssetUrl(m.url));
+  const galleryImages = imageMedias.filter((m) => m.url !== mainImage).slice(0, 6);
 
   return (
     <>

@@ -2,7 +2,8 @@ import { Metadata } from 'next';
 import { redirect, notFound } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { isBureauActif, canModifyContent } from '@/lib/rbac';
+import { canModifyContent } from '@/lib/rbac';
+import { assertBureauModuleOrRedirect } from '@/lib/bureau-page-guard';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,12 +19,12 @@ export default async function BureauContentDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const session = await auth();
   const { id } = await params;
 
-  if (!session?.user) {
-    redirect('/connexion');
-  }
+  await assertBureauModuleOrRedirect('contents');
+
+  const session = await auth();
+  if (!session?.user) redirect('/connexion');
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
@@ -31,11 +32,6 @@ export default async function BureauContentDetailPage({
 
   if (!user) {
     redirect('/connexion');
-  }
-
-  const bureauActif = await isBureauActif(user.id);
-  if (!bureauActif) {
-    redirect('/app/dashboard');
   }
 
   const content = await prisma.content.findUnique({
@@ -52,9 +48,9 @@ export default async function BureauContentDetailPage({
   }
 
   const { canModify } = await canModifyContent(user.id, id);
-  const { getAffectationActive } = await import('@/lib/rbac');
-  const affectation = await getAffectationActive(user.id);
-  const isOwner = affectation?.posteId === content.auteurPosteId;
+  const { getBureauMandatContext } = await import('@/lib/rbac');
+  const ctx = await getBureauMandatContext(user.id);
+  const isOwner = ctx?.posteIds.includes(content.auteurPosteId) ?? false;
   if (!isOwner && !canModify) {
     redirect('/bureau/contents');
   }

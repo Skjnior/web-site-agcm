@@ -2,22 +2,20 @@
 // Gestion des contenus du bureau (membres bureau uniquement)
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireBureau } from '@/lib/require-auth';
+import { requireBureauModule } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
 import { parsePagination, createPaginatedResponse } from '@/lib/pagination';
-import { getAffectationActive } from '@/lib/rbac';
-import { getMandatActif } from '@/lib/mandat';
+import { canDeleteContent, getBureauMandatContext } from '@/lib/rbac';
 import { contentCreateSchema } from '@/lib/validators/content';
 
 export async function GET(request: NextRequest) {
-  const { error, session } = await requireBureau();
+  const { error, session } = await requireBureauModule('contents');
   if (error) return error;
 
-  const affectation = await getAffectationActive(session!.user!.id!);
-  const mandatActif = await getMandatActif();
-  if (!affectation || !mandatActif) {
+  const ctx = await getBureauMandatContext(session!.user!.id!);
+  if (!ctx) {
     return NextResponse.json(
-      { error: 'Aucun poste bureau actif' },
+      { error: 'Aucun poste actif sur le mandat en cours' },
       { status: 403 }
     );
   }
@@ -29,8 +27,8 @@ export async function GET(request: NextRequest) {
 
   try {
     const where: Record<string, unknown> = {
-      auteurPosteId: affectation.posteId,
-      mandatId: mandatActif.id,
+      auteurPosteId: { in: ctx.posteIds },
+      mandatId: ctx.mandatId,
     };
 
     if (status && status !== 'ALL') {
@@ -77,7 +75,15 @@ export async function GET(request: NextRequest) {
       }),
     ]);
 
-    return NextResponse.json(createPaginatedResponse(contents, total, page, limit));
+    const userId = session!.user!.id!;
+    const data = await Promise.all(
+      contents.map(async (c) => ({
+        ...c,
+        canDelete: await canDeleteContent(userId, c.id),
+      })),
+    );
+
+    return NextResponse.json(createPaginatedResponse(data, total, page, limit));
   } catch (err) {
     console.error('Erreur récupération contenus bureau:', err);
     return NextResponse.json(
@@ -88,14 +94,13 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const { error, session } = await requireBureau();
+  const { error, session } = await requireBureauModule('contents');
   if (error) return error;
 
-  const affectation = await getAffectationActive(session!.user!.id!);
-  const mandatActif = await getMandatActif();
-  if (!affectation || !mandatActif) {
+  const ctx = await getBureauMandatContext(session!.user!.id!);
+  if (!ctx) {
     return NextResponse.json(
-      { error: 'Aucun poste bureau actif' },
+      { error: 'Aucun poste actif sur le mandat en cours' },
       { status: 403 }
     );
   }
@@ -111,11 +116,12 @@ export async function POST(request: NextRequest) {
         contenu: data.contenu || null,
         lienExterne: data.lienExterne || null,
         imagePrincipale: data.imagePrincipale || null,
+        attachments: data.attachments?.length ? data.attachments : [],
         tags: data.tags || [],
         visibiliteCible: data.visibiliteCible,
         statutWorkflow: 'BROUILLON',
-        auteurPosteId: affectation.posteId,
-        mandatId: mandatActif.id,
+        auteurPosteId: ctx.primaryAffectation.posteId,
+        mandatId: ctx.mandatId,
       },
       include: {
         auteurPoste: { select: { id: true, nom: true } },

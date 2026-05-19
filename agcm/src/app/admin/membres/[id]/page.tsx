@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { redirect, notFound } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { canActOnUser } from '@/lib/permissions';
+import { canActOnMemberRecord } from '@/lib/permissions';
 import MemberDetailClient from './MemberDetailClient';
 
 export const metadata: Metadata = {
@@ -79,7 +79,7 @@ export default async function MemberDetailPage({ params }: MemberDetailPageProps
   }
 
   // Vérifier les permissions
-  const canAct = canActOnUser(userRole, member.user.roleSysteme);
+  const canAct = canActOnMemberRecord(userRole, member);
 
   return (
     <MemberDetailClient

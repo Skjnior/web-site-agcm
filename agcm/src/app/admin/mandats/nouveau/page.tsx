@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,9 +8,10 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Save, Upload, FileText, Users, X, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Upload, FileText, Users, X, Plus, Trash2, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
+import { MemberPickField, MemberAvatar, type MemberPickOption } from '@/components/admin/MemberPickField';
 
 const mandatSchema = z.object({
   titre: z.string().min(1, 'Le titre est requis'),
@@ -21,13 +22,6 @@ const mandatSchema = z.object({
 
 type MandatFormData = z.infer<typeof mandatSchema>;
 
-interface Member {
-  id: string;
-  prenom: string;
-  nom: string;
-  email: string;
-  fullName: string;
-}
 
 interface Poste {
   id: string;
@@ -40,13 +34,18 @@ interface BureauAffectation {
   posteId: string;
 }
 
+const selectAdminClass =
+  'mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:ring-primary/30';
+
 export default function NouveauMandatPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadedFile, setUploadedFile] = useState<{ url: string; name: string } | null>(null);
-  const [members, setMembers] = useState<Member[]>([]);
+  const pvFileInputRef = useRef<HTMLInputElement>(null);
+  const [members, setMembers] = useState<MemberPickOption[]>([]);
   const [postes, setPostes] = useState<Poste[]>([]);
   const [loadingMembers, setLoadingMembers] = useState(true);
   const [loadingPostes, setLoadingPostes] = useState(true);
@@ -72,7 +71,7 @@ export default function NouveauMandatPage() {
       const response = await fetch('/api/super-admin/members');
       if (response.ok) {
         const data = await response.json();
-        setMembers(data.members || []);
+        setMembers(data.data ?? data.members ?? []);
       }
     } catch (error) {
       console.error('Erreur lors du chargement des membres:', error);
@@ -136,6 +135,7 @@ export default function NouveauMandatPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setUploadError(null);
     setUploading(true);
     try {
       const formData = new FormData();
@@ -150,20 +150,24 @@ export default function NouveauMandatPage() {
         const data = await response.json();
         setUploadedFile({ url: data.fileUrl, name: data.fileName });
         setValue('pvDocumentUrl', data.fileUrl);
+        setUploadError(null);
       } else {
-        const error = await response.json();
-        alert(error.error || 'Erreur lors de l\'upload du fichier');
+        const body = await response.json().catch(() => ({}));
+        setUploadError(body.error || 'Erreur lors de l’envoi du fichier. Réessayez ou choisissez un autre document.');
       }
-    } catch (error) {
-      alert('Erreur lors de l\'upload du fichier');
+    } catch {
+      setUploadError('Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.');
     } finally {
       setUploading(false);
+      e.target.value = '';
     }
   };
 
   const handleRemoveFile = () => {
     setUploadedFile(null);
     setValue('pvDocumentUrl', '');
+    setUploadError(null);
+    if (pvFileInputRef.current) pvFileInputRef.current.value = '';
   };
 
   const onSubmit = async (data: MandatFormData) => {
@@ -202,102 +206,131 @@ export default function NouveauMandatPage() {
 
       router.push('/admin/mandats');
       router.refresh();
-    } catch (err: any) {
-      setError(err.message || 'Erreur lors de la création');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Erreur lors de la création');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 text-gray-900">
-      <div className="flex items-center gap-4">
-        <Link href="/admin/mandats">
-          <Button variant="outline" size="sm">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Retour
-          </Button>
-        </Link>
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Nouveau mandat</h1>
-          <p className="text-gray-600 mt-1">Créer un nouveau mandat</p>
+    <div className="admin-page mx-auto max-w-3xl space-y-8 px-4 pb-12 animate-in fade-in duration-500">
+      <div className="admin-glass flex flex-col gap-4 rounded-3xl p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+          <Link href="/admin/mandats">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-fit border-slate-300 dark:border-slate-600 dark:hover:bg-slate-800"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Retour
+            </Button>
+          </Link>
+          <div>
+            <h1 className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-3xl font-bold text-transparent dark:from-slate-100 dark:to-slate-400">
+              Nouveau mandat
+            </h1>
+            <p className="mt-1 text-slate-600 dark:text-slate-400">Créer un nouveau mandat</p>
+          </div>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800">{error}</p>
+        <div
+          role="alert"
+          className="rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-950/40"
+        >
+          <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg shadow p-6 space-y-6">
-        <div className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="admin-panel-form space-y-8">
+        <section className="space-y-4">
+          <h2 className="border-b border-slate-200 pb-2 text-lg font-semibold text-slate-900 dark:border-slate-700 dark:text-slate-100">
+            Informations générales
+          </h2>
           <div>
-            <Label htmlFor="titre">Titre *</Label>
+            <Label htmlFor="titre" className="text-slate-700 dark:text-slate-300">
+              Titre *
+            </Label>
             <Input
               id="titre"
               {...register('titre')}
               placeholder="Ex: Mandat 2025-2027"
-              className={errors.titre ? 'border-red-500' : ''}
+              className={cn(errors.titre && 'border-red-500 dark:border-red-500')}
             />
             {errors.titre && (
-              <p className="text-red-500 text-sm mt-1">{errors.titre.message}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.titre.message}</p>
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <Label htmlFor="dateDebut">Date de début *</Label>
+              <Label htmlFor="dateDebut" className="text-slate-700 dark:text-slate-300">
+                Date de début *
+              </Label>
               <Input
                 id="dateDebut"
                 type="date"
                 {...register('dateDebut')}
-                className={errors.dateDebut ? 'border-red-500' : ''}
+                className={cn(errors.dateDebut && 'border-red-500 dark:border-red-500')}
               />
               {errors.dateDebut && (
-                <p className="text-red-500 text-sm mt-1">{errors.dateDebut.message}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.dateDebut.message}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="dateFin">Date de fin *</Label>
+              <Label htmlFor="dateFin" className="text-slate-700 dark:text-slate-300">
+                Date de fin *
+              </Label>
               <Input
                 id="dateFin"
                 type="date"
                 {...register('dateFin')}
-                className={errors.dateFin ? 'border-red-500' : ''}
+                className={cn(errors.dateFin && 'border-red-500 dark:border-red-500')}
               />
               {errors.dateFin && (
-                <p className="text-red-500 text-sm mt-1">{errors.dateFin.message}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.dateFin.message}</p>
               )}
             </div>
           </div>
 
           <div>
-            <Label htmlFor="pvDocument">Document PV (optionnel)</Label>
+            <Label htmlFor="pvDocument" className="text-slate-700 dark:text-slate-300">
+              Document PV (optionnel)
+            </Label>
             {!uploadedFile ? (
               <div className="mt-2">
                 <label
                   htmlFor="file-upload"
-                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors"
+                  className="flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-slate-50/80 transition-colors hover:bg-slate-100/90 dark:border-slate-600 dark:bg-slate-800/40 dark:hover:bg-slate-800/70"
                 >
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <div className="flex flex-col items-center justify-center pb-6 pt-5">
                     {uploading ? (
                       <>
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-guinea-red mb-2"></div>
-                        <p className="text-sm text-gray-500">Upload en cours...</p>
+                        <div
+                          className="mb-2 h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-guinea-red dark:border-slate-600 dark:border-t-guinea-red"
+                          aria-hidden
+                        />
+                        <p className="text-sm text-slate-500 dark:text-slate-400">Upload en cours…</p>
                       </>
                     ) : (
                       <>
-                        <Upload className="h-8 w-8 text-gray-400 mb-2" />
-                        <p className="mb-2 text-sm text-gray-500">
-                          <span className="font-semibold">Cliquez pour uploader</span> ou glissez-déposez
+                        <Upload className="mb-2 h-8 w-8 text-slate-400 dark:text-slate-500" />
+                        <p className="mb-2 text-sm text-slate-600 dark:text-slate-400">
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">Cliquez pour uploader</span>{' '}
+                          ou glissez-déposez
                         </p>
-                        <p className="text-xs text-gray-500">PDF, Word, Excel, PowerPoint (MAX. 50MB)</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-500">
+                          PDF, Word, Excel, PowerPoint (MAX. 50MB)
+                        </p>
                       </>
                     )}
                   </div>
                   <input
+                    ref={pvFileInputRef}
                     id="file-upload"
                     type="file"
                     className="hidden"
@@ -306,14 +339,44 @@ export default function NouveauMandatPage() {
                     accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv"
                   />
                 </label>
+                {uploadError && (
+                  <div
+                    role="alert"
+                    className="mt-3 flex gap-3 rounded-xl border border-amber-200/90 bg-amber-50/95 p-4 text-amber-950 shadow-sm dark:border-amber-900/45 dark:bg-amber-950/40 dark:text-amber-50"
+                  >
+                    <AlertTriangle
+                      className="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400"
+                      aria-hidden
+                    />
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <p className="font-semibold text-amber-900 dark:text-amber-100">
+                        Document PV : fichier refusé
+                      </p>
+                      <p className="text-sm leading-relaxed text-amber-900/95 dark:text-amber-100/90">
+                        {uploadError}
+                      </p>
+                      <p className="text-xs text-amber-800/85 dark:text-amber-200/80">
+                        Astuce : enregistrez ou exportez le PV en PDF depuis votre traitement de texte, puis réessayez.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setUploadError(null)}
+                      className="shrink-0 self-start rounded-lg p-1.5 text-amber-700 transition-colors hover:bg-amber-200/60 dark:text-amber-300 dark:hover:bg-amber-900/50"
+                      aria-label="Fermer l’alerte"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="mt-2 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
+              <div className="mt-2 flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50/90 p-4 dark:border-emerald-800/50 dark:bg-emerald-950/35">
                 <div className="flex items-center gap-3">
-                  <FileText className="h-5 w-5 text-green-600" />
+                  <FileText className="h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{uploadedFile.name}</p>
-                    <p className="text-xs text-gray-500">Fichier uploadé avec succès</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{uploadedFile.name}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Fichier uploadé avec succès</p>
                   </div>
                 </div>
                 <Button
@@ -321,45 +384,47 @@ export default function NouveauMandatPage() {
                   variant="outline"
                   size="sm"
                   onClick={handleRemoveFile}
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className="shrink-0 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-800/60 dark:text-red-400 dark:hover:bg-red-950/40 dark:hover:text-red-300"
                 >
-                  <X className="h-4 w-4 mr-1" />
+                  <X className="mr-1 h-4 w-4" />
                   Supprimer
                 </Button>
               </div>
             )}
             <input type="hidden" {...register('pvDocumentUrl')} />
           </div>
-        </div>
+        </section>
 
-        {/* Section Bureau Exécutif */}
-        <div className="border-t border-gray-200 pt-6">
-          <div className="flex items-center justify-between mb-4">
+        <section className="space-y-4 border-t border-slate-200 pt-6 dark:border-slate-700">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-gray-700" />
-              <h3 className="text-lg font-semibold text-gray-900">Bureau Exécutif</h3>
+              <Users className="h-5 w-5 text-slate-700 dark:text-slate-300" />
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Bureau exécutif</h3>
             </div>
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={addBureauAffectation}
-              className="text-blue-600 hover:text-blue-700"
+              className="border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-800/60 dark:text-blue-300 dark:hover:bg-blue-950/40"
             >
-              <Plus className="h-4 w-4 mr-1" />
+              <Plus className="mr-1 h-4 w-4" />
               Ajouter un membre
             </Button>
           </div>
 
           {loadingMembers || loadingPostes ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-guinea-red mx-auto"></div>
-              <p className="mt-2 text-sm text-gray-500">Chargement...</p>
+            <div className="py-8 text-center">
+              <div
+                className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-slate-200 border-t-guinea-red dark:border-slate-600 dark:border-t-guinea-red"
+                aria-hidden
+              />
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">Chargement…</p>
             </div>
           ) : bureauAffectations.length === 0 ? (
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg text-center">
-              <p className="text-sm text-gray-600">
-                Aucun membre du bureau ajouté. Cliquez sur "Ajouter un membre" pour commencer.
+            <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-4 text-center dark:border-slate-600 dark:bg-slate-800/40">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Aucun membre du bureau ajouté. Cliquez sur « Ajouter un membre » pour commencer.
               </p>
             </div>
           ) : (
@@ -371,36 +436,29 @@ export default function NouveauMandatPage() {
                 return (
                   <div
                     key={index}
-                    className="p-4 bg-gray-50 border border-gray-200 rounded-lg"
+                    className="rounded-lg border border-slate-200 bg-slate-50/80 p-4 dark:border-slate-600 dark:bg-slate-800/35"
                   >
-                    <div className="flex items-end gap-4">
-                      <div className="flex-1">
-                        <Label htmlFor={`member-${index}`}>Membre *</Label>
-                        <select
+                    <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-end">
+                      <div className="min-w-0 flex-1">
+                        <MemberPickField
                           id={`member-${index}`}
+                          label="Membre *"
+                          members={getAvailableMembers(index)}
                           value={affectation.memberId}
-                          onChange={(e) =>
-                            updateBureauAffectation(index, 'memberId', e.target.value)
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-guinea-red mt-1"
-                        >
-                          <option value="">Sélectionner un membre</option>
-                          {getAvailableMembers(index).map((member) => (
-                            <option key={member.id} value={member.id}>
-                              {member.fullName} ({member.email})
-                            </option>
-                          ))}
-                        </select>
+                          onChange={(id) => updateBureauAffectation(index, 'memberId', id)}
+                          disabled={loadingMembers || loadingPostes}
+                          placeholder="Choisir un membre"
+                        />
                       </div>
-                      <div className="flex-1">
-                        <Label htmlFor={`poste-${index}`}>Poste *</Label>
+                      <div className="min-w-0 flex-1">
+                        <Label htmlFor={`poste-${index}`} className="text-slate-700 dark:text-slate-300">
+                          Poste *
+                        </Label>
                         <select
                           id={`poste-${index}`}
                           value={affectation.posteId}
-                          onChange={(e) =>
-                            updateBureauAffectation(index, 'posteId', e.target.value)
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-guinea-red mt-1"
+                          onChange={(e) => updateBureauAffectation(index, 'posteId', e.target.value)}
+                          className={selectAdminClass}
                         >
                           <option value="">Sélectionner un poste</option>
                           {postes.map((poste) => (
@@ -415,16 +473,25 @@ export default function NouveauMandatPage() {
                         variant="outline"
                         size="sm"
                         onClick={() => removeBureauAffectation(index)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-400 hover:border-red-500"
+                        className="shrink-0 border-red-300 text-red-600 hover:bg-red-50 dark:border-red-800/60 dark:text-red-400 dark:hover:bg-red-950/40"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                     {selectedMember && selectedPoste && (
-                      <div className="mt-3 p-3 bg-white rounded border border-gray-200">
-                        <p className="text-sm text-gray-600">
-                          <span className="font-medium">{selectedMember.fullName}</span> sera affecté au poste de{' '}
-                          <span className="font-medium">{selectedPoste.nom}</span>
+                      <div className="mt-3 flex flex-col gap-2 rounded border border-slate-200 bg-white p-3 dark:border-slate-600 dark:bg-slate-900/60 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex min-w-0 items-start gap-3">
+                          <MemberAvatar member={selectedMember} className="h-12 w-12 text-sm" />
+                          <div className="min-w-0 text-sm">
+                            <p className="font-medium text-slate-900 dark:text-slate-100">{selectedMember.fullName}</p>
+                            <p className="truncate text-slate-600 dark:text-slate-400">{selectedMember.email}</p>
+                            <p className="text-slate-600 dark:text-slate-400">
+                              {selectedMember.telephone?.trim() || 'Téléphone non renseigné'}
+                            </p>
+                          </div>
+                        </div>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 sm:text-right">
+                          → poste <span className="font-medium text-slate-900 dark:text-slate-100">{selectedPoste.nom}</span>
                         </p>
                       </div>
                     )}
@@ -433,15 +500,21 @@ export default function NouveauMandatPage() {
               })}
             </div>
           )}
-        </div>
+        </section>
 
-        <div className="flex justify-end gap-4">
+        <div className="flex flex-wrap justify-end gap-3 border-t border-slate-200 pt-6 dark:border-slate-700">
           <Link href="/admin/mandats">
-            <Button type="button" variant="outline">Annuler</Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="border-slate-300 dark:border-slate-600 dark:hover:bg-slate-800"
+            >
+              Annuler
+            </Button>
           </Link>
           <Button type="submit" disabled={loading}>
-            <Save className="h-4 w-4 mr-2" />
-            {loading ? 'Création...' : 'Créer'}
+            <Save className="mr-2 h-4 w-4" />
+            {loading ? 'Création…' : 'Créer'}
           </Button>
         </div>
       </form>

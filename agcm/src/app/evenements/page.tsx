@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, MapPin, Clock, ChevronLeft, ChevronRight, CalendarDays, Filter } from 'lucide-react';
 import Footer from '@/components/layout/Footer';
+import { pickFirstImageMediaUrl } from '@/lib/media-display-url';
 
 export const metadata: Metadata = {
   title: 'Événements - AGCM',
@@ -58,9 +59,9 @@ export default async function EvenementsPage({ searchParams }: PageProps) {
         lieu: true,
         statut: true,
         medias: {
-          select: { url: true, isPrincipale: true },
-          orderBy: { isPrincipale: 'desc' },
-          take: 1,
+          select: { url: true, isPrincipale: true, ordre: true },
+          orderBy: [{ isPrincipale: 'desc' }, { ordre: 'asc' }],
+          take: 20,
         },
       },
       orderBy: { dateDebut: 'asc' },
@@ -130,7 +131,7 @@ export default async function EvenementsPage({ searchParams }: PageProps) {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {events.map((event) => {
                 const statutInfo = STATUT_CONFIG[event.statut] || STATUT_CONFIG.A_VENIR;
-                const imageUrl = event.medias[0]?.url;
+                const imageUrl = pickFirstImageMediaUrl(event.medias);
 
                 return (
                   <Link

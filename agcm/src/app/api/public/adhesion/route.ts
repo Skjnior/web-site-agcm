@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { notifyEmailJsAdhesionTemplate } from '@/lib/emailjs-notify';
 
 
 const adhesionSchema = z.object({
@@ -35,7 +36,19 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Notifier les admins
+    try {
+      await notifyEmailJsAdhesionTemplate({
+        prenom: data.prenom,
+        nom: data.nom,
+        email: data.email,
+        telephone: data.telephone,
+        ville: data.ville,
+        pays: data.pays,
+        message: data.message,
+      });
+    } catch (emailError) {
+      console.error("Erreur lors de l'envoi de la notification (EmailJS / Resend):", emailError);
+    }
 
     return NextResponse.json(
       {

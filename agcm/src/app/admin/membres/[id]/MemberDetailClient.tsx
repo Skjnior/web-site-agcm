@@ -13,11 +13,23 @@ import SuccessModal from '@/components/ui/SuccessModal';
 import ErrorModal from '@/components/ui/ErrorModal';
 import InputModal from '@/components/ui/InputModal';
 
+const GENRE_LABELS: Record<string, string> = {
+  FEMME: 'Femme',
+  HOMME: 'Homme',
+  AUTRE: 'Autre',
+  NE_PAS_DIRE: 'Préfère ne pas dire',
+};
+
 interface MemberDetailClientProps {
   member: {
     id: string;
     prenom: string;
     nom: string;
+    genre: string | null;
+    dateNaissance: Date | string | null;
+    profession: string | null;
+    adresse: string | null;
+    photoUrl: string | null;
     telephone: string | null;
     ville: string | null;
     pays: string | null;
@@ -26,6 +38,7 @@ interface MemberDetailClientProps {
     dateAdhesion: Date | null;
     createdAt: Date;
     updatedAt: Date;
+    email: string | null;
     user: {
       id: string;
       email: string;
@@ -33,7 +46,7 @@ interface MemberDetailClientProps {
       isActive: boolean;
       lastLogin: Date | null;
       createdAt: Date;
-    };
+    } | null;
     affectations?: Array<{
       id: string;
       poste: {
@@ -80,9 +93,12 @@ export default function MemberDetailClient({
   const [successModal, setSuccessModal] = useState<{ isOpen: boolean; message: string }>({ isOpen: false, message: '' });
   const [errorModal, setErrorModal] = useState<{ isOpen: boolean; message: string }>({ isOpen: false, message: '' });
 
+  const contactEmail = member.user?.email ?? member.email ?? '—';
+
   const getStatutLabel = (statut: string) => {
     const labels: Record<string, string> = {
       ACTIF: 'Actif',
+      INACTIF: 'Inactif',
       SUSPENDU: 'Suspendu',
       RADIE: 'Radié',
     };
@@ -164,7 +180,7 @@ export default function MemberDetailClient({
 
   return (
     <>
-      <div className="max-w-7xl mx-auto space-y-6 text-gray-900">
+      <div className="max-w-7xl mx-auto space-y-6 text-gray-900 dark:text-slate-100">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -174,10 +190,10 @@ export default function MemberDetailClient({
                 Retour à la liste
               </Button>
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100">
               {member.prenom} {member.nom}
             </h1>
-            <p className="text-gray-600 mt-1">Détails et informations du membre</p>
+            <p className="text-gray-600 dark:text-slate-400 mt-1">Détails et informations du membre</p>
           </div>
           {canAct && (
             <div className="flex items-center gap-2">
@@ -217,7 +233,7 @@ export default function MemberDetailClient({
                 variant="delete"
                 size="sm"
                 onClick={() => setDeleteModal(true)}
-                disabled={loading || member.user.id === currentUserId}
+                disabled={loading || (!!member.user && member.user.id === currentUserId)}
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Supprimer
@@ -232,7 +248,7 @@ export default function MemberDetailClient({
             {/* Informations personnelles */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-slate-100">
                   <User className="h-5 w-5" />
                   Informations personnelles
                 </CardTitle>
@@ -240,57 +256,95 @@ export default function MemberDetailClient({
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Prénom</label>
-                    <p className="text-gray-900">{member.prenom}</p>
+                    <label className="text-sm font-medium text-gray-500 dark:text-slate-400">Prénom</label>
+                    <p className="text-gray-900 dark:text-slate-100">{member.prenom}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Nom</label>
-                    <p className="text-gray-900">{member.nom}</p>
+                    <label className="text-sm font-medium text-gray-500 dark:text-slate-400">Nom</label>
+                    <p className="text-gray-900 dark:text-slate-100">{member.nom}</p>
                   </div>
+                  {member.genre && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-500 dark:text-slate-400">Genre</label>
+                      <p className="text-gray-900 dark:text-slate-100">
+                        {GENRE_LABELS[member.genre] ?? member.genre}
+                      </p>
+                    </div>
+                  )}
+                  {member.dateNaissance && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-500 dark:text-slate-400">Date de naissance</label>
+                      <p className="text-gray-900 dark:text-slate-100">{formatDate(member.dateNaissance as Date)}</p>
+                    </div>
+                  )}
+                  {member.profession && (
+                    <div className="col-span-2">
+                      <label className="text-sm font-medium text-gray-500 dark:text-slate-400">Profession</label>
+                      <p className="text-gray-900 dark:text-slate-100">{member.profession}</p>
+                    </div>
+                  )}
+                  {member.adresse && (
+                    <div className="col-span-2">
+                      <label className="text-sm font-medium text-gray-500 dark:text-slate-400">Adresse</label>
+                      <p className="text-gray-900 dark:text-slate-100">{member.adresse}</p>
+                    </div>
+                  )}
+                  {member.photoUrl && (
+                    <div className="col-span-2">
+                      <label className="text-sm font-medium text-gray-500 dark:text-slate-400">Photo</label>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={member.photoUrl}
+                        alt=""
+                        className="mt-2 max-h-40 max-w-[200px] rounded-lg border border-slate-200 object-cover dark:border-slate-600"
+                      />
+                    </div>
+                  )}
                   <div>
-                    <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                    <label className="text-sm font-medium text-gray-500 dark:text-slate-400 flex items-center gap-2">
                       <Mail className="h-4 w-4" />
                       Email
                     </label>
-                    <p className="text-gray-900">{member.user.email}</p>
+                    <p className="text-gray-900 dark:text-slate-100">{contactEmail}</p>
                   </div>
                   {member.telephone && (
                     <div>
-                      <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                      <label className="text-sm font-medium text-gray-500 dark:text-slate-400 flex items-center gap-2">
                         <Phone className="h-4 w-4" />
                         Téléphone
                       </label>
-                      <p className="text-gray-900">{member.telephone}</p>
+                      <p className="text-gray-900 dark:text-slate-100">{member.telephone}</p>
                     </div>
                   )}
                   {member.ville && (
                     <div>
-                      <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                      <label className="text-sm font-medium text-gray-500 dark:text-slate-400 flex items-center gap-2">
                         <MapPin className="h-4 w-4" />
                         Ville
                       </label>
-                      <p className="text-gray-900">{member.ville}</p>
+                      <p className="text-gray-900 dark:text-slate-100">{member.ville}</p>
                     </div>
                   )}
                   {member.pays && (
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Pays</label>
-                      <p className="text-gray-900">{member.pays}</p>
+                      <label className="text-sm font-medium text-gray-500 dark:text-slate-400">Pays</label>
+                      <p className="text-gray-900 dark:text-slate-100">{member.pays}</p>
                     </div>
                   )}
                   <div>
-                    <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                    <label className="text-sm font-medium text-gray-500 dark:text-slate-400 flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
                       Date d'adhésion
                     </label>
-                    <p className="text-gray-900">{formatDate(member.dateAdhesion)}</p>
+                    <p className="text-gray-900 dark:text-slate-100">{formatDate(member.dateAdhesion)}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Statut</label>
+                    <label className="text-sm font-medium text-gray-500 dark:text-slate-400">Statut</label>
                     <div className="mt-1">
                       <Badge
                         variant={
                           member.statutMembre === 'ACTIF' ? 'approuve' :
+                          member.statutMembre === 'INACTIF' ? 'soumis' :
                           member.statutMembre === 'SUSPENDU' ? 'rejete' :
                           'soumis'
                         }
@@ -302,8 +356,8 @@ export default function MemberDetailClient({
                 </div>
                 {member.bio && (
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Biographie</label>
-                    <p className="text-gray-900 mt-1 whitespace-pre-wrap">{member.bio}</p>
+                    <label className="text-sm font-medium text-gray-500 dark:text-slate-400">Biographie</label>
+                    <p className="text-gray-900 dark:text-slate-100 mt-1 whitespace-pre-wrap">{member.bio}</p>
                   </div>
                 )}
               </CardContent>
@@ -313,17 +367,17 @@ export default function MemberDetailClient({
             {member.affectations && member.affectations.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Postes et mandats</CardTitle>
+                  <CardTitle className="text-slate-900 dark:text-slate-100">Postes et mandats</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     {member.affectations.map((affectation) => (
                       <div
                         key={affectation.id}
-                        className="border rounded-lg p-4 space-y-2"
+                        className="space-y-2 rounded-lg border border-slate-200 p-4 dark:border-slate-600 dark:bg-slate-900/40"
                       >
                         <div className="flex items-center justify-between">
-                          <h4 className="font-semibold text-gray-900">
+                          <h4 className="font-semibold text-gray-900 dark:text-slate-100">
                             {affectation.poste.nom}
                           </h4>
                           <Badge
@@ -333,14 +387,15 @@ export default function MemberDetailClient({
                           </Badge>
                         </div>
                         {affectation.poste.description && (
-                          <p className="text-sm text-gray-600">{affectation.poste.description}</p>
+                          <p className="text-sm text-gray-600 dark:text-slate-400">{affectation.poste.description}</p>
                         )}
-                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-slate-400">
                           <span>
-                            <strong>Mandat:</strong> {affectation.mandat.titre}
+                            <strong className="text-slate-800 dark:text-slate-200">Mandat:</strong>{' '}
+                            {affectation.mandat.titre}
                           </span>
                           <span>
-                            <strong>Période:</strong>{' '}
+                            <strong className="text-slate-800 dark:text-slate-200">Période:</strong>{' '}
                             {formatDate(affectation.mandat.dateDebut)} - {formatDate(affectation.mandat.dateFin)}
                           </span>
                         </div>
@@ -366,16 +421,17 @@ export default function MemberDetailClient({
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Compte utilisateur */}
+            {member.user ? (
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-slate-100">
                   <Shield className="h-5 w-5" />
                   Compte utilisateur
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Rôle système</label>
+                  <label className="text-sm font-medium text-gray-500 dark:text-slate-400">Rôle système</label>
                   <div className="mt-1">
                     <Badge
                       variant={
@@ -389,7 +445,7 @@ export default function MemberDetailClient({
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Statut du compte</label>
+                  <label className="text-sm font-medium text-gray-500 dark:text-slate-400">Statut du compte</label>
                   <div className="mt-1">
                     <Badge
                       variant={member.user.isActive ? 'approuve' : 'rejete'}
@@ -399,13 +455,13 @@ export default function MemberDetailClient({
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Date de création</label>
-                  <p className="text-gray-900 text-sm">{formatDate(member.user.createdAt)}</p>
+                  <label className="text-sm font-medium text-gray-500 dark:text-slate-400">Date de création</label>
+                  <p className="text-gray-900 dark:text-slate-100 text-sm">{formatDate(member.user.createdAt)}</p>
                 </div>
                 {member.user.lastLogin && (
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Dernière connexion</label>
-                    <p className="text-gray-900 text-sm">
+                    <label className="text-sm font-medium text-gray-500 dark:text-slate-400">Dernière connexion</label>
+                    <p className="text-gray-900 dark:text-slate-100 text-sm">
                       {new Intl.DateTimeFormat('fr-FR', {
                         day: '2-digit',
                         month: 'long',
@@ -418,28 +474,43 @@ export default function MemberDetailClient({
                 )}
               </CardContent>
             </Card>
+            ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-slate-100">
+                  <Shield className="h-5 w-5" />
+                  Adhérent sans compte
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                <p>Cette personne est enregistrée comme adhérent·e (pas d&apos;accès au site). Pour lui donner un compte bureau ou admin, créez un utilisateur depuis la section Utilisateurs avec le même email : la fiche sera reliée automatiquement si elle existe.</p>
+              </CardContent>
+            </Card>
+            )}
 
             {/* Informations système */}
             <Card>
               <CardHeader>
-                <CardTitle>Informations système</CardTitle>
+                <CardTitle className="text-slate-900 dark:text-slate-100">Informations système</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">ID Membre</span>
-                  <span className="text-gray-900 font-mono">{member.id}</span>
+                  <span className="text-gray-500 dark:text-slate-400">ID Membre</span>
+                  <span className="text-gray-900 dark:text-slate-100 font-mono">{member.id}</span>
+                </div>
+                {member.user ? (
+                <div className="flex justify-between">
+                  <span className="text-gray-500 dark:text-slate-400">ID Utilisateur</span>
+                  <span className="text-gray-900 dark:text-slate-100 font-mono">{member.user.id}</span>
+                </div>
+                ) : null}
+                <div className="flex justify-between">
+                  <span className="text-gray-500 dark:text-slate-400">Créé le</span>
+                  <span className="text-gray-900 dark:text-slate-100">{formatDate(member.createdAt)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">ID Utilisateur</span>
-                  <span className="text-gray-900 font-mono">{member.user.id}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Créé le</span>
-                  <span className="text-gray-900">{formatDate(member.createdAt)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Modifié le</span>
-                  <span className="text-gray-900">{formatDate(member.updatedAt)}</span>
+                  <span className="text-gray-500 dark:text-slate-400">Modifié le</span>
+                  <span className="text-gray-900 dark:text-slate-100">{formatDate(member.updatedAt)}</span>
                 </div>
               </CardContent>
             </Card>
@@ -453,7 +524,9 @@ export default function MemberDetailClient({
         onClose={() => setDeleteModal(false)}
         onConfirm={handleDelete}
         title="Supprimer le membre"
-        message="Êtes-vous sûr de vouloir supprimer ce membre ? Cette action est irréversible et supprimera également le compte utilisateur associé."
+        message={member.user
+          ? 'Êtes-vous sûr de vouloir supprimer ce membre ? Cette action est irréversible et supprimera également le compte utilisateur associé.'
+          : 'Êtes-vous sûr de vouloir supprimer cette fiche adhérent ? Cette action est irréversible (pas de compte associé).'}
         type="danger"
         confirmText="Supprimer"
         isLoading={loading}

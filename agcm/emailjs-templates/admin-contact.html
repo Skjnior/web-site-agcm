@@ -1,0 +1,61 @@
+<!--
+  EmailJS – Contact / Partenariat / Don · Template ID : template_m6wz0tn
+  Service : service_w0zlpfb
+-->
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.5; color: #1f2937; background-color: #f3f4f6; margin: 0; padding: 24px 12px;">
+  <tr>
+    <td align="center">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width: 600px; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb; box-shadow: 0 4px 24px rgba(15, 36, 23, 0.08);">
+        <tr>
+          <td style="background: linear-gradient(135deg, #0f2417 0%, #19533a 100%); padding: 20px 24px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td width="56" valign="middle">
+                  <img src="{{logo_url}}" width="56" height="56" alt="AGCM" style="display: block; border-radius: 10px; object-fit: cover; border: 2px solid rgba(255,215,0,0.35);" />
+                </td>
+                <td valign="middle" style="padding-left: 16px;">
+                  <div style="color: #ffffff; font-size: 18px; font-weight: 700; letter-spacing: 0.02em;">AGCM</div>
+                  <div style="color: rgba(255,255,255,0.85); font-size: 11px; margin-top: 4px; max-width: 380px;">Association des Guinéens de la Charente-Maritime</div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 24px;">
+            <p style="margin: 0 0 8px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #DC143C;">{{form_kind}}</p>
+            <h1 style="margin: 0 0 16px; font-size: 20px; font-weight: 700; color: #0f2417;">Message reçu depuis le site</h1>
+            <p style="margin: 0 0 20px; color: #6b7280; font-size: 14px;">Merci de répondre dans les meilleurs délais depuis votre boîte professionnelle ou l’espace admin.</p>
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px dashed #d1d5db; border-bottom: 1px dashed #d1d5db; margin: 20px 0;">
+              <tr>
+                <td style="padding: 20px 0;">
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                      <td width="52" valign="top">
+                        <div style="width: 44px; height: 44px; background: #e8f5e9; border-radius: 10px; text-align: center; line-height: 44px; font-size: 22px;" role="img" aria-label="Expéditeur">👤</div>
+                      </td>
+                      <td valign="top" style="padding-left: 8px;">
+                        <div style="font-size: 16px; font-weight: 700; color: #0f2417;">{{sender_name}}</div>
+                        <div style="font-size: 13px; color: #6b7280; margin-top: 2px;">
+                          <a href="mailto:{{sender_email}}" style="color: #19533a; text-decoration: none;">{{sender_email}}</a>
+                        </div>
+                        <div style="font-size: 12px; color: #9ca3af; margin-top: 6px;">{{submitted_at}}</div>
+                        <p style="margin: 12px 0 0; font-size: 13px;"><strong style="color: #374151;">Sujet :</strong> <span style="color: #111827;">{{subject}}</span></p>
+                        <div style="margin-top: 14px; padding: 14px 16px; background: #f9fafb; border-radius: 8px; border-left: 4px solid #DC143C;">
+                          <p style="margin: 0; font-size: 14px; color: #374151; white-space: pre-wrap;">{{message}}</p>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <p style="margin: 0; font-size: 11px; color: #9ca3af;">Notification automatique · Site AGCM ({{form_kind}})</p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>

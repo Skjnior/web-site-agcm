@@ -10,6 +10,7 @@ import SuccessModal from '@/components/ui/SuccessModal';
 import ErrorModal from '@/components/ui/ErrorModal';
 import InputModal from '@/components/ui/InputModal';
 import Link from 'next/link';
+import { memberContactEmail } from '@/lib/member-contact';
 
 interface AffectationDetails {
   id: string;
@@ -39,12 +40,13 @@ interface AffectationDetails {
     nom: string;
     telephone: string | null;
     ville: string | null;
+    email: string | null;
     user: {
       id: string;
       email: string;
       roleSysteme: string;
       isActive: boolean;
-    };
+    } | null;
   };
 }
 
@@ -117,7 +119,6 @@ export default function AffectationDetailPage() {
   };
 
   const confirmActivate = async () => {
-    setActivateConfirmModal(false);
     try {
       setActivating(true);
       const response = await fetch(`/api/super-admin/affectations/${id}/activer`, {
@@ -129,7 +130,7 @@ export default function AffectationDetailPage() {
         throw new Error(errorData.error || 'Erreur lors de l\'activation');
       }
 
-      // Recharger les données
+      setActivateConfirmModal(false);
       await fetchAffectation();
       setSuccessModal({ isOpen: true, message: 'Affectation activée avec succès' });
     } catch (err: any) {
@@ -202,10 +203,10 @@ export default function AffectationDetailPage() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto space-y-6 text-gray-900">
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-guinea-red mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement...</p>
+      <div className="admin-page space-y-8 px-4 pb-12 text-slate-900 animate-in fade-in duration-500 dark:text-slate-100">
+        <div className="admin-glass rounded-2xl p-12 text-center shadow-sm">
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
+          <p className="mt-4 text-slate-600 dark:text-slate-400">Chargement...</p>
         </div>
       </div>
     );
@@ -213,11 +214,13 @@ export default function AffectationDetailPage() {
 
   if (error || !affectation) {
     return (
-      <div className="max-w-7xl mx-auto space-y-6 text-gray-900">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-          <p className="text-red-800">{error || 'Affectation introuvable'}</p>
+      <div className="admin-page space-y-8 px-4 pb-12 text-slate-900 animate-in fade-in duration-500 dark:text-slate-100">
+        <div className="admin-glass rounded-2xl border border-red-200/80 bg-red-50/90 p-6 text-center dark:border-red-900/50 dark:bg-red-950/40">
+          <p className="text-red-800 dark:text-red-200">{error || 'Affectation introuvable'}</p>
           <Link href="/admin/affectations" className="mt-4 inline-block">
-            <Button variant="outline">Retour à la liste</Button>
+            <Button variant="outline" className="border-slate-300 dark:border-slate-600 dark:hover:bg-slate-800">
+              Retour à la liste
+            </Button>
           </Link>
         </div>
       </div>
@@ -225,19 +228,30 @@ export default function AffectationDetailPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 text-gray-900">
-      <div className="flex items-center gap-4">
-        <Button variant="outline" size="sm" onClick={() => router.back()}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Retour
-        </Button>
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold text-gray-900">Détails de l'affectation</h1>
-          <p className="text-gray-600 mt-1">Informations complètes sur cette affectation</p>
+    <div className="admin-page space-y-8 px-4 pb-12 text-slate-900 animate-in fade-in duration-500 dark:text-slate-100">
+      <div className="admin-glass flex flex-col gap-4 rounded-2xl p-6 shadow-sm sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 flex-1 flex-col gap-4 sm:flex-row sm:items-start">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.back()}
+            className="shrink-0 border-slate-300 dark:border-slate-600 dark:hover:bg-slate-800"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Retour
+          </Button>
+          <div className="min-w-0">
+            <h1 className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-3xl font-bold text-transparent dark:from-slate-100 dark:to-slate-400">
+              Détails de l'affectation
+            </h1>
+            <p className="mt-1 text-slate-600 dark:text-slate-400">
+              Informations complètes sur cette affectation
+            </p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
           <Link href={`/admin/affectations/${affectation.id}/edit`}>
-            <Button variant="outline" size="sm" className="border-blue-500 text-blue-700 hover:bg-blue-50">
+            <Button variant="edit" size="sm">
               <Edit className="h-4 w-4 mr-2" />
               Modifier
             </Button>
@@ -248,11 +262,11 @@ export default function AffectationDetailPage() {
               size="sm"
               onClick={handleInactiver}
               disabled={inactivating}
-              className="border-red-500 text-red-700 hover:bg-red-50"
+              className="border-red-300 text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/40"
             >
               {inactivating ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-700 mr-2"></div>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-red-700 dark:border-red-400" />
                   Inactivation...
                 </>
               ) : (
@@ -263,16 +277,10 @@ export default function AffectationDetailPage() {
               )}
             </Button>
           ) : (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleActiver}
-              disabled={activating}
-              className="border-green-500 text-green-700 hover:bg-green-50"
-            >
+            <Button variant="add" size="sm" onClick={handleActiver} disabled={activating}>
               {activating ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-700 mr-2"></div>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white" />
                   Activation...
                 </>
               ) : (
@@ -284,16 +292,10 @@ export default function AffectationDetailPage() {
             </Button>
           )}
           {affectation.dateFin && new Date(affectation.dateFin) >= new Date() && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleDelete}
-              disabled={deleting}
-              className="border-red-500 text-red-700 hover:bg-red-50"
-            >
+            <Button variant="delete" size="sm" onClick={handleDelete} disabled={deleting}>
               {deleting ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-700 mr-2"></div>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white" />
                   Suppression...
                 </>
               ) : (
@@ -307,85 +309,96 @@ export default function AffectationDetailPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Informations du membre */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <User className="h-5 w-5 text-blue-600" />
+        <div className="admin-panel p-6">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="rounded-lg bg-blue-100 p-2 dark:bg-blue-950/50">
+              <User className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
-            <h2 className="text-xl font-semibold text-gray-900">Membre</h2>
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Membre</h2>
           </div>
           <div className="space-y-3">
             <div>
-              <p className="text-sm text-gray-500">Nom complet</p>
-              <p className="text-gray-900 font-medium">
+              <p className="text-sm text-slate-500 dark:text-slate-400">Nom complet</p>
+              <p className="font-medium text-slate-900 dark:text-slate-100">
                 {affectation.member.prenom} {affectation.member.nom}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Email</p>
-              <p className="text-gray-900 font-medium flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                {affectation.member.user.email}
+              <p className="text-sm text-slate-500 dark:text-slate-400">Email</p>
+              <p className="flex items-center gap-2 font-medium text-slate-900 dark:text-slate-100">
+                <Mail className="h-4 w-4 shrink-0 text-slate-400 dark:text-slate-500" />
+                {memberContactEmail(affectation.member) || '—'}
               </p>
             </div>
             {affectation.member.telephone && (
               <div>
-                <p className="text-sm text-gray-500">Téléphone</p>
-                <p className="text-gray-900 font-medium">{affectation.member.telephone}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Téléphone</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100">{affectation.member.telephone}</p>
               </div>
             )}
             {affectation.member.ville && (
               <div>
-                <p className="text-sm text-gray-500">Ville</p>
-                <p className="text-gray-900 font-medium">{affectation.member.ville}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Ville</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100">{affectation.member.ville}</p>
               </div>
             )}
-            <div>
-              <p className="text-sm text-gray-500">Rôle système</p>
-              <Badge variant={affectation.member.user.roleSysteme === 'SUPER_ADMIN' ? 'default' : 'outline'}>
-                {affectation.member.user.roleSysteme}
-              </Badge>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Statut compte</p>
-              <Badge variant={affectation.member.user.isActive ? 'success' : 'destructive'}>
-                {affectation.member.user.isActive ? 'Actif' : 'Inactif'}
-              </Badge>
-            </div>
+            {affectation.member.user ? (
+              <>
+                <div>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Rôle système</p>
+                  <Badge
+                    variant={affectation.member.user.roleSysteme === 'SUPER_ADMIN' ? 'default' : 'outline'}
+                    className="mt-1 border-slate-300 dark:border-slate-600"
+                  >
+                    {affectation.member.user.roleSysteme}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Statut compte</p>
+                  <Badge variant={affectation.member.user.isActive ? 'success' : 'destructive'} className="mt-1">
+                    {affectation.member.user.isActive ? 'Actif' : 'Inactif'}
+                  </Badge>
+                </div>
+              </>
+            ) : (
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Pas de compte de connexion (fiche adhérent uniquement).
+              </p>
+            )}
           </div>
         </div>
 
         {/* Informations du poste */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Briefcase className="h-5 w-5 text-purple-600" />
+        <div className="admin-panel p-6">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="rounded-lg bg-violet-100 p-2 dark:bg-violet-950/50">
+              <Briefcase className="h-5 w-5 text-violet-600 dark:text-violet-400" />
             </div>
-            <h2 className="text-xl font-semibold text-gray-900">Poste</h2>
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Poste</h2>
           </div>
           <div className="space-y-3">
             <div>
-              <p className="text-sm text-gray-500">Nom du poste</p>
-              <p className="text-gray-900 font-medium">{affectation.poste.nom}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Nom du poste</p>
+              <p className="font-medium text-slate-900 dark:text-slate-100">{affectation.poste.nom}</p>
             </div>
             {affectation.poste.description && (
               <div>
-                <p className="text-sm text-gray-500">Description</p>
-                <p className="text-gray-900">{affectation.poste.description}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Description</p>
+                <p className="text-slate-900 dark:text-slate-100">{affectation.poste.description}</p>
               </div>
             )}
             <div className="flex gap-4">
               <div>
-                <p className="text-sm text-gray-500">Bureau</p>
-                <Badge variant={affectation.poste.estBureau ? 'success' : 'outline'}>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Bureau</p>
+                <Badge variant={affectation.poste.estBureau ? 'success' : 'outline'} className="mt-1">
                   {affectation.poste.estBureau ? 'Oui' : 'Non'}
                 </Badge>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Actif</p>
-                <Badge variant={affectation.poste.estActif ? 'success' : 'destructive'}>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Actif</p>
+                <Badge variant={affectation.poste.estActif ? 'success' : 'destructive'} className="mt-1">
                   {affectation.poste.estActif ? 'Oui' : 'Non'}
                 </Badge>
               </div>
@@ -394,21 +407,21 @@ export default function AffectationDetailPage() {
         </div>
 
         {/* Informations du mandat */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Calendar className="h-5 w-5 text-green-600" />
+        <div className="admin-panel p-6">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="rounded-lg bg-emerald-100 p-2 dark:bg-emerald-950/50">
+              <Calendar className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <h2 className="text-xl font-semibold text-gray-900">Mandat</h2>
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Mandat</h2>
           </div>
           <div className="space-y-3">
             <div>
-              <p className="text-sm text-gray-500">Titre</p>
-              <p className="text-gray-900 font-medium">{affectation.mandat.titre}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Titre</p>
+              <p className="font-medium text-slate-900 dark:text-slate-100">{affectation.mandat.titre}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Période</p>
-              <p className="text-gray-900">
+              <p className="text-sm text-slate-500 dark:text-slate-400">Période</p>
+              <p className="text-slate-900 dark:text-slate-100">
                 Du {new Date(affectation.mandat.dateDebut).toLocaleDateString('fr-FR')} au{' '}
                 {affectation.mandat.dateFin
                   ? new Date(affectation.mandat.dateFin).toLocaleDateString('fr-FR')
@@ -416,8 +429,8 @@ export default function AffectationDetailPage() {
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Statut</p>
-              <Badge variant={affectation.mandat.statut === 'ACTIF' ? 'success' : 'outline'}>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Statut</p>
+              <Badge variant={affectation.mandat.statut === 'ACTIF' ? 'success' : 'outline'} className="mt-1">
                 {affectation.mandat.statut}
               </Badge>
             </div>
@@ -425,24 +438,24 @@ export default function AffectationDetailPage() {
         </div>
 
         {/* Informations de l'affectation */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-orange-100 rounded-lg">
-              <UserCheck className="h-5 w-5 text-orange-600" />
+        <div className="admin-panel p-6">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="rounded-lg bg-amber-100 p-2 dark:bg-amber-950/40">
+              <UserCheck className="h-5 w-5 text-amber-600 dark:text-amber-400" />
             </div>
-            <h2 className="text-xl font-semibold text-gray-900">Affectation</h2>
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Affectation</h2>
           </div>
           <div className="space-y-3">
             <div>
-              <p className="text-sm text-gray-500">Statut</p>
-              <Badge variant={affectation.statut === 'ACTIF' ? 'success' : 'destructive'}>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Statut</p>
+              <Badge variant={affectation.statut === 'ACTIF' ? 'success' : 'destructive'} className="mt-1">
                 {affectation.statut}
               </Badge>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Date de début</p>
-              <p className="text-gray-900 font-medium flex items-center gap-2">
-                <Clock className="h-4 w-4" />
+              <p className="text-sm text-slate-500 dark:text-slate-400">Date de début</p>
+              <p className="flex items-center gap-2 font-medium text-slate-900 dark:text-slate-100">
+                <Clock className="h-4 w-4 shrink-0 text-slate-400 dark:text-slate-500" />
                 {new Date(affectation.dateDebut).toLocaleDateString('fr-FR', {
                   day: 'numeric',
                   month: 'long',
@@ -452,9 +465,9 @@ export default function AffectationDetailPage() {
             </div>
             {affectation.dateFin && (
               <div>
-                <p className="text-sm text-gray-500">Date de fin</p>
-                <p className="text-gray-900 font-medium flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
+                <p className="text-sm text-slate-500 dark:text-slate-400">Date de fin</p>
+                <p className="flex items-center gap-2 font-medium text-slate-900 dark:text-slate-100">
+                  <Clock className="h-4 w-4 shrink-0 text-slate-400 dark:text-slate-500" />
                   {new Date(affectation.dateFin).toLocaleDateString('fr-FR', {
                     day: 'numeric',
                     month: 'long',
@@ -465,21 +478,21 @@ export default function AffectationDetailPage() {
             )}
             {affectation.raisonInactivation && (
               <div>
-                <p className="text-sm text-gray-500">Raison d'inactivation</p>
-                <div className="mt-1 p-3 bg-gray-50 rounded-lg">
-                  <p className="text-gray-900">{affectation.raisonInactivation}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Raison d'inactivation</p>
+                <div className="mt-1 rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800/50">
+                  <p className="text-slate-900 dark:text-slate-100">{affectation.raisonInactivation}</p>
                 </div>
               </div>
             )}
             <div>
-              <p className="text-sm text-gray-500">Créée le</p>
-              <p className="text-gray-900 text-sm">
+              <p className="text-sm text-slate-500 dark:text-slate-400">Créée le</p>
+              <p className="text-sm text-slate-900 dark:text-slate-100">
                 {new Date(affectation.createdAt).toLocaleString('fr-FR')}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Modifiée le</p>
-              <p className="text-gray-900 text-sm">
+              <p className="text-sm text-slate-500 dark:text-slate-400">Modifiée le</p>
+              <p className="text-sm text-slate-900 dark:text-slate-100">
                 {new Date(affectation.updatedAt).toLocaleString('fr-FR')}
               </p>
             </div>
@@ -502,10 +515,17 @@ export default function AffectationDetailPage() {
       />
       <ConfirmationModal
         isOpen={activateConfirmModal}
-        onClose={() => setActivateConfirmModal(false)}
+        onClose={() => {
+          if (activating) return;
+          setActivateConfirmModal(false);
+        }}
         onConfirm={confirmActivate}
         title="Activer l'affectation"
-        message="Êtes-vous sûr de vouloir activer cette affectation ?"
+        message={
+          affectation
+            ? `Le membre « ${affectation.member.prenom} ${affectation.member.nom} » reprendra le poste « ${affectation.poste.nom} » pour le mandat « ${affectation.mandat.titre} ».\n\nConfirmez-vous la réactivation de cette affectation ?`
+            : ''
+        }
         type="info"
         confirmText="Activer"
         isLoading={activating}

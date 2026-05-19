@@ -2,11 +2,10 @@
 // CRUD des projets (bureau)
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/require-auth';
+import { requireBureauModule } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
 import { projetCreateSchema } from '@/lib/validators/projet';
-import { getAffectationActive } from '@/lib/rbac';
-import { getMandatActif } from '@/lib/mandat';
+import { getBureauMandatContext } from '@/lib/rbac';
 import { logAction } from '@/lib/audit';
 import { parsePagination, createPaginatedResponse } from '@/lib/pagination';
 import { z } from 'zod';
@@ -21,28 +20,21 @@ function slugify(text: string): string {
 }
 
 export async function POST(request: NextRequest) {
-  const { error, session } = await requireAuth();
+  const { error, session } = await requireBureauModule('projets');
   if (error) return error;
 
   try {
-    const affectation = await getAffectationActive(session!.user.id);
-    if (!affectation) {
+    const ctx = await getBureauMandatContext(session!.user.id);
+    if (!ctx) {
       return NextResponse.json(
-        { error: 'Vous devez avoir un poste actif pour créer un projet' },
+        { error: 'Vous devez avoir un poste actif sur le mandat en cours pour créer un projet' },
         { status: 403 }
-      );
-    }
-
-    const mandatActif = await getMandatActif();
-    if (!mandatActif) {
-      return NextResponse.json(
-        { error: 'Aucun mandat actif' },
-        { status: 400 }
       );
     }
 
     const body = await request.json();
     const data = projetCreateSchema.parse(body);
+    const medias = data.medias ?? [];
 
     // Générer le slug
     const slug = slugify(data.titre);
@@ -60,9 +52,19 @@ export async function POST(request: NextRequest) {
         actions: data.actions,
         statut: data.statut,
         visibiliteSite: data.visibiliteSite,
-        responsablePosteId: affectation.posteId,
-        mandatId: mandatActif.id,
+        responsablePosteId: ctx.primaryAffectation.posteId,
+        mandatId: ctx.mandatId,
+        ...(medias.length > 0 && {
+          medias: {
+            create: medias.map((m, i) => ({
+              url: m.url,
+              type: m.type,
+              ordre: m.ordre ?? i,
+            })),
+          },
+        }),
       },
+      include: { medias: true },
     });
 
     await logAction({
@@ -94,22 +96,23 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  const { error, session } = await requireAuth();
+  const { error, session } = await requireBureauModule('projets');
   if (error) return error;
 
   const { page, limit, offset } = parsePagination(request);
 
   try {
-    const affectation = await getAffectationActive(session!.user.id);
-    if (!affectation) {
+    const ctx = await getBureauMandatContext(session!.user.id);
+    if (!ctx) {
       return NextResponse.json(
-        { error: 'Vous devez avoir un poste actif' },
+        { error: 'Vous devez avoir un poste actif sur le mandat en cours' },
         { status: 403 }
       );
     }
 
     const where = {
-      responsablePosteId: affectation.posteId,
+      responsablePosteId: { in: ctx.posteIds },
+      mandatId: ctx.mandatId,
     };
 
     const [total, projets] = await Promise.all([

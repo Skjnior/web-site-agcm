@@ -53,14 +53,53 @@ export async function PATCH(
       afterData: demande,
     });
 
-    // Si APPROUVEE, notifier le SuperAdmin pour créer le compte
-    // (le SuperAdmin devra créer le compte manuellement via /api/super-admin/users)
+    if (statut === 'APPROUVEE') {
+      const emailNorm = demande.email.trim().toLowerCase();
+      const existingUser = await prisma.user.findUnique({
+        where: { email: emailNorm },
+      });
+      if (existingUser) {
+        return NextResponse.json(
+          {
+            error:
+              'Un compte existe déjà pour cet e-mail. Utilisez la gestion des membres ou des utilisateurs.',
+          },
+          { status: 409 }
+        );
+      }
+      const existingMember = await prisma.member.findFirst({
+        where: {
+          OR: [{ email: { equals: emailNorm, mode: 'insensitive' } }, { user: { email: { equals: emailNorm, mode: 'insensitive' } } }],
+        },
+      });
+      if (existingMember) {
+        return NextResponse.json(
+          { error: 'Cette personne est déjà enregistrée comme adhérent·e ou membre avec compte.' },
+          { status: 409 }
+        );
+      }
+
+      await prisma.member.create({
+        data: {
+          userId: null,
+          email: emailNorm,
+          prenom: demande.prenom.trim(),
+          nom: demande.nom.trim(),
+          telephone: demande.telephone?.trim() || null,
+          ville: demande.ville?.trim() || null,
+          pays: demande.pays?.trim() || null,
+          bio: demande.message?.trim() || null,
+          statutMembre: 'ACTIF',
+        },
+      });
+    }
 
     return NextResponse.json({
       success: true,
-      message: statut === 'APPROUVEE' 
-        ? 'Demande approuvée. Le SuperAdmin doit créer le compte.'
-        : 'Demande refusée.',
+      message:
+        statut === 'APPROUVEE'
+          ? "Demande approuvée. La fiche adhérent·e a été ajoutée (sans compte de connexion)."
+          : 'Demande refusée.',
       demande,
     });
   } catch (error) {

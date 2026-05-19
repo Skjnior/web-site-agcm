@@ -8,12 +8,7 @@ interface Stat {
 }
 
 export default function StatsSection() {
-  const [stats, setStats] = useState<Stat[]>([
-    { label: 'Membres', value: '+551' },
-    { label: 'Événements / an', value: '0' },
-    { label: 'Projets actifs', value: '120+' },
-    { label: 'Actualités', value: '100+' },
-  ]);
+  const [stats, setStats] = useState<Stat[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,10 +17,11 @@ export default function StatsSection() {
         const response = await fetch('/api/public/stats');
         if (response.ok) {
           const data = await response.json();
-          setStats(data.stats || stats);
+          if (Array.isArray(data.stats)) setStats(data.stats);
         }
       } catch (error) {
         console.error('Erreur lors du chargement des stats:', error);
+        setStats([]);
       } finally {
         setLoading(false);
       }
@@ -36,8 +32,8 @@ export default function StatsSection() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[...Array(4)].map((_, i) => (
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {[...Array(3)].map((_, i) => (
           <div key={i} className="bg-white/10 border border-white/10 rounded-xl p-4 animate-pulse">
             <div className="h-8 bg-white/20 rounded mb-2"></div>
             <div className="h-6 bg-white/20 rounded w-1/2"></div>
@@ -47,8 +43,16 @@ export default function StatsSection() {
     );
   }
 
+  if (stats.length === 0) {
+    return (
+      <p className="text-sm text-slate-400">
+        Statistiques indisponibles pour le moment.
+      </p>
+    );
+  }
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
       {stats.map((stat, i) => (
         <div
           key={i}

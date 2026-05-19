@@ -2,10 +2,12 @@
 // GET et PATCH pour un contenu du bureau
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireBureau } from '@/lib/require-auth';
+import { requireBureauModule } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
-import { canModifyContent } from '@/lib/rbac';
+import { canModifyContent, canDeleteContent } from '@/lib/rbac';
+import { logAction } from '@/lib/audit';
 import { z } from 'zod';
+import { contentAttachmentSchema } from '@/lib/validators/content';
 
 const updateSchema = z.object({
   type: z.enum(['ACTIVITE', 'ACTUALITE', 'PARTAGE', 'ANNONCE']).optional(),
@@ -19,13 +21,14 @@ const updateSchema = z.object({
     .or(z.literal('')),
   visibiliteCible: z.enum(['PRIVE_BUREAU', 'PUBLIC_SITE']).optional(),
   tags: z.array(z.string()).optional(),
+  attachments: z.array(contentAttachmentSchema).max(20).optional(),
 });
 
 export async function GET(
   _request: NextRequest,
   context: { params: Promise<{ contentId: string }> }
 ) {
-  const { error, session } = await requireBureau();
+  const { error, session } = await requireBureauModule('contents');
   if (error) return error;
 
   const { contentId } = await context.params;
@@ -46,9 +49,13 @@ export async function GET(
 
     const { canModify } = await canModifyContent(session!.user!.id!, contentId);
     if (!canModify) {
-      const { getAffectationActive } = await import('@/lib/rbac');
-      const affectation = await getAffectationActive(session!.user!.id!);
-      if (!affectation || content.auteurPosteId !== affectation.posteId) {
+      const { getBureauMandatContext } = await import('@/lib/rbac');
+      const ctx = await getBureauMandatContext(session!.user!.id!);
+      const ownsByPoste =
+        !!content.auteurPosteId &&
+        !!ctx?.posteIds.length &&
+        ctx.posteIds.includes(content.auteurPosteId);
+      if (!ownsByPoste) {
         return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
       }
     }
@@ -64,7 +71,7 @@ export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ contentId: string }> }
 ) {
-  const { error, session } = await requireBureau();
+  const { error, session } = await requireBureauModule('contents');
   if (error) return error;
 
   const { contentId } = await context.params;
@@ -91,6 +98,9 @@ export async function PATCH(
         ...(data.imagePrincipale !== undefined && { imagePrincipale: data.imagePrincipale || null }),
         ...(data.visibiliteCible && { visibiliteCible: data.visibiliteCible }),
         ...(data.tags && { tags: data.tags }),
+        ...(data.attachments !== undefined && {
+          attachments: data.attachments.length ? data.attachments : [],
+        }),
       },
       include: {
         auteurPoste: { select: { id: true, nom: true } },
@@ -107,6 +117,49 @@ export async function PATCH(
       );
     }
     console.error('Erreur modification contenu:', err);
+    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  _request: NextRequest,
+  context: { params: Promise<{ contentId: string }> }
+) {
+  const { error, session } = await requireBureauModule('contents');
+  if (error) return error;
+
+  const { contentId } = await context.params;
+
+  const allowed = await canDeleteContent(session!.user!.id!, contentId);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: 'Suppression non autorisée (statut ou droits insuffisants)' },
+      { status: 403 }
+    );
+  }
+
+  try {
+    const contentBefore = await prisma.content.findUnique({
+      where: { id: contentId },
+    });
+    if (!contentBefore) {
+      return NextResponse.json({ error: 'Contenu introuvable' }, { status: 404 });
+    }
+
+    await prisma.content.delete({ where: { id: contentId } });
+
+    await logAction({
+      userId: session!.user!.id!,
+      action: 'DELETE',
+      entityType: 'Content',
+      entityId: contentId,
+      beforeData: contentBefore,
+      afterData: null,
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('Erreur suppression contenu bureau:', err);
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
   }
 }

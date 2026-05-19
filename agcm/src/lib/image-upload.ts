@@ -1,18 +1,24 @@
 // lib/image-upload.ts
+// Images : Vercel Blob si BLOB_READ_WRITE_TOKEN est défini, sinon fichiers dans public/uploads/images/
+import { put } from '@vercel/blob';
 import { writeFile, mkdir } from 'fs/promises';
 import { join, resolve, basename } from 'path';
 import { existsSync } from 'fs';
 import { fileTypeFromBuffer } from 'file-type';
 
-const UPLOAD_DIR = join(process.cwd(), 'public', 'uploads', 'images');
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
 
-// S'assurer que le dossier existe
-export async function ensureImageUploadDir() {
-  if (!existsSync(UPLOAD_DIR)) {
-    await mkdir(UPLOAD_DIR, { recursive: true });
+const LOCAL_IMAGES_DIR = join(process.cwd(), 'public', 'uploads', 'images');
+
+function hasBlobToken(): boolean {
+  return Boolean(process.env.BLOB_READ_WRITE_TOKEN?.trim());
+}
+
+async function ensureLocalImagesDir() {
+  if (!existsSync(LOCAL_IMAGES_DIR)) {
+    await mkdir(LOCAL_IMAGES_DIR, { recursive: true });
   }
 }
 
@@ -22,62 +28,63 @@ export async function saveUploadedImage(file: File): Promise<{
   fileSize: number;
   mimeType: string;
 }> {
-  await ensureImageUploadDir();
-
-  // Vérifier que c'est une image (première vérification basée sur MIME type)
   if (!file.type.startsWith('image/')) {
     throw new Error('Le fichier doit être une image');
   }
 
-  // Convertir le File en Buffer
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  // Vérifier la taille
   if (buffer.length > MAX_FILE_SIZE) {
     throw new Error(`L'image est trop volumineuse. Taille maximale : ${MAX_FILE_SIZE / 1024 / 1024} MB`);
   }
 
-  // Vérifier le type réel du fichier avec magic bytes (protection contre MIME type falsifié)
   const fileType = await fileTypeFromBuffer(buffer);
   if (!fileType || !ALLOWED_IMAGE_TYPES.includes(fileType.mime)) {
     throw new Error('Type de fichier non autorisé. Formats acceptés : JPEG, PNG, WebP, GIF');
   }
 
-  // Valider l'extension du nom de fichier
   const originalExtension = file.name.split('.').pop()?.toLowerCase() || '';
   if (!ALLOWED_EXTENSIONS.includes(`.${originalExtension}`)) {
     throw new Error('Extension de fichier non autorisée');
   }
 
-  // Générer un nom de fichier unique avec extension sécurisée
   const timestamp = Date.now();
   const randomStr = Math.random().toString(36).substring(2, 15);
-  // Utiliser l'extension du type détecté plutôt que celle du nom de fichier
   const safeExtension = fileType.ext || 'jpg';
-  const fileName = `${timestamp}-${randomStr}.${safeExtension}`;
-  
-  // Sécuriser le chemin pour éviter path traversal
-  const safeFileName = basename(fileName);
-  const filePath = resolve(UPLOAD_DIR, safeFileName);
-  
-  // Vérifier que le chemin résolu est bien dans le dossier autorisé
-  const resolvedUploadDir = resolve(UPLOAD_DIR);
-  if (!filePath.startsWith(resolvedUploadDir)) {
+  const uniqueFileName = `${timestamp}-${randomStr}.${safeExtension}`;
+
+  if (hasBlobToken()) {
+    const blobPath = `uploads/images/${uniqueFileName}`;
+    const blob = await put(blobPath, buffer, {
+      access: 'public',
+      contentType: fileType.mime,
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    });
+
+    return {
+      imageUrl: blob.url,
+      fileName: file.name,
+      fileSize: buffer.length,
+      mimeType: fileType.mime,
+    };
+  }
+
+  await ensureLocalImagesDir();
+
+  const safeFileName = basename(uniqueFileName);
+  const filePath = resolve(LOCAL_IMAGES_DIR, safeFileName);
+  const resolvedDir = resolve(LOCAL_IMAGES_DIR);
+  if (!filePath.startsWith(resolvedDir)) {
     throw new Error('Chemin de fichier invalide');
   }
 
-  // Sauvegarder le fichier
   await writeFile(filePath, buffer);
 
-  // Retourner l'URL relative (accessible via /uploads/images/filename)
-  const imageUrl = `/uploads/images/${safeFileName}`;
-
   return {
-    imageUrl,
+    imageUrl: `/uploads/images/${safeFileName}`,
     fileName: file.name,
     fileSize: buffer.length,
-    mimeType: fileType.mime, // Utiliser le MIME type détecté plutôt que celui fourni
+    mimeType: fileType.mime,
   };
 }
-

@@ -22,7 +22,7 @@ export default function AdminNav() {
   };
 
   return (
-    <nav className="bg-white border-r min-h-screen w-64 p-4 space-y-2">
+    <nav className="min-h-screen w-64 space-y-2 border-r border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
       <div className="mb-6">
         <h2 className="text-lg font-bold text-gray-900">Administration</h2>
         <p className="text-xs text-gray-500 mt-1">Interface de gestion</p>
@@ -34,7 +34,7 @@ export default function AdminNav() {
           className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
             isActive(item.href)
               ? 'bg-blue-50 text-blue-700 font-semibold'
-              : 'text-gray-700 hover:bg-gray-50'
+              : 'text-gray-700 hover:bg-gray-50 dark:text-slate-300 dark:hover:bg-slate-800'
           }`}
         >
           <span className="text-xl">{item.icon}</span>

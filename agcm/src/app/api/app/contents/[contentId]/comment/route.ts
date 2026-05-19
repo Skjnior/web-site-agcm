@@ -3,7 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { requireAuth } from '@/lib/require-auth';
+import { requireIntranetAccess } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
 import { commentCreateSchema } from '@/lib/validators/comment';
 import { logAction } from '@/lib/audit';
@@ -12,7 +12,7 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ contentId: string }> }
 ) {
-  const { error, session } = await requireAuth();
+  const { error, session } = await requireIntranetAccess();
   if (error) return error;
 
   const { contentId } = await params;

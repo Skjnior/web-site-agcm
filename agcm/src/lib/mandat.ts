@@ -1,18 +1,19 @@
 // src/lib/mandat.ts
 // Helpers pour gérer les mandats actifs
 
+import { cache } from 'react';
 import { prisma } from './prisma';
 
 /**
  * Récupère le mandat actif (statut = ACTIF)
  * @returns Le mandat actif ou null
  */
-export async function getMandatActif() {
+export const getMandatActif = cache(async () => {
   return await prisma.mandat.findFirst({
     where: { statut: 'ACTIF' },
     orderBy: { dateDebut: 'desc' },
   });
-}
+});
 
 /**
  * Vérifie si un mandat est actif

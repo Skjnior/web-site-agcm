@@ -2,7 +2,8 @@ import { Metadata } from 'next';
 import { redirect, notFound } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { isBureauActif, canModifyContent } from '@/lib/rbac';
+import { canModifyContent } from '@/lib/rbac';
+import { assertBureauModuleOrRedirect } from '@/lib/bureau-page-guard';
 import BureauContentEditForm from './BureauContentEditForm';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -18,9 +19,11 @@ export default async function BureauContentEditPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const session = await auth();
   const { id } = await params;
 
+  await assertBureauModuleOrRedirect('contents');
+
+  const session = await auth();
   if (!session?.user) {
     redirect('/connexion');
   }
@@ -31,11 +34,6 @@ export default async function BureauContentEditPage({
 
   if (!user) {
     redirect('/connexion');
-  }
-
-  const bureauActif = await isBureauActif(user.id);
-  if (!bureauActif) {
-    redirect('/app/dashboard');
   }
 
   const content = await prisma.content.findUnique({

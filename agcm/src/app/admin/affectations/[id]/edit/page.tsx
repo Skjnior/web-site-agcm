@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowLeft, Save } from 'lucide-react';
+import { MemberPickField, type MemberPickOption } from '@/components/admin/MemberPickField';
+import { memberContactEmail } from '@/lib/member-contact';
 
 const affectationUpdateSchema = z.object({
   mandatId: z.string().min(1, 'Le mandat est requis'),
@@ -31,15 +33,25 @@ export default function EditAffectationPage() {
   const [error, setError] = useState<string>('');
   const [mandats, setMandats] = useState<any[]>([]);
   const [postes, setPostes] = useState<any[]>([]);
-  const [members, setMembers] = useState<any[]>([]);
+  const [members, setMembers] = useState<MemberPickOption[]>([]);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
+    reset,
+    control,
   } = useForm<AffectationFormData>({
     resolver: zodResolver(affectationUpdateSchema),
+    defaultValues: {
+      mandatId: '',
+      posteId: '',
+      memberId: '',
+      dateDebut: '',
+      dateFin: '',
+      statut: 'ACTIF',
+      raisonInactivation: '',
+    },
   });
 
   useEffect(() => {
@@ -68,19 +80,60 @@ export default function EditAffectationPage() {
       ]);
 
       const affectation = affectationData.affectation;
-      
-      // Pré-remplir le formulaire
-      setValue('mandatId', affectation.mandatId);
-      setValue('posteId', affectation.posteId);
-      setValue('memberId', affectation.memberId);
-      setValue('dateDebut', new Date(affectation.dateDebut).toISOString().split('T')[0]);
-      setValue('dateFin', affectation.dateFin ? new Date(affectation.dateFin).toISOString().split('T')[0] : '');
-      setValue('statut', affectation.statut);
-      setValue('raisonInactivation', affectation.raisonInactivation || '');
+      if (!affectation) {
+        throw new Error('Affectation introuvable');
+      }
 
-      setMandats(mandatsData.data || []);
-      setPostes(postesData.data || []);
-      setMembers(membersData.data || []);
+      let mandatList = mandatsData.data ?? [];
+      let posteList = postesData.data ?? [];
+
+      /** L'API postes/mandats est paginée (max 100) : inclure l'entité courante si absente des résultats. */
+      if (affectation.mandatId && !mandatList.some((m: { id: string }) => m.id === affectation.mandatId) && affectation.mandat) {
+        mandatList = [affectation.mandat, ...mandatList];
+      }
+      if (affectation.posteId && !posteList.some((p: { id: string }) => p.id === affectation.posteId) && affectation.poste) {
+        posteList = [affectation.poste, ...posteList];
+      }
+
+      setMandats(mandatList);
+      setPostes(posteList);
+
+      let memberList: MemberPickOption[] = membersData.data ?? membersData.members ?? [];
+      const mid = affectation.memberId as string;
+      if (mid && !memberList.some((m) => m.id === mid) && affectation.member) {
+        const mm = affectation.member as {
+          id: string;
+          prenom: string;
+          nom: string;
+          telephone: string | null;
+          photoUrl: string | null;
+          email: string | null;
+          user: { email: string } | null;
+        };
+        memberList = [
+          {
+            id: mm.id,
+            prenom: mm.prenom,
+            nom: mm.nom,
+            email: memberContactEmail(mm),
+            telephone: mm.telephone,
+            photoUrl: mm.photoUrl,
+            fullName: `${mm.prenom} ${mm.nom}`,
+          },
+          ...memberList,
+        ];
+      }
+      setMembers(memberList);
+
+      reset({
+        mandatId: affectation.mandatId,
+        posteId: affectation.posteId,
+        memberId: affectation.memberId,
+        dateDebut: new Date(affectation.dateDebut).toISOString().split('T')[0],
+        dateFin: affectation.dateFin ? new Date(affectation.dateFin).toISOString().split('T')[0] : '',
+        statut: affectation.statut === 'INACTIF' ? 'INACTIF' : 'ACTIF',
+        raisonInactivation: affectation.raisonInactivation || '',
+      });
     } catch (err: any) {
       setError(err.message || 'Erreur lors du chargement');
     } finally {
@@ -132,43 +185,49 @@ export default function EditAffectationPage() {
 
   if (loadingData) {
     return (
-      <div className="max-w-3xl mx-auto space-y-6 text-gray-900">
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-guinea-red mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement...</p>
+      <div className="admin-page space-y-8 px-4 pb-12 text-slate-900 animate-in fade-in duration-500 dark:text-slate-100">
+        <div className="admin-glass rounded-2xl p-12 text-center shadow-sm">
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
+          <p className="mt-4 text-slate-600 dark:text-slate-400">Chargement...</p>
         </div>
       </div>
     );
   }
 
+  const selectClass =
+    'w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100';
+
   return (
-    <div className="max-w-3xl mx-auto space-y-6 text-gray-900">
-      <div className="flex items-center gap-4">
-        <Button variant="outline" size="sm" onClick={() => router.back()}>
+    <div className="admin-page mx-auto max-w-3xl space-y-8 px-4 pb-12 text-slate-900 animate-in fade-in duration-500 dark:text-slate-100">
+      <div className="admin-glass flex flex-col gap-4 rounded-2xl p-6 shadow-sm sm:flex-row sm:items-center sm:gap-6">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.back()}
+          className="border-slate-300 dark:border-slate-600 dark:hover:bg-slate-800"
+        >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Retour
         </Button>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Modifier l'affectation</h1>
-          <p className="text-gray-600 mt-1">Modifier les informations de l'affectation</p>
+          <h1 className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-3xl font-bold text-transparent dark:from-slate-100 dark:to-slate-400">
+            Modifier l'affectation
+          </h1>
+          <p className="mt-1 text-slate-600 dark:text-slate-400">Modifier les informations de l'affectation</p>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800">{error}</p>
+        <div className="rounded-xl border border-red-200/80 bg-red-50/90 p-4 dark:border-red-900/50 dark:bg-red-950/40">
+          <p className="text-red-800 dark:text-red-200">{error}</p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg shadow p-6 space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="admin-panel-form">
         <div className="space-y-4">
           <div>
             <Label htmlFor="mandatId">Mandat *</Label>
-            <select
-              id="mandatId"
-              {...register('mandatId')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-guinea-red text-gray-900"
-            >
+            <select id="mandatId" {...register('mandatId')} className={selectClass}>
               <option value="">Sélectionner un mandat</option>
               {mandats.map((mandat) => (
                 <option key={mandat.id} value={mandat.id}>
@@ -183,11 +242,7 @@ export default function EditAffectationPage() {
 
           <div>
             <Label htmlFor="posteId">Poste *</Label>
-            <select
-              id="posteId"
-              {...register('posteId')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-guinea-red text-gray-900"
-            >
+            <select id="posteId" {...register('posteId')} className={selectClass}>
               <option value="">Sélectionner un poste</option>
               {postes.map((poste) => (
                 <option key={poste.id} value={poste.id}>
@@ -201,21 +256,24 @@ export default function EditAffectationPage() {
           </div>
 
           <div>
-            <Label htmlFor="memberId">Membre *</Label>
-            <select
-              id="memberId"
-              {...register('memberId')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-guinea-red text-gray-900"
-            >
-              <option value="">Sélectionner un membre</option>
-              {members.map((member) => (
-                <option key={member.id} value={member.id}>
-                  {member.prenom} {member.nom} ({member.email})
-                </option>
-              ))}
-            </select>
+            <Controller
+              name="memberId"
+              control={control}
+              render={({ field }) => (
+                <MemberPickField
+                  id="memberId"
+                  label="Membre *"
+                  members={members}
+                  value={field.value}
+                  onChange={field.onChange}
+                  error={!!errors.memberId}
+                  disabled={loadingData}
+                  placeholder="Choisir un membre (photo, email, téléphone)"
+                />
+              )}
+            />
             {errors.memberId && (
-              <p className="text-red-500 text-sm mt-1">{errors.memberId.message}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.memberId.message}</p>
             )}
           </div>
 
@@ -245,11 +303,7 @@ export default function EditAffectationPage() {
 
           <div>
             <Label htmlFor="statut">Statut</Label>
-            <select
-              id="statut"
-              {...register('statut')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-guinea-red text-gray-900"
-            >
+            <select id="statut" {...register('statut')} className={selectClass}>
               <option value="ACTIF">ACTIF</option>
               <option value="INACTIF">INACTIF</option>
             </select>
@@ -261,17 +315,22 @@ export default function EditAffectationPage() {
               id="raisonInactivation"
               {...register('raisonInactivation')}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-guinea-red text-gray-900"
+              className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
               placeholder="Raison de l'inactivation (si applicable)"
             />
           </div>
         </div>
 
-        <div className="flex justify-end gap-4">
-          <Button type="button" variant="outline" onClick={() => router.back()}>
+        <div className="flex justify-end gap-4 pt-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.back()}
+            className="border-slate-300 dark:border-slate-600 dark:hover:bg-slate-800"
+          >
             Annuler
           </Button>
-          <Button type="submit" disabled={loading}>
+          <Button type="submit" variant="edit" disabled={loading}>
             <Save className="h-4 w-4 mr-2" />
             {loading ? 'Enregistrement...' : 'Enregistrer'}
           </Button>

@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { canActOnUser } from '@/lib/permissions';
+import { canActOnMemberRecord } from '@/lib/permissions';
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -28,7 +28,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     }
 
     // Vérifier les permissions
-    if (!canActOnUser(session.user.role, member.user.roleSysteme)) {
+    if (!canActOnMemberRecord(session.user.role, member)) {
       return NextResponse.json(
         { error: 'Vous n\'avez pas la permission d\'agir sur ce membre' },
         { status: 403 }

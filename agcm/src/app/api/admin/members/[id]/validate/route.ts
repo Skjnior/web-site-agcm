@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { canActOnUser } from '@/lib/permissions';
+import { canActOnMemberRecord } from '@/lib/permissions';
 import { sendEmail } from '@/lib/email';
 import { getMemberValidationEmailTemplate } from '@/lib/email-templates';
 
@@ -30,11 +30,16 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     }
 
     // Vérifier les permissions
-    if (!canActOnUser(session.user.role, member.user.roleSysteme)) {
+    if (!canActOnMemberRecord(session.user.role, member)) {
       return NextResponse.json(
         { error: 'Vous n\'avez pas la permission d\'agir sur ce membre' },
         { status: 403 }
       );
+    }
+
+    const contactEmail = member.user?.email ?? member.email;
+    if (!contactEmail) {
+      return NextResponse.json({ error: 'Aucun e-mail de contact pour ce membre' }, { status: 400 });
     }
 
     const { memberNumber } = await req.json();
@@ -51,7 +56,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     // Envoyer un email de confirmation au membre
     const dateExpiration = new Date(new Date().setFullYear(new Date().getFullYear() + 1));
     await sendEmail({
-      to: member.user.email,
+      to: contactEmail,
       subject: 'Votre adhésion à l\'AGCM a été validée',
       html: getMemberValidationEmailTemplate({
         prenom: updatedMember.prenom,

@@ -4,11 +4,18 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { X, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 
-interface GalerieImage {
+export interface GalerieImage {
   id: string;
   url: string;
   alt: string;
 }
+
+type GalerieSectionProps = {
+  /** @deprecated Utiliser l’API /api/public/galerie (images visibles uniquement). */
+  images?: GalerieImage[];
+  /** Limite d’affichage sur l’accueil (0 = toutes les visibles). */
+  maxDisplay?: number;
+};
 
 interface GalerieModalProps {
   images: GalerieImage[];
@@ -114,50 +121,22 @@ function GalerieModal({ images, currentIndex, isOpen, onClose, onNext, onPrev }:
   );
 }
 
-export default function GalerieSection() {
-  // Images de la galerie (maximum 8)
-  const [images] = useState<GalerieImage[]>([
-    {
-      id: '1',
-      url: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200&auto=format&fit=crop',
-      alt: 'Moment partagé - Événement communautaire',
-    },
-    {
-      id: '2',
-      url: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200&auto=format&fit=crop',
-      alt: 'Moment partagé - Activité culturelle',
-    },
-    {
-      id: '3',
-      url: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200&auto=format&fit=crop&sat=-15',
-      alt: 'Moment partagé - Rassemblement',
-    },
-    {
-      id: '4',
-      url: 'https://images.unsplash.com/photo-1556761175-4b46a572b786?w=1200&auto=format&fit=crop',
-      alt: 'Moment partagé - Solidarité',
-    },
-    {
-      id: '5',
-      url: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=1200&auto=format&fit=crop',
-      alt: 'Moment partagé - Sport',
-    },
-    {
-      id: '6',
-      url: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1200&auto=format&fit=crop',
-      alt: 'Moment partagé - Culture',
-    },
-    {
-      id: '7',
-      url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&auto=format&fit=crop',
-      alt: 'Moment partagé - Éducation',
-    },
-    {
-      id: '8',
-      url: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1200&auto=format&fit=crop',
-      alt: 'Moment partagé - Intégration',
-    },
-  ].slice(0, 8)); // Limiter à 8 images maximum
+export default function GalerieSection({ images: imagesProp, maxDisplay = 12 }: GalerieSectionProps) {
+  const [fetched, setFetched] = useState<GalerieImage[] | null>(null);
+
+  useEffect(() => {
+    if (imagesProp?.length) return;
+    fetch('/api/public/galerie')
+      .then((r) => r.json())
+      .then((d) => {
+        if (Array.isArray(d.images)) setFetched(d.images);
+        else setFetched([]);
+      })
+      .catch(() => setFetched([]));
+  }, [imagesProp]);
+
+  const allImages = imagesProp?.length ? imagesProp : fetched ?? [];
+  const images = maxDisplay > 0 ? allImages.slice(0, maxDisplay) : allImages;
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -197,6 +176,10 @@ export default function GalerieSection() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isModalOpen]);
+
+  if (images.length === 0) {
+    return null;
+  }
 
   return (
     <>

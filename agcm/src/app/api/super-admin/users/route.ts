@@ -9,18 +9,39 @@ import { parsePagination, createPaginatedResponse } from '@/lib/pagination';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 
+const genreValues = ['FEMME', 'HOMME', 'AUTRE', 'NE_PAS_DIRE'] as const;
+
 const userCreateSchema = z.object({
   email: z.string().email('Email invalide'),
   password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
   roleSysteme: z.enum(['SUPER_ADMIN', 'ADMIN', 'MEMBER']),
-  // Member data
   prenom: z.string().min(1, 'Le prénom est requis'),
   nom: z.string().min(1, 'Le nom est requis'),
+  genre: z.preprocess(
+    (val) => (val === '' || val === undefined || val === null ? undefined : val),
+    z.enum(genreValues).optional()
+  ),
+  dateNaissance: z
+    .string()
+    .optional()
+    .transform((s) => {
+      if (!s?.trim()) return undefined;
+      const d = new Date(s);
+      return Number.isNaN(d.getTime()) ? undefined : d;
+    }),
+  profession: z.string().optional(),
+  adresse: z.string().optional(),
   telephone: z.string().optional(),
   ville: z.string().optional(),
   pays: z.string().optional(),
   bio: z.string().optional(),
-  photoUrl: z.string().optional(),
+  photoUrl: z
+    .string()
+    .optional()
+    .transform((s) => s?.trim() || undefined)
+    .refine((s) => !s || /^https?:\/\/.+/i.test(s) || /^\/uploads\//.test(s), {
+      message: 'URL ou chemin invalide (https://… ou fichier uploadé /uploads/…)',
+    }),
 });
 
 const userUpdateSchema = z.object({
@@ -98,10 +119,11 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const data = userCreateSchema.parse(body);
+    const emailLower = data.email.trim().toLowerCase();
 
     // Vérifier que l'email n'existe pas déjà
     const existingUser = await prisma.user.findUnique({
-      where: { email: data.email },
+      where: { email: emailLower },
     });
 
     if (existingUser) {
@@ -114,32 +136,67 @@ export async function POST(request: NextRequest) {
     // Hasher le mot de passe
     const passwordHash = await bcrypt.hash(data.password, 10);
 
-    // Créer l'utilisateur et le membre en transaction
+    // Créer l'utilisateur et le membre en transaction (ou relier une fiche adhérent existante)
     const result = await prisma.$transaction(async (tx) => {
+      const existingAdherent = await tx.member.findFirst({
+        where: {
+          userId: null,
+          email: { equals: emailLower, mode: 'insensitive' },
+        },
+      });
+
       const user = await tx.user.create({
         data: {
-          email: data.email,
+          email: emailLower,
           passwordHash,
           roleSysteme: data.roleSysteme,
           isActive: true,
         },
       });
 
+      if (existingAdherent) {
+        const member = await tx.member.update({
+          where: { id: existingAdherent.id },
+          data: {
+            userId: user.id,
+            email: null,
+            prenom: data.prenom.trim() || existingAdherent.prenom,
+            nom: data.nom.trim() || existingAdherent.nom,
+            genre: data.genre ?? existingAdherent.genre ?? undefined,
+            dateNaissance: data.dateNaissance ?? existingAdherent.dateNaissance ?? undefined,
+            profession: data.profession?.trim() || existingAdherent.profession,
+            adresse: data.adresse?.trim() || existingAdherent.adresse,
+            telephone: data.telephone?.trim() || existingAdherent.telephone,
+            ville: data.ville?.trim() || existingAdherent.ville,
+            pays: data.pays?.trim() || existingAdherent.pays,
+            bio: data.bio?.trim() || existingAdherent.bio,
+            photoUrl: data.photoUrl ?? existingAdherent.photoUrl,
+            statutMembre: 'ACTIF',
+          },
+        });
+        return { user, member, linkedAdherent: true as const };
+      }
+
       const member = await tx.member.create({
         data: {
           userId: user.id,
+          email: null,
           prenom: data.prenom,
           nom: data.nom,
-          telephone: data.telephone,
-          ville: data.ville,
-          pays: data.pays,
-          bio: data.bio,
+          genre: data.genre ?? undefined,
+          dateNaissance: data.dateNaissance ?? undefined,
+          profession: data.profession?.trim() || undefined,
+          adresse: data.adresse?.trim() || undefined,
+          telephone: data.telephone?.trim() || undefined,
+          ville: data.ville?.trim() || undefined,
+          pays: data.pays?.trim() || undefined,
+          bio: data.bio?.trim() || undefined,
           photoUrl: data.photoUrl,
           statutMembre: 'ACTIF',
         },
       });
 
-      return { user, member };
+      return { user, member, linkedAdherent: false as const };
     });
 
     await logAction({

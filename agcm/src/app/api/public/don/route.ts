@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { donationIntentSchema } from '@/lib/validators/demandes';
+import { notifyPublicDonForm } from '@/lib/emailjs-notify';
 
 
 export async function POST(request: NextRequest) {
@@ -12,14 +13,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const data = donationIntentSchema.parse(body);
 
-    // Trouver le poste Trésorier ou Directeur finances (optionnel)
+    // Trésorier ou poste « finances » (directeur des finances / poste fusionné formation+finances)
     const tresorierPoste = await prisma.poste.findFirst({
       where: {
-        nom: {
-          contains: 'Trésorier',
-          mode: 'insensitive',
-        },
         estActif: true,
+        OR: [
+          { nom: { contains: 'Trésorier', mode: 'insensitive' } },
+          { nom: { contains: 'directeur', mode: 'insensitive' } },
+          { nom: { contains: 'finances', mode: 'insensitive' } },
+        ],
       },
     });
 
@@ -36,7 +38,18 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Notifier les admins et le trésorier si assigné
+    try {
+      await notifyPublicDonForm({
+        type: data.type,
+        montantEstime: data.montantEstime,
+        description: data.description,
+        nom: data.nom,
+        email: data.email,
+        telephone: data.telephone,
+      });
+    } catch (emailError) {
+      console.error("Erreur lors de l'envoi de la notification (EmailJS / Resend):", emailError);
+    }
 
     return NextResponse.json(
       {

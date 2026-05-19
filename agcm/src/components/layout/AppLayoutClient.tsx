@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import AppHeader from '@/components/layout/AppHeader';
 import AppSidebar from '@/components/layout/AppSidebar';
+import type { BureauModule } from '@/lib/bureau-poste-perimetre';
 
 interface AppLayoutClientProps {
   children: React.ReactNode;
   userRole: 'SUPER_ADMIN' | 'ADMIN' | 'MEMBER';
   isBureau?: boolean;
   posteNom?: string;
+  allowedBureauModules?: BureauModule[];
   userInfo: {
     name: string;
     email: string;
@@ -22,12 +24,13 @@ export default function AppLayoutClient({
   userRole,
   isBureau,
   posteNom,
+  allowedBureauModules,
   userInfo,
 }: AppLayoutClientProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex h-screen w-full bg-slate-950 overflow-hidden text-slate-100 font-sans selection:bg-blue-500/30">
+    <div className="dark flex h-screen w-full overflow-hidden bg-slate-950 font-sans text-slate-100 selection:bg-blue-500/30">
       {/* Background decoration */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
         <div className="absolute top-[10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-blue-900/20 blur-[120px]" />
@@ -40,6 +43,7 @@ export default function AppLayoutClient({
         userRole={userRole}
         isBureau={isBureau}
         posteNom={posteNom}
+        allowedBureauModules={allowedBureauModules}
         mobileOpen={mobileMenuOpen}
         onMobileClose={() => setMobileMenuOpen(false)}
       />

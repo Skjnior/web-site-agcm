@@ -2,11 +2,10 @@
 // CRUD des événements (bureau)
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/require-auth';
+import { requireBureauModule } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
 import { eventCreateSchema } from '@/lib/validators/event';
-import { getAffectationActive } from '@/lib/rbac';
-import { getMandatActif } from '@/lib/mandat';
+import { getBureauMandatContext } from '@/lib/rbac';
 import { logAction } from '@/lib/audit';
 import { parsePagination, createPaginatedResponse } from '@/lib/pagination';
 import { z } from 'zod';
@@ -21,28 +20,21 @@ function slugify(text: string): string {
 }
 
 export async function POST(request: NextRequest) {
-  const { error, session } = await requireAuth();
+  const { error, session } = await requireBureauModule('evenements');
   if (error) return error;
 
   try {
-    const affectation = await getAffectationActive(session!.user.id);
-    if (!affectation) {
+    const ctx = await getBureauMandatContext(session!.user.id);
+    if (!ctx) {
       return NextResponse.json(
-        { error: 'Vous devez avoir un poste actif pour créer un événement' },
+        { error: 'Vous devez avoir un poste actif sur le mandat en cours pour créer un événement' },
         { status: 403 }
-      );
-    }
-
-    const mandatActif = await getMandatActif();
-    if (!mandatActif) {
-      return NextResponse.json(
-        { error: 'Aucun mandat actif' },
-        { status: 400 }
       );
     }
 
     const body = await request.json();
     const data = eventCreateSchema.parse(body);
+    const medias = data.medias ?? [];
 
     // Déterminer le statut selon la date
     let statut: 'PASSE' | 'EN_COURS' | 'A_VENIR' = 'A_VENIR';
@@ -66,9 +58,19 @@ export async function POST(request: NextRequest) {
         lieu: data.lieu,
         statut,
         afficheSite: data.afficheSite,
-        createdByPosteId: affectation.posteId,
-        mandatId: mandatActif.id,
+        createdByPosteId: ctx.primaryAffectation.posteId,
+        mandatId: ctx.mandatId,
+        ...(medias.length > 0 && {
+          medias: {
+            create: medias.map((m, i) => ({
+              url: m.url,
+              isPrincipale: Boolean(m.isPrincipale),
+              ordre: m.ordre ?? i,
+            })),
+          },
+        }),
       },
+      include: { medias: true },
     });
 
     await logAction({
@@ -100,22 +102,23 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  const { error, session } = await requireAuth();
+  const { error, session } = await requireBureauModule('evenements');
   if (error) return error;
 
   const { page, limit, offset } = parsePagination(request);
 
   try {
-    const affectation = await getAffectationActive(session!.user.id);
-    if (!affectation) {
+    const ctx = await getBureauMandatContext(session!.user.id);
+    if (!ctx) {
       return NextResponse.json(
-        { error: 'Vous devez avoir un poste actif' },
+        { error: 'Vous devez avoir un poste actif sur le mandat en cours' },
         { status: 403 }
       );
     }
 
     const where = {
-      createdByPosteId: affectation.posteId,
+      createdByPosteId: { in: ctx.posteIds },
+      mandatId: ctx.mandatId,
     };
 
     const [total, events] = await Promise.all([

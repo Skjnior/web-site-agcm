@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { contactSchema } from '@/lib/validators/demandes';
+import { notifyPublicContactForm } from '@/lib/emailjs-notify';
 
 
 export async function POST(request: NextRequest) {
@@ -23,7 +24,16 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Notifier les admins
+    try {
+      await notifyPublicContactForm({
+        nom: data.nom,
+        email: data.email,
+        sujet: data.sujet,
+        message: data.message,
+      });
+    } catch (emailError) {
+      console.error("Erreur lors de l'envoi de la notification (EmailJS / Resend):", emailError);
+    }
 
     return NextResponse.json(
       {

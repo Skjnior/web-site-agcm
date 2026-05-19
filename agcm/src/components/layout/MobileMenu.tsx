@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Session } from 'next-auth';
-import { signOut } from 'next-auth/react';
+import { signOutWithConfirmation } from '@/lib/sign-out-confirm';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -145,7 +145,13 @@ export default function MobileMenu({
 
                 {/* Sign Out Button */}
                 <Button
-                  onClick={() => signOut({ callbackUrl: '/' })}
+                  onClick={() => {
+                    void (async () => {
+                      if (await signOutWithConfirmation({ callbackUrl: '/' })) {
+                        onClose();
+                      }
+                    })();
+                  }}
                   variant="outline"
                   className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
                 >

@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
 import AppLayoutClient from '@/components/layout/AppLayoutClient';
+import { ALL_BUREAU_MODULES, getBureauPerimetreForPostes, type BureauModule } from '@/lib/bureau-poste-perimetre';
 
 export default async function AppLayout({
   children,
@@ -14,52 +14,54 @@ export default async function AppLayout({
     redirect('/connexion');
   }
 
-  // Récupérer les informations utilisateur
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    include: {
-      member: {
-        include: {
-          affectations: {
-            where: {
-              statut: 'ACTIF',
-            },
-            include: {
-              poste: true,
-              mandat: true,
-            },
-          },
-        },
-      },
-    },
-  });
+  const sessionUser = session.user as {
+    id?: string;
+    email?: string;
+    name?: string;
+    role?: string;
+    roleSysteme?: string;
+    canAccessIntranet?: boolean;
+  };
 
-  if (!user) {
-    redirect('/connexion');
+  const userRole = (sessionUser.roleSysteme || sessionUser.role || 'MEMBER') as
+    | 'SUPER_ADMIN'
+    | 'ADMIN'
+    | 'MEMBER';
+
+  const isBureau =
+    userRole === 'MEMBER' && sessionUser.canAccessIntranet === true;
+
+  if (userRole === 'MEMBER' && !isBureau) {
+    redirect('/');
   }
 
-  // Déterminer le rôle et les infos
-  const userRole = user.roleSysteme;
-  const { getAffectationActive, isBureauActif } = await import('@/lib/rbac');
-  const affectation = await getAffectationActive(user.id);
-  const isBureau = await isBureauActif(user.id);
+  const { getAffectationActive, getBureauMandatContext } = await import('@/lib/rbac');
+
+  const affectation = isBureau ? await getAffectationActive(session.user.id) : null;
 
   const userInfo = {
-    name: user.member
-      ? `${user.member.prenom} ${user.member.nom}`
-      : user.email,
-    email: user.email,
+    name: sessionUser.name || sessionUser.email || '',
+    email: sessionUser.email || '',
     poste: affectation?.poste.nom,
     mandat: affectation?.mandat
       ? `${new Date(affectation.mandat.dateDebut).getFullYear()} - ${new Date(affectation.mandat.dateFin).getFullYear()}`
       : undefined,
   };
 
+  let allowedBureauModules: BureauModule[] | undefined;
+  if (isBureau) {
+    const ctxMandat = await getBureauMandatContext(session.user.id);
+    allowedBureauModules = ctxMandat
+      ? Array.from(getBureauPerimetreForPostes(ctxMandat.affectations.map((a) => a.poste.nom)).modules)
+      : ALL_BUREAU_MODULES;
+  }
+
   return (
     <AppLayoutClient
       userRole={userRole}
       isBureau={isBureau}
       posteNom={affectation?.poste.nom}
+      allowedBureauModules={allowedBureauModules}
       userInfo={userInfo}
     >
       {children}

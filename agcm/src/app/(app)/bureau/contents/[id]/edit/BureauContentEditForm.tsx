@@ -14,6 +14,11 @@ import { ImageUpload } from '@/components/ui/image-upload';
 import { Loader2, Save } from 'lucide-react';
 import SuccessModal from '@/components/ui/SuccessModal';
 import ErrorModal from '@/components/ui/ErrorModal';
+import {
+  BureauAttachmentsManager,
+  normalizeContentAttachments,
+  type BureauContentAttachmentDraft,
+} from '@/components/bureau/BureauAttachmentsManager';
 
 const updateSchema = z.object({
   type: z.enum(['ACTIVITE', 'ACTUALITE', 'PARTAGE', 'ANNONCE']).optional(),
@@ -35,13 +40,16 @@ interface BureauContentEditFormProps {
     lienExterne: string | null;
     imagePrincipale: string | null;
     visibiliteCible: string;
+    attachments?: unknown;
   };
 }
 
 export default function BureauContentEditForm({ contentId, initialContent }: BureauContentEditFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [loadingContent, setLoadingContent] = useState(false);
+  const [attachments, setAttachments] = useState<BureauContentAttachmentDraft[]>(() =>
+    normalizeContentAttachments(initialContent.attachments)
+  );
   const [successModal, setSuccessModal] = useState<{ isOpen: boolean; message: string }>({ isOpen: false, message: '' });
   const [errorModal, setErrorModal] = useState<{ isOpen: boolean; message: string }>({ isOpen: false, message: '' });
 
@@ -51,18 +59,30 @@ export default function BureauContentEditForm({ contentId, initialContent }: Bur
     formState: { errors },
     setValue,
     watch,
+    reset,
   } = useForm<ContentFormData>({
     resolver: zodResolver(updateSchema),
+    defaultValues: {
+      type: initialContent.type as ContentFormData['type'],
+      titre: initialContent.titre,
+      contenu: initialContent.contenu || '',
+      lienExterne: initialContent.lienExterne || '',
+      imagePrincipale: initialContent.imagePrincipale || '',
+      visibiliteCible: initialContent.visibiliteCible as ContentFormData['visibiliteCible'],
+    },
   });
 
   useEffect(() => {
-    setValue('type', initialContent.type as ContentFormData['type']);
-    setValue('titre', initialContent.titre);
-    setValue('contenu', initialContent.contenu || '');
-    setValue('lienExterne', initialContent.lienExterne || '');
-    setValue('imagePrincipale', initialContent.imagePrincipale || '');
-    setValue('visibiliteCible', initialContent.visibiliteCible as ContentFormData['visibiliteCible']);
-  }, [initialContent, setValue]);
+    reset({
+      type: initialContent.type as ContentFormData['type'],
+      titre: initialContent.titre,
+      contenu: initialContent.contenu || '',
+      lienExterne: initialContent.lienExterne || '',
+      imagePrincipale: initialContent.imagePrincipale || '',
+      visibiliteCible: initialContent.visibiliteCible as ContentFormData['visibiliteCible'],
+    });
+    setAttachments(normalizeContentAttachments(initialContent.attachments));
+  }, [initialContent, reset]);
 
   const onSubmit = async (data: ContentFormData) => {
     setLoading(true);
@@ -74,6 +94,7 @@ export default function BureauContentEditForm({ contentId, initialContent }: Bur
       if (data.lienExterne !== undefined) body.lienExterne = data.lienExterne || null;
       if (data.imagePrincipale !== undefined) body.imagePrincipale = data.imagePrincipale || null;
       if (data.visibiliteCible) body.visibiliteCible = data.visibiliteCible;
+      body.attachments = attachments;
 
       const response = await fetch(`/api/bureau/contents/${contentId}`, {
         method: 'PATCH',
@@ -115,14 +136,14 @@ export default function BureauContentEditForm({ contentId, initialContent }: Bur
               value={watch('type')}
               onValueChange={(value) => setValue('type', value as ContentFormData['type'])}
             >
-              <SelectTrigger id="type" className="bg-slate-900/50 border-slate-600 text-slate-100">
+              <SelectTrigger id="type" className="bg-slate-900/50 border-slate-600 text-slate-100 [&>span]:text-slate-100">
                 <SelectValue placeholder="Sélectionner un type" />
               </SelectTrigger>
-              <SelectContent className="z-50">
-                <SelectItem value="ACTIVITE" className="text-slate-900">Activité</SelectItem>
-                <SelectItem value="ACTUALITE" className="text-slate-900">Actualité</SelectItem>
-                <SelectItem value="PARTAGE" className="text-slate-900">Partage</SelectItem>
-                <SelectItem value="ANNONCE" className="text-slate-900">Annonce</SelectItem>
+              <SelectContent className="z-[100] border-slate-600 bg-slate-900 text-slate-100">
+                <SelectItem value="ACTIVITE">Activité</SelectItem>
+                <SelectItem value="ACTUALITE">Actualité</SelectItem>
+                <SelectItem value="PARTAGE">Partage</SelectItem>
+                <SelectItem value="ANNONCE">Annonce</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -166,8 +187,11 @@ export default function BureauContentEditForm({ contentId, initialContent }: Bur
               value={watch('imagePrincipale') || ''}
               onChange={(url) => setValue('imagePrincipale', url)}
               label="Image principale"
+              hideUrlOption
             />
           </div>
+
+          <BureauAttachmentsManager variant="content" items={attachments} onChange={setAttachments} />
 
           <div>
             <Label htmlFor="visibiliteCible" className="text-slate-300">Visibilité</Label>
@@ -175,12 +199,12 @@ export default function BureauContentEditForm({ contentId, initialContent }: Bur
               value={watch('visibiliteCible')}
               onValueChange={(value) => setValue('visibiliteCible', value as ContentFormData['visibiliteCible'])}
             >
-              <SelectTrigger id="visibiliteCible" className="bg-slate-900/50 border-slate-600 text-slate-100">
+              <SelectTrigger id="visibiliteCible" className="bg-slate-900/50 border-slate-600 text-slate-100 [&>span]:text-slate-100">
                 <SelectValue placeholder="Sélectionner la visibilité" />
               </SelectTrigger>
-              <SelectContent className="z-50">
-                <SelectItem value="PRIVE_BUREAU" className="text-slate-900">Privé Bureau</SelectItem>
-                <SelectItem value="PUBLIC_SITE" className="text-slate-900">Public Site</SelectItem>
+              <SelectContent className="z-[100] border-slate-600 bg-slate-900 text-slate-100">
+                <SelectItem value="PRIVE_BUREAU">Privé bureau</SelectItem>
+                <SelectItem value="PUBLIC_SITE">Public (site vitrine)</SelectItem>
               </SelectContent>
             </Select>
           </div>

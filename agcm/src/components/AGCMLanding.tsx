@@ -1,29 +1,23 @@
 'use client'
 
-import type React from 'react'
-import { useEffect, useRef, useState } from 'react'
+import type { ComponentType } from 'react'
+import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 import {
   ArrowRight,
   CheckCircle,
   MapPin,
-  ArrowUp,
   Users,
   Heart,
   BookOpen,
   Globe2,
-  Calendar,
   HeartHandshake,
   MessageCircle,
-  Clock,
   ChevronDown,
-  Facebook,
-  Tag,
   Phone,
   X,
 } from 'lucide-react'
-import Logo from './Logo'
-import Link from 'next/link'
 import EvenementsSection from './EvenementsSection'
 import StatsSection from './StatsSection'
 import BureauSection from './BureauSection'
@@ -31,71 +25,83 @@ import BureauSectionCompact from './BureauSectionCompact'
 import ProjetsGuineeSection from './ProjetsGuineeSection'
 import ActualitesSection from './ActualitesSection'
 import GalerieSection from './GalerieSection'
+import PartnersCarouselSection from './PartnersCarouselSection'
 import SectionDivider from './SectionDivider'
 import Footer from './layout/Footer'
 import PresidentMessageSection from './PresidentMessageSection'
 import DonationSection from './DonationSection'
+import { SITE_PUBLIC_DEFAULT_PAYLOAD } from '@/config/site-public-default-payload'
+import type { SiteHighlightIcon, SitePublicPayload } from '@/types/site-public'
 
-const axes = [
-  { title: 'Intégration & solidarité locale', text: 'Accompagnement des nouveaux arrivants, soutien administratif, aide à l\'orientation et mentorat.' },
-  { title: 'Culture & cohésion communautaire', text: 'Événements, sport, cuisine et musique pour rassembler la communauté guinéenne et ses amis.' },
-  { title: 'Projets humanitaires en Guinée', text: 'Soutien aux écoles, centres de santé, environnement et aide matérielle sur le terrain.' },
-]
+const LANDING_HASH_SCROLL_OFFSET = 80
 
-// Les données suivantes sont maintenant chargées depuis la base de données :
-// - stats : via StatsSection
-// - bureau : via BureauSection
-// - projetsGuinee : via ProjetsGuineeSection
-// - evenements : via EvenementsSection
-// - actualites : via ActualitesSection
+const HIGHLIGHT_ICONS: Record<
+  SiteHighlightIcon,
+  ComponentType<{ className?: string; size?: number }>
+> = {
+  heart: Heart,
+  book: BookOpen,
+  globe: Globe2,
+}
 
-const faq = [
-  { q: 'Comment adhérer ?', a: 'Remplissez le formulaire d\'adhésion et réglez la cotisation annuelle (montant indiqué lors de l\'inscription).' },
-  { q: 'Faut-il être guinéen ?', a: 'L\'association est ouverte à tous. La plupart des membres sont guinéens, mais les soutiens extérieurs sont bienvenus.' },
-  { q: 'Puis-je faire un don ?', a: 'Oui, les dons soutiennent directement les projets en Guinée et les actions locales. Une page transparence présente l\'usage des fonds.' },
-  { q: 'Comment participer aux activités ?', a: 'Consultez le calendrier des événements et inscrivez-vous. Les infos pratiques sont partagées aux membres.' },
-]
-
-// Les événements sont maintenant chargés depuis l'API
-
-const bureau = [
-  { nom: 'Nom à compléter', role: 'Président', mandat: '2024 - 2026' },
-  { nom: 'Nom à compléter', role: 'Vice-président', mandat: '2024 - 2026' },
-  { nom: 'Nom à compléter', role: 'Secrétaire général', mandat: '2024 - 2026' },
-  { nom: 'Nom à compléter', role: 'Trésorier', mandat: '2024 - 2026' },
-]
-
-const socialPosts = [
+const HIGHLIGHT_CARD_STYLES = [
   {
-    title: 'Solidarité et culture — AGCM',
-    excerpt: 'Nos actions de cohésion et de soutien pour la communauté guinéenne en Charente-Maritime.',
-    date: '2025',
-    network: 'Facebook',
-    icon: Facebook,
-    link: 'https://www.facebook.com/share/14NXh1YLUkc/?mibextid=wwXIfr'
+    card: 'bg-gradient-to-r from-red-500/20 via-red-500/10 to-transparent border border-red-400/30 hover:from-red-500/30 hover:border-red-400/50 hover:shadow-red-500/20',
+    iconWrap: 'bg-gradient-to-br from-red-500 to-red-600 shadow-red-500/30',
+    titleHover: 'group-hover:text-red-200',
   },
   {
-    title: 'Échanges et rencontres',
-    excerpt: 'Moments partagés, intégration, sport et culture au service du vivre-ensemble.',
-    date: '2025',
-    network: 'Facebook',
-    icon: Facebook,
-    link: 'https://www.facebook.com/share/14NXh1YLUkc/?mibextid=wwXIfr'
+    card: 'bg-gradient-to-r from-yellow-500/20 via-yellow-500/10 to-transparent border border-yellow-400/30 hover:from-yellow-500/30 hover:border-yellow-400/50 hover:shadow-yellow-500/20',
+    iconWrap: 'bg-gradient-to-br from-yellow-500 to-yellow-600 shadow-yellow-500/30',
+    titleHover: 'group-hover:text-yellow-200',
   },
   {
-    title: 'Projets solidaires',
-    excerpt: 'Actions en Guinée et en France : kits scolaires, santé, environnement.',
-    date: '2025',
-    network: 'Facebook',
-    icon: Facebook,
-    link: 'https://www.facebook.com/share/14NXh1YLUkc/?mibextid=wwXIfr'
+    card: 'bg-gradient-to-r from-agcm-500/20 via-agcm-500/10 to-transparent border border-agcm-400/30 hover:from-agcm-500/30 hover:border-agcm-400/50 hover:shadow-agcm-500/20',
+    iconWrap: 'bg-gradient-to-br from-agcm-500 to-agcm-600 shadow-agcm-500/30',
+    titleHover: 'group-hover:text-agcm-200',
   },
-]
-
-
+] as const
 
 export default function AGCMLanding() {
-  const sectionRefs = useRef<(HTMLElement | null)[]>([])
+  const pathname = usePathname()
+  const [site, setSite] = useState<SitePublicPayload>(SITE_PUBLIC_DEFAULT_PAYLOAD)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/public/site-public-page')
+      .then((r) => r.json())
+      .then((data) => {
+        if (!cancelled && data?.payload) setSite(data.payload as SitePublicPayload)
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  // Depuis la navbar, liens /#axes et /#dons : défiler vers la section après chargement ou navigation client
+  useEffect(() => {
+    if (pathname !== '/') return
+
+    const scrollToHash = () => {
+      const hash = typeof window !== 'undefined' ? window.location.hash : ''
+      if (!hash || hash.length < 2) return
+      const id = hash.slice(1)
+      const el = document.getElementById(id)
+      if (!el) return
+      const y = el.getBoundingClientRect().top + window.pageYOffset - LANDING_HASH_SCROLL_OFFSET
+      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' })
+    }
+
+    const t1 = setTimeout(scrollToHash, 0)
+    const t2 = setTimeout(scrollToHash, 150)
+    window.addEventListener('hashchange', scrollToHash)
+    return () => {
+      clearTimeout(t1)
+      clearTimeout(t2)
+      window.removeEventListener('hashchange', scrollToHash)
+    }
+  }, [pathname])
 
   // États pour les modals de formulaires
   const [showContactModal, setShowContactModal] = useState(false)
@@ -207,24 +213,24 @@ export default function AGCMLanding() {
   }
 
   return (
-    <div className="min-h-screen w-full max-w-[100%] overflow-x-hidden bg-gradient-to-b from-agcm-900 via-agcm-800 to-agcm-900">
+    <div className="min-h-screen bg-gradient-to-b from-agcm-900 via-agcm-800 to-agcm-900">
 
       {/* Hero */}
       <section id="top" className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute inset-0 opacity-45">
-          <Image src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80" alt="Communauté" fill className="object-cover" priority />
+          <Image src={site.hero.backgroundUrl} alt="Communauté" fill className="object-cover" priority />
         </div>
         <div className="absolute inset-0 bg-gradient-to-br from-agcm-900/92 via-agcm-800/90 to-agcm-700/90"></div>
         <div className="max-w-6xl mx-auto relative z-10 grid lg:grid-cols-2 gap-10 items-center">
           <div className="space-y-6">
             <span className="inline-flex items-center gap-2 bg-white/10 text-white px-4 py-2 rounded-full border border-white/20 text-xs uppercase tracking-wide">
-              AGCM-GCM
+              {site.hero.badge}
             </span>
             <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-white">
-              Unis par nos racines, engagés pour notre avenir.
+              {site.hero.title}
             </h1>
             <p className="text-lg text-slate-200">
-              L'AGCM fédère et accompagne les Guinéens de La Charente-Maritime, valorise notre culture et porte des projets solidaires ici et en Guinée.
+              {site.hero.paragraph}
             </p>
             <StatsSection />
             <div className="flex flex-wrap gap-3">
@@ -240,33 +246,28 @@ export default function AGCMLanding() {
             <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 via-yellow-500/15 to-red-600/20 rounded-3xl blur-3xl"></div>
             <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-white/10 border-2 border-white/20 backdrop-blur-xl rounded-3xl p-6 h-full flex flex-col justify-between shadow-2xl hover:shadow-red-500/20 transition-shadow duration-300">
               <div className="space-y-3 overflow-hidden scrollbar-hide flex-1 min-h-0">
-                <div className="group flex items-start gap-4 bg-gradient-to-r from-red-500/20 via-red-500/10 to-transparent border border-red-400/30 rounded-2xl p-4 hover:from-red-500/30 hover:border-red-400/50 transition-all duration-300 md:hover:scale-[1.02] hover:shadow-lg hover:shadow-red-500/20">
-                  <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/30 group-hover:scale-110 transition-transform duration-300">
-                    <Heart className="text-white" size={20} />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-white font-bold text-sm mb-1 group-hover:text-red-200 transition-colors">Solidarité & accueil</p>
-                    <p className="text-slate-200 text-xs leading-relaxed">Mentorat, aide administrative, accompagnement.</p>
-                  </div>
-                </div>
-                <div className="group flex items-start gap-4 bg-gradient-to-r from-yellow-500/20 via-yellow-500/10 to-transparent border border-yellow-400/30 rounded-2xl p-4 hover:from-yellow-500/30 hover:border-yellow-400/50 transition-all duration-300 md:hover:scale-[1.02] hover:shadow-lg hover:shadow-yellow-500/20">
-                  <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/30 group-hover:scale-110 transition-transform duration-300">
-                    <BookOpen className="text-white" size={20} />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-white font-bold text-sm mb-1 group-hover:text-yellow-200 transition-colors">Jeunesse & insertion</p>
-                    <p className="text-slate-200 text-xs leading-relaxed">Orientation, stages, ateliers pro.</p>
-                  </div>
-                </div>
-                <div className="group flex items-start gap-4 bg-gradient-to-r from-agcm-500/20 via-agcm-500/10 to-transparent border border-agcm-400/30 rounded-2xl p-4 hover:from-agcm-500/30 hover:border-agcm-400/50 transition-all duration-300 md:hover:scale-[1.02] hover:shadow-lg hover:shadow-agcm-500/20">
-                  <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-agcm-500 to-agcm-600 rounded-xl flex items-center justify-center shadow-lg shadow-agcm-500/30 group-hover:scale-110 transition-transform duration-300">
-                    <Globe2 className="text-white" size={20} />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-white font-bold text-sm mb-1 group-hover:text-agcm-200 transition-colors">Projets en Guinée</p>
-                    <p className="text-slate-200 text-xs leading-relaxed">Éducation, santé, environnement.</p>
-                  </div>
-                </div>
+                {site.hero.highlights.map((h, i) => {
+                  const st = HIGHLIGHT_CARD_STYLES[i % HIGHLIGHT_CARD_STYLES.length]
+                  const Icon = HIGHLIGHT_ICONS[h.icon] ?? Heart
+                  return (
+                    <div
+                      key={`${h.title}-${i}`}
+                      className={`group flex items-start gap-4 rounded-2xl p-4 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg ${st.card}`}
+                    >
+                      <div
+                        className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl shadow-lg transition-transform duration-300 group-hover:scale-110 ${st.iconWrap}`}
+                      >
+                        <Icon className="text-white" size={20} />
+                      </div>
+                      <div className="flex-1">
+                        <p className={`text-white font-bold text-sm mb-1 transition-colors ${st.titleHover}`}>
+                          {h.title}
+                        </p>
+                        <p className="text-xs leading-relaxed text-slate-200">{h.text}</p>
+                      </div>
+                    </div>
+                  )
+                })}
                 {/* President Message - Put back inside the same component */}
                 <div className="mt-6 pt-6 border-t border-white/10">
                   <PresidentMessageSection />
@@ -304,7 +305,7 @@ export default function AGCMLanding() {
             <h2 className="text-3xl md:text-4xl font-bold text-agcm-900 mt-2">Les piliers d'action</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-4">
-            {axes.map((a, i) => (
+            {site.axes.map((a, i) => (
               <div key={i} className="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover-lift">
                 <h3 className="text-lg font-semibold text-agcm-900 mb-2">{a.title}</h3>
                 <p className="text-sm text-slate-700 leading-relaxed">{a.text}</p>
@@ -318,14 +319,13 @@ export default function AGCMLanding() {
       <section id="about" className="py-14 px-4 sm:px-6 lg:px-8 bg-agcm-sand">
         <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center">
           <div className="space-y-4">
-            <span className="text-agcm-600 font-semibold text-sm uppercase">Histoire & valeurs</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-agcm-900">Née pour fédérer et soutenir</h2>
+            <span className="text-agcm-600 font-semibold text-sm uppercase">{site.history.tagline}</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-agcm-900">{site.history.title}</h2>
             <p className="text-agcm-800 leading-relaxed">
-              L'AGCM est née de la volonté de Guinéens de La Rochelle de créer un espace d'entraide et d'intégration.
-              Depuis 2023, nous accompagnons la communauté, renforçons les liens sociaux, valorisons notre culture et soutenons des projets humanitaires.
+              {site.history.body}
             </p>
             <div className="grid sm:grid-cols-2 gap-3 text-sm text-agcm-900">
-              {['Solidarité', 'Respect', 'Engagement', 'Cohésion', 'Culture & Identité'].map((v, i) => (
+              {site.history.valeurLabels.map((v, i) => (
                 <div key={i} className="flex items-center gap-2 bg-white border border-agcm-400/40 rounded-2xl px-3 py-2 shadow-sm">
                   <CheckCircle size={16} className="text-agcm-600" />
                   <span>{v}</span>
@@ -335,7 +335,7 @@ export default function AGCMLanding() {
           </div>
           <div className="bg-white border border-agcm-400/40 rounded-3xl p-6 shadow-xl lg:col-span-2">
             <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 text-agcm-900"><Users size={18} /> Bureau exécutif</h3>
-            <p className="text-agcm-800 text-sm mb-3">Une équipe engagée pour coordonner projets locaux et humanitaires.</p>
+            <p className="text-agcm-800 text-sm mb-3">{site.history.bureauTeaser}</p>
             <BureauSectionCompact />
           </div>
         </div>
@@ -347,12 +347,14 @@ export default function AGCMLanding() {
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 shadow-sm max-w-2xl mx-auto">
             <h3 className="text-2xl font-bold text-agcm-900 mb-3 flex items-center gap-2"><Heart className="text-red-600" size={20} /> Adhésion</h3>
             <p className="text-slate-700 mb-4 text-sm leading-relaxed">
-              Rejoignez l'association pour participer aux activités, recevoir les infos et soutenir les projets.
+              {site.adhesion.intro}
             </p>
             <ul className="space-y-2 text-sm text-slate-700">
-              <li className="flex gap-2 items-start"><CheckCircle size={16} className="text-red-500 mt-0.5" /> Accès aux événements et groupes</li>
-              <li className="flex gap-2 items-start"><CheckCircle size={16} className="text-red-500 mt-0.5" /> Info en priorité et accompagnement</li>
-              <li className="flex gap-2 items-start"><CheckCircle size={16} className="text-red-500 mt-0.5" /> Cotisation annuelle (montant à préciser)</li>
+              {site.adhesion.bullets.map((line, idx) => (
+                <li key={idx} className="flex gap-2 items-start">
+                  <CheckCircle size={16} className="text-red-500 mt-0.5" /> {line}
+                </li>
+              ))}
             </ul>
             <button
               onClick={() => setShowAdhesionModal(true)}
@@ -371,18 +373,11 @@ export default function AGCMLanding() {
       <section id="jeunesse" className="py-14 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-50 to-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8">
-            <span className="text-red-600 font-semibold text-sm uppercase">Jeunesse & intégration</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-agcm-900 mt-2">Accompagner les jeunes</h2>
+            <span className="text-red-600 font-semibold text-sm uppercase">{site.jeunesse.tagline}</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-agcm-900 mt-2">{site.jeunesse.title}</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-4 text-sm text-slate-700">
-            {[
-              'Aide aux démarches (CAF, préfecture, école)',
-              'Orientation / réussite scolaire',
-              'Recherche de stage / job étudiant',
-              'Mentorat par les anciens',
-              'Ateliers insertion professionnelle',
-              'Soutien moral aux nouveaux arrivants',
-            ].map((item, i) => (
+            {site.jeunesse.items.map((item, i) => (
               <div key={i} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex gap-3">
                 <CheckCircle size={16} className="text-red-500 mt-1" />
                 <span>{item}</span>
@@ -399,10 +394,10 @@ export default function AGCMLanding() {
       <section id="guinee" className="py-14 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10">
-            <span className="text-red-600 font-semibold text-sm uppercase">Projets en Guinée</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-agcm-900 mt-2">Agir sur le terrain</h2>
+            <span className="text-red-600 font-semibold text-sm uppercase">{site.guineeSection.eyebrow}</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-agcm-900 mt-2">{site.guineeSection.title}</h2>
             <p className="text-slate-700 text-sm mt-2 max-w-2xl mx-auto">
-              Nous soutenons des actions concrètes pour l'éducation, la santé et l'environnement.
+              {site.guineeSection.intro}
             </p>
           </div>
           <ProjetsGuineeSection />
@@ -416,18 +411,20 @@ export default function AGCMLanding() {
       <section id="projets-locaux" className="py-14 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-agcm-900 via-agcm-800 to-agcm-900 text-white">
         <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center">
           <div className="relative h-72">
-            <Image src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80" alt="Projets locaux" fill className="object-cover rounded-3xl shadow-2xl" />
+            <Image src={site.projetsLocaux.imageUrl} alt="Projets locaux" fill className="object-cover rounded-3xl shadow-2xl" />
           </div>
           <div className="space-y-4">
-            <span className="text-red-300 font-semibold text-sm uppercase">Projets locaux</span>
-            <h2 className="text-3xl font-bold">Agir en Charente-Maritime</h2>
+            <span className="text-red-300 font-semibold text-sm uppercase">{site.projetsLocaux.eyebrow}</span>
+            <h2 className="text-3xl font-bold">{site.projetsLocaux.title}</h2>
             <p className="text-slate-200 text-sm leading-relaxed">
-              Actions solidaires, événements culturels, activités sportives et soutien aux jeunes sur le territoire.
+              {site.projetsLocaux.lead}
             </p>
             <ul className="space-y-2 text-sm text-slate-100">
-              <li className="flex gap-2 items-start"><CheckCircle size={16} className="text-red-300 mt-0.5" /> Événements culturels et cohésion</li>
-              <li className="flex gap-2 items-start"><CheckCircle size={16} className="text-red-300 mt-0.5" /> Actions solidaires locales</li>
-              <li className="flex gap-2 items-start"><CheckCircle size={16} className="text-red-300 mt-0.5" /> Sport, rencontres et intégration</li>
+              {site.projetsLocaux.bullets.map((b, idx) => (
+                <li key={idx} className="flex gap-2 items-start">
+                  <CheckCircle size={16} className="text-red-300 mt-0.5" /> {b}
+                </li>
+              ))}
             </ul>
           </div>
         </div>
@@ -437,47 +434,26 @@ export default function AGCMLanding() {
       {/* Galerie */}
       <GalerieSection />
 
-      {/* Partenaires & mécènes */}
-      <section id="partenaires" className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-6">
-            <span className="text-red-600 font-semibold text-sm uppercase">Partenaires & mécènes</span>
-            <h2 className="text-3xl font-bold text-agcm-900">Construire ensemble</h2>
-          </div>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm text-slate-700">
-            {['Associations locales', 'Entreprises solidaires', 'Mairies / structures municipales', 'Clubs sportifs', 'Organisations guinéennes', 'Mécènes individuels'].map((p, i) => (
-              <div key={i} className="bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-sm flex gap-2">
-                <HeartHandshake size={16} className="text-red-500 mt-1" />
-                <span>{p}</span>
-              </div>
-            ))}
-          </div>
-          <div className="text-center mt-4">
-            <button
-              onClick={() => setShowPartenaireModal(true)}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white px-5 py-3 rounded-lg shadow hover:-translate-y-0.5 transition"
-            >
-              Devenir partenaire <ArrowRight size={16} />
-            </button>
-          </div>
-        </div>
-      </section>
+      <PartnersCarouselSection
+        eyebrow={site.partenaires.eyebrow}
+        title={site.partenaires.title}
+      />
 
       {/* FAQ */}
       <section id="faq" className="py-8 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-agcm-900 via-agcm-800 to-agcm-900 text-white">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-6">
-            <span className="text-red-300 font-semibold text-xs uppercase tracking-wider">Questions fréquentes</span>
+            <span className="text-red-300 font-semibold text-xs uppercase tracking-wider">{site.faq.eyebrow}</span>
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 mt-1">
-              Besoin de réponses ?
+              {site.faq.title}
             </h2>
             <p className="text-base text-slate-200 max-w-2xl mx-auto">
-              Réponses aux questions les plus fréquentes
+              {site.faq.subtitle}
             </p>
           </div>
 
           <div className="space-y-2">
-            {faq.map((item, idx) => (
+            {site.faq.items.map((item, idx) => (
               <details key={idx} className="bg-white/10 border border-white/10 rounded-md p-3 text-white">
                 <summary className="flex items-center justify-between cursor-pointer text-sm md:text-base">
                   <span className="font-medium text-slate-100 pr-3">{item.q}</span>
@@ -496,28 +472,28 @@ export default function AGCMLanding() {
       <section id="contact" className="py-14 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center">
           <div className="space-y-4">
-            <span className="text-red-600 font-semibold text-sm uppercase">Contact</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-agcm-900">On reste en lien</h2>
-            <p className="text-slate-700 text-sm">Horaires d'échange (indicatif) : Lundi - Vendredi, 18h-21h. Lien WhatsApp / Messenger sur demande.</p>
+            <span className="text-red-600 font-semibold text-sm uppercase">{site.contact.eyebrow}</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-agcm-900">{site.contact.title}</h2>
+            <p className="text-slate-700 text-sm">{site.contact.lead}</p>
             <div className="space-y-3 text-slate-800 text-sm">
               <div className="flex items-center gap-3">
                 <Phone size={18} />
-                <span>06 00 00 00 00</span>
+                <span>{site.contact.phone}</span>
               </div>
               <div className="flex items-center gap-3">
                 <MessageCircle size={18} />
-                <span>WhatsApp / Messenger (sur demande)</span>
+                <span>{site.contact.whatsappLine}</span>
               </div>
               <div className="flex items-center gap-3">
                 <MapPin size={18} />
-                <span>Charente-Maritime • France</span>
+                <span>{site.contact.regionLine}</span>
               </div>
             </div>
           </div>
           <div className="space-y-4">
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2687.674410555554!2d-1.1511393239070596!3d46.161579279053004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x480153c0fc4d4f73%3A0x40d37521e0dec60!2sLa%20Rochelle!5e0!3m2!1sfr!2sfr!4v1700000000000!5m2!1sfr!2sfr"
+                src={site.contact.mapEmbedUrl}
                 width="100%"
                 height="260"
                 loading="lazy"

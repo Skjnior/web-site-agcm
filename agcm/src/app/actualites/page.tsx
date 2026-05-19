@@ -162,7 +162,9 @@ export default async function ActualitesPage({ searchParams }: PageProps) {
                         {actu.titre}
                       </h2>
                       {actu.contenu && (
-                        <p className="text-slate-500 text-sm line-clamp-3 flex-1">{actu.contenu}</p>
+                        <p className="text-slate-500 text-sm line-clamp-3 flex-1">
+                          {actu.contenu.replace(/<[^>]*>?/gm, '')}
+                        </p>
                       )}
                       <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 text-xs text-slate-400">
                         <span className="flex items-center gap-1">

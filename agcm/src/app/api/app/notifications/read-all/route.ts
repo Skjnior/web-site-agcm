@@ -2,11 +2,11 @@
 // Marquer toutes les notifications comme lues
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/require-auth';
+import { requireIntranetAccess } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
 
 export async function PATCH(_request: NextRequest) {
-  const { error, session } = await requireAuth();
+  const { error, session } = await requireIntranetAccess();
   if (error) return error;
 
   try {

@@ -5,6 +5,9 @@ import { prisma } from '@/lib/prisma';
 // Mock Prisma
 jest.mock('@/lib/prisma', () => ({
   prisma: {
+    user: {
+      findUnique: jest.fn(),
+    },
     auditLog: {
       create: jest.fn(),
       findMany: jest.fn(),
@@ -28,6 +31,7 @@ describe('Audit Functions', () => {
         afterData: { titre: 'Test' },
       };
 
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue({ email: 'actor@example.com' });
       (prisma.auditLog.create as jest.Mock).mockResolvedValue({
         id: 'log-1',
         ...mockAuditData,
@@ -36,9 +40,14 @@ describe('Audit Functions', () => {
 
       await logAction(mockAuditData);
 
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+        where: { id: 'user-1' },
+        select: { email: true },
+      });
       expect(prisma.auditLog.create).toHaveBeenCalledWith({
         data: {
           userId: mockAuditData.userId,
+          actorEmail: 'actor@example.com',
           action: mockAuditData.action,
           entityType: mockAuditData.entityType,
           entityId: mockAuditData.entityId,
@@ -56,6 +65,7 @@ describe('Audit Functions', () => {
         entityId: 'content-1',
       };
 
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue({ email: 'a@b.com' });
       (prisma.auditLog.create as jest.Mock).mockRejectedValue(new Error('Database error'));
 
       // Should not throw
@@ -70,6 +80,7 @@ describe('Audit Functions', () => {
         },
       };
 
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue({ email: 'a@b.com' });
       await logAction({
         userId: 'user-1',
         action: 'UPDATE' as const,

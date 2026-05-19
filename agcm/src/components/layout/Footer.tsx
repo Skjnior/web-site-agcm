@@ -1,29 +1,18 @@
 // components/layout/Footer.tsx
 import Link from 'next/link';
 import Image from 'next/image';
+import { publicNavFooterQuickLinks } from '@/config/site-public-nav';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   // Données officielles du Certificat d'enregistrement
   const contactInfo = {
-    // TODO: Vérifier l'adresse complète à Conakry
-    address: "Commune de Matoto, Conakry, Guinée",
-    // TODO: Vérifier le téléphone actuel (doc indique 25-58-72)
-    phone: "+224 25-58-72",
-    // TODO: Ajouter l'email officiel quand disponible
-    email: "contact@agcm-guinee.org",
-    // Données officielles
-    president: "Mr. ALKALY MOHAMED TAHEY CONDE"
+    address: "La Rochelle, Charente-Maritime, France",
+    phone: "+33 (0)6 XX XX XX XX", // Téléphone non trouvé précisément, laisser un placeholder propre
+    email: "association.ajgcm@gmail.com",
+    president: "Mr. ALHASSANE DIALLO"
   };
-
-  const quickLinks = [
-    { name: "Accueil", href: "/" },
-    { name: "À propos", href: "/a-propos" },
-    { name: "Événements", href: "/evenements" },
-    { name: "Actualités", href: "/actualites" },
-    { name: "Contact", href: "/contact" }
-  ];
 
   const legalLinks = [
     { name: "Mentions légales", href: "/mentions-legales" },
@@ -103,8 +92,8 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-bold mb-4">Navigation</h4>
             <ul className="space-y-2">
-              {quickLinks.map((link) => (
-                <li key={link.href}>
+              {publicNavFooterQuickLinks.map((link) => (
+                <li key={`${link.href}-${link.name}`}>
                   <Link
                     href={link.href}
                     className="text-sm hover:text-guinea-yellow transition-colors"

@@ -2,26 +2,11 @@
 // Script pour ajouter des membres du bureau au mandat actif
 
 import { PrismaClient } from '@prisma/client';
+import { BUREAU_EXECUTIF_POSTES } from './bureau-reglement-seed';
 
 const prisma = new PrismaClient();
 
-const postesBureau = [
-  'Président',
-  'Vice-Président',
-  'Secrétaire Général',
-  'Secrétaire Adjoint',
-  'Trésorier',
-  'Trésorier Adjoint',
-  'Responsable Communication',
-  'Responsable Projets',
-  'Responsable Événements',
-  'Responsable Partenariats',
-  'Responsable Formation',
-  'Responsable Jeunesse',
-  'Responsable Culture',
-  'Responsable Social',
-  'Responsable Sport',
-];
+const postesBureau = BUREAU_EXECUTIF_POSTES.map((p) => p.nom);
 
 async function main() {
   console.log('🌱 Ajout de membres du bureau au mandat actif...\n');

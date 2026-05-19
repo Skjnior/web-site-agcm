@@ -1,22 +1,67 @@
-// middleware.ts
-// Middleware de sécurité selon le cahier des charges AGCM
-// Note: Pas d'import Prisma/audit ici - le middleware s'exécute en Edge runtime
-// où Prisma n'est pas supporté. Les logs d'accès non autorisés sont gérés
-// côté API routes (Node.js).
-
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import type { NextRequest, NextFetchEvent } from 'next/server';
 import { getToken } from '@auth/core/jwt';
+import { getAuthSecret } from '@/lib/auth-secret';
 
-export async function middleware(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+// Clé secrète partagée avec l'API interne
+const INTERNAL_SECRET = process.env.INTERNAL_API_SECRET || 'internal-page-view-secret';
+
+// Pages à tracker (uniquement les vraies pages, pas les API ni les assets)
+const PAGE_PATHS_TO_TRACK = [
+  '/',
+  '/bureau-actuel',
+  '/projets',
+  '/evenements',
+  '/actualites',
+  '/partenaires',
+  '/adhesion',
+  '/partenariat',
+  '/don',
+  '/contact',
+  '/a-propos',
+  '/dashboard',
+  '/admin',
+  '/bureau',
+];
+
+function shouldTrackPath(path: string): boolean {
+  // Exclure les fichiers statiques (images, fonts, etc.)
+  if (
+    path.startsWith('/_next/') || 
+    path.includes('.') || 
+    path.startsWith('/favicon.ico') ||
+    path.startsWith('/Image') ||
+    path.startsWith('/images') ||
+    path.startsWith('/public')
+  ) return false;
+
+  // Exclure les routes API (pour éviter la récursion)
+  if (path.startsWith('/api/')) return false;
+
+  // Exclure les pages de connexion/déconnexion
+  if (path.startsWith('/connexion') || path.startsWith('/deconnexion')) return false;
+
+  return true;
+}
+
+function getClientIP(req: NextRequest): string | null {
+  return (
+    (req as any).ip ||
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    req.headers.get('x-real-ip') ||
+    null
+  );
+}
+
+
+export async function middleware(req: NextRequest, event: NextFetchEvent) {
+  const token = await getToken({ req, secret: getAuthSecret() });
   const path = req.nextUrl.pathname;
   const method = req.method;
 
   // Fonction helper pour ajouter les headers de sécurité
   function addSecurityHeaders(response: NextResponse): NextResponse {
     response.headers.set('X-Content-Type-Options', 'nosniff');
-    response.headers.set('X-Frame-Options', 'DENY');
     response.headers.set('X-XSS-Protection', '1; mode=block');
     response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
@@ -41,11 +86,18 @@ export async function middleware(req: NextRequest) {
     '/partenariat',
     '/don',
     '/contact',
+    '/a-propos',
+    '/connexion',
+    '/mot-de-passe-oublie',
+    '/reinitialiser-mot-de-passe',
+    '/ressources',
+    '/formations',
   ];
 
   const publicApiRoutes = [
     '/api/public/',
     '/api/auth/',
+    '/api/internal/', // Routes internes (tracking, etc.) — sécurisées par leur propre clé
   ];
 
   const isPublicPage = publicPageRoutes.some(route => path === route || path.startsWith(route + '/'));
@@ -89,7 +141,7 @@ export async function middleware(req: NextRequest) {
     return addSecurityHeaders(redirectResponse);
   }
 
-  const userRole = token.role as string;
+  const userRole = (token.roleSysteme || token.role) as string;
 
   // ============================================
   // PROTECTION ROUTES API SUPER_ADMIN
@@ -151,8 +203,13 @@ export async function middleware(req: NextRequest) {
   // ============================================
   if (path.startsWith('/admin')) {
     if (!['ADMIN', 'SUPER_ADMIN'].includes(userRole)) {
-      const redirectResponse = NextResponse.redirect(new URL('/dashboard', req.url));
-      return addSecurityHeaders(redirectResponse);
+      const profilMembreBureau =
+        userRole === 'MEMBER' &&
+        (path === '/admin/profil' || path.startsWith('/admin/profil/'));
+      if (!profilMembreBureau) {
+        const redirectResponse = NextResponse.redirect(new URL('/dashboard', req.url));
+        return addSecurityHeaders(redirectResponse);
+      }
     }
   }
 

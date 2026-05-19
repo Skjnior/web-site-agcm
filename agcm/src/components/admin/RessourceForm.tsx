@@ -139,8 +139,8 @@ export default function RessourceForm({ ressourceId, initialData }: RessourceFor
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="bg-white border rounded-xl p-6 space-y-6">
-        <h2 className="text-lg font-semibold text-gray-900">Informations générales</h2>
+      <div className="admin-panel space-y-6 rounded-xl p-6">
+        <h2 className="text-lg font-semibold text-slate-100">Informations générales</h2>
         <div className="grid md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
             <label htmlFor="titre" className="block text-sm font-medium text-gray-700 mb-1">
@@ -173,6 +173,7 @@ export default function RessourceForm({ ressourceId, initialData }: RessourceFor
               value={formData.imageUrl}
               onChange={(url) => setFormData((prev) => ({ ...prev, imageUrl: url }))}
               label="Image de la ressource (flyer, couverture, etc.)"
+              hideUrlOption
             />
           </div>
           <div>
@@ -340,8 +341,8 @@ export default function RessourceForm({ ressourceId, initialData }: RessourceFor
         </div>
       </div>
 
-      <div className="bg-white border rounded-xl p-6 space-y-6">
-        <h2 className="text-lg font-semibold text-gray-900">Accès</h2>
+      <div className="admin-panel space-y-6 rounded-xl p-6">
+        <h2 className="text-lg font-semibold text-slate-100">Accès</h2>
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <input

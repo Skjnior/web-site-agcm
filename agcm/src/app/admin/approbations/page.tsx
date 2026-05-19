@@ -54,6 +54,7 @@ export default async function ApprobationsPage({
                   select: {
                     prenom: true,
                     nom: true,
+                    email: true,
                     user: { select: { email: true } },
                   },
                 },

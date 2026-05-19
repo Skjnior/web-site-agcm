@@ -1,7 +1,10 @@
 'use client';
 
 import { Button } from './button';
+import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+
+const outlineDark = 'border-slate-300 dark:border-slate-600 dark:hover:bg-slate-800';
 
 interface PaginationProps {
   page: number;
@@ -31,10 +34,10 @@ export function Pagination({
 
   return (
     <div className={`flex items-center justify-between ${className}`}>
-      <div className="text-sm text-gray-600">
-        Affichage de <span className="font-medium">{start}</span> à{' '}
-        <span className="font-medium">{end}</span> sur{' '}
-        <span className="font-medium">{total}</span> résultats
+      <div className="text-sm text-gray-600 dark:text-slate-400">
+        Affichage de <span className="font-medium text-gray-900 dark:text-slate-200">{start}</span> à{' '}
+        <span className="font-medium text-gray-900 dark:text-slate-200">{end}</span> sur{' '}
+        <span className="font-medium text-gray-900 dark:text-slate-200">{total}</span> résultats
       </div>
 
       <div className="flex items-center gap-2">
@@ -44,6 +47,7 @@ export function Pagination({
           onClick={() => onPageChange(1)}
           disabled={!hasPrev}
           aria-label="Première page"
+          className={outlineDark}
         >
           <ChevronsLeft className="h-4 w-4" />
         </Button>
@@ -53,6 +57,7 @@ export function Pagination({
           onClick={() => onPageChange(page - 1)}
           disabled={!hasPrev}
           aria-label="Page précédente"
+          className={outlineDark}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -76,7 +81,7 @@ export function Pagination({
                 variant={pageNum === page ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => onPageChange(pageNum)}
-                className="min-w-[2.5rem]"
+                className={cn('min-w-[2.5rem]', pageNum !== page && outlineDark)}
               >
                 {pageNum}
               </Button>
@@ -90,6 +95,7 @@ export function Pagination({
           onClick={() => onPageChange(page + 1)}
           disabled={!hasNext}
           aria-label="Page suivante"
+          className={outlineDark}
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
@@ -99,6 +105,7 @@ export function Pagination({
           onClick={() => onPageChange(totalPages)}
           disabled={!hasNext}
           aria-label="Dernière page"
+          className={outlineDark}
         >
           <ChevronsRight className="h-4 w-4" />
         </Button>

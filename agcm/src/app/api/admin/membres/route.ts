@@ -2,9 +2,11 @@
 // Gestion des membres (Admin/Président)
 
 import { NextRequest, NextResponse } from 'next/server';
+import type { Prisma } from '@prisma/client';
+import type { StatutMembre } from '@prisma/client';
 import { requireAdmin } from '@/lib/require-auth';
-import { prisma } from '@/lib/prisma';
 import { parsePagination, createPaginatedResponse } from '@/lib/pagination';
+import { listMembersForAdmin } from '@/lib/membres-admin-list';
 
 export async function GET(request: NextRequest) {
   const { error } = await requireAdmin();
@@ -12,75 +14,37 @@ export async function GET(request: NextRequest) {
 
   const searchParams = request.nextUrl.searchParams;
   const statusFilter = searchParams.get('status');
-  const typeFilter = searchParams.get('type');
   const search = searchParams.get('q') || '';
+  const bureauOnly = searchParams.get('bureau') === '1';
   const { page, limit, offset } = parsePagination(request);
 
   try {
-    const where: any = {};
+    const baseWhere: Prisma.MemberWhereInput = {};
 
-    // Filtre par statut
     if (statusFilter && statusFilter !== 'all') {
-      where.statutMembre = statusFilter;
+      baseWhere.statutMembre = statusFilter as StatutMembre;
     }
 
-    // Filtre par recherche (nom, prénom, email, téléphone)
     if (search) {
-      where.OR = [
+      baseWhere.OR = [
         { prenom: { contains: search, mode: 'insensitive' } },
         { nom: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
         { user: { email: { contains: search, mode: 'insensitive' } } },
         { telephone: { contains: search, mode: 'insensitive' } },
       ];
     }
 
-    const [total, members] = await Promise.all([
-      prisma.member.count({ where }),
-      prisma.member.findMany({
-        where,
-        include: {
-          user: {
-            select: {
-              id: true,
-              email: true,
-              roleSysteme: true,
-            },
-          },
-        },
-        orderBy: {
-          dateAdhesion: 'desc',
-        },
-        skip: offset,
-        take: limit,
-      }),
-    ]);
+    const { total, members } = await listMembersForAdmin({
+      baseWhere,
+      skip: offset,
+      take: limit,
+      bureauOnly,
+    });
 
-    // Mapper les données pour correspondre à l'interface attendue
-    const mappedMembers = members.map((member) => ({
-      id: member.id,
-      prenom: member.prenom,
-      nom: member.nom,
-      email: member.user.email,
-      telephone: member.telephone,
-      ville: member.ville,
-      pays: member.pays,
-      statutMembre: member.statutMembre,
-      dateAdhesion: member.dateAdhesion,
-      user: {
-        id: member.user.id,
-        email: member.user.email,
-        role: member.user.roleSysteme,
-      },
-    }));
-
-    return NextResponse.json(createPaginatedResponse(mappedMembers, total, page, limit));
+    return NextResponse.json(createPaginatedResponse(members, total, page, limit));
   } catch (error) {
     console.error('Erreur lors de la récupération des membres:', error);
-    return NextResponse.json(
-      { error: 'Erreur serveur' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
   }
 }
-
-

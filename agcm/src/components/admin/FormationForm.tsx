@@ -121,11 +121,11 @@ export default function FormationForm({ formationId, initialData }: FormationFor
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="bg-white border rounded-xl p-6 space-y-6">
-        <h2 className="text-lg font-semibold text-gray-900">Informations générales</h2>
+      <div className="admin-panel space-y-6 rounded-xl p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100">Informations générales</h2>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="titre" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="titre" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Titre *
             </label>
             <input
@@ -134,11 +134,11 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               required
               value={formData.titre}
               onChange={handleTitleChange}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             />
           </div>
           <div>
-            <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="slug" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Slug (URL) *
             </label>
             <input
@@ -147,11 +147,11 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               required
               value={formData.slug}
               onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             />
           </div>
           <div className="md:col-span-2">
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="description" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Description *
             </label>
             <RichTextEditor
@@ -161,7 +161,7 @@ export default function FormationForm({ formationId, initialData }: FormationFor
             />
           </div>
           <div className="md:col-span-2">
-            <label htmlFor="objectifs" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="objectifs" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Objectifs *
             </label>
             <RichTextEditor
@@ -171,7 +171,7 @@ export default function FormationForm({ formationId, initialData }: FormationFor
             />
           </div>
           <div className="md:col-span-2">
-            <label htmlFor="programme" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="programme" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Programme *
             </label>
             <RichTextEditor
@@ -183,11 +183,11 @@ export default function FormationForm({ formationId, initialData }: FormationFor
         </div>
       </div>
 
-      <div className="bg-white border rounded-xl p-6 space-y-6">
-        <h2 className="text-lg font-semibold text-gray-900">Dates et horaires</h2>
+      <div className="admin-panel space-y-6 rounded-xl p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100">Dates et horaires</h2>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="dateDebut" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="dateDebut" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Date de début *
             </label>
             <input
@@ -196,11 +196,11 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               required
               value={formData.dateDebut}
               onChange={(e) => setFormData((prev) => ({ ...prev, dateDebut: e.target.value }))}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             />
           </div>
           <div>
-            <label htmlFor="dateFin" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="dateFin" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Date de fin *
             </label>
             <input
@@ -209,11 +209,11 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               required
               value={formData.dateFin}
               onChange={(e) => setFormData((prev) => ({ ...prev, dateFin: e.target.value }))}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             />
           </div>
           <div>
-            <label htmlFor="heureDebut" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="heureDebut" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Heure de début *
             </label>
             <input
@@ -222,11 +222,11 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               required
               value={formData.heureDebut}
               onChange={(e) => setFormData((prev) => ({ ...prev, heureDebut: e.target.value }))}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             />
           </div>
           <div>
-            <label htmlFor="heureFin" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="heureFin" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Heure de fin *
             </label>
             <input
@@ -235,11 +235,11 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               required
               value={formData.heureFin}
               onChange={(e) => setFormData((prev) => ({ ...prev, heureFin: e.target.value }))}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             />
           </div>
           <div>
-            <label htmlFor="dateInscriptionDebut" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="dateInscriptionDebut" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Date début inscriptions *
             </label>
             <input
@@ -248,11 +248,11 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               required
               value={formData.dateInscriptionDebut}
               onChange={(e) => setFormData((prev) => ({ ...prev, dateInscriptionDebut: e.target.value }))}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             />
           </div>
           <div>
-            <label htmlFor="dateInscriptionFin" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="dateInscriptionFin" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Date fin inscriptions *
             </label>
             <input
@@ -261,17 +261,17 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               required
               value={formData.dateInscriptionFin}
               onChange={(e) => setFormData((prev) => ({ ...prev, dateInscriptionFin: e.target.value }))}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             />
           </div>
         </div>
       </div>
 
-      <div className="bg-white border rounded-xl p-6 space-y-6">
-        <h2 className="text-lg font-semibold text-gray-900">Lieu et capacité</h2>
+      <div className="admin-panel space-y-6 rounded-xl p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100">Lieu et capacité</h2>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="lieu" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="lieu" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Lieu *
             </label>
             <input
@@ -280,11 +280,11 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               required
               value={formData.lieu}
               onChange={(e) => setFormData((prev) => ({ ...prev, lieu: e.target.value }))}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             />
           </div>
           <div>
-            <label htmlFor="placesMax" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="placesMax" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Places maximum *
             </label>
             <input
@@ -297,17 +297,17 @@ export default function FormationForm({ formationId, initialData }: FormationFor
                 const value = e.target.value === '' ? 30 : parseInt(e.target.value) || 30;
                 setFormData((prev) => ({ ...prev, placesMax: value }));
               }}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             />
           </div>
         </div>
       </div>
 
-      <div className="bg-white border rounded-xl p-6 space-y-6">
-        <h2 className="text-lg font-semibold text-gray-900">Tarifs</h2>
+      <div className="admin-panel space-y-6 rounded-xl p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100">Tarifs</h2>
         <div className="grid md:grid-cols-3 gap-4">
           <div>
-            <label htmlFor="tarifMembre" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="tarifMembre" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Tarif membre *
             </label>
             <input
@@ -321,11 +321,11 @@ export default function FormationForm({ formationId, initialData }: FormationFor
                 const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
                 setFormData((prev) => ({ ...prev, tarifMembre: value }));
               }}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             />
           </div>
           <div>
-            <label htmlFor="tarifNonMembre" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="tarifNonMembre" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Tarif non-membre *
             </label>
             <input
@@ -339,11 +339,11 @@ export default function FormationForm({ formationId, initialData }: FormationFor
                 const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
                 setFormData((prev) => ({ ...prev, tarifNonMembre: value }));
               }}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             />
           </div>
           <div>
-            <label htmlFor="devise" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="devise" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Devise *
             </label>
             <select
@@ -351,7 +351,7 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               required
               value={formData.devise}
               onChange={(e) => setFormData((prev) => ({ ...prev, devise: e.target.value }))}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             >
               <option value="GNF">GNF</option>
               <option value="USD">USD</option>
@@ -361,11 +361,11 @@ export default function FormationForm({ formationId, initialData }: FormationFor
         </div>
       </div>
 
-      <div className="bg-white border rounded-xl p-6 space-y-6">
-        <h2 className="text-lg font-semibold text-gray-900">Informations complémentaires</h2>
+      <div className="admin-panel space-y-6 rounded-xl p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100">Informations complémentaires</h2>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="categorie" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="categorie" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Catégorie *
             </label>
             <input
@@ -374,11 +374,11 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               required
               value={formData.categorie}
               onChange={(e) => setFormData((prev) => ({ ...prev, categorie: e.target.value }))}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             />
           </div>
           <div>
-            <label htmlFor="niveau" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="niveau" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Niveau *
             </label>
             <select
@@ -386,7 +386,7 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               required
               value={formData.niveau}
               onChange={(e) => setFormData((prev) => ({ ...prev, niveau: e.target.value }))}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             >
               <option value="DEBUTANT">Débutant</option>
               <option value="INTERMEDIAIRE">Intermédiaire</option>
@@ -394,7 +394,7 @@ export default function FormationForm({ formationId, initialData }: FormationFor
             </select>
           </div>
           <div>
-            <label htmlFor="dureeJours" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="dureeJours" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Durée (jours) *
             </label>
             <input
@@ -407,11 +407,11 @@ export default function FormationForm({ formationId, initialData }: FormationFor
                 const value = e.target.value === '' ? 1 : parseInt(e.target.value) || 1;
                 setFormData((prev) => ({ ...prev, dureeJours: value }));
               }}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             />
           </div>
           <div>
-            <label htmlFor="formateurs" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="formateurs" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Formateurs *
             </label>
             <textarea
@@ -420,11 +420,11 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               rows={3}
               value={formData.formateurs}
               onChange={(e) => setFormData((prev) => ({ ...prev, formateurs: e.target.value }))}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             />
           </div>
           <div className="md:col-span-2">
-            <label htmlFor="prerequisites" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="prerequisites" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Prérequis
             </label>
             <textarea
@@ -432,7 +432,7 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               rows={3}
               value={formData.prerequisites}
               onChange={(e) => setFormData((prev) => ({ ...prev, prerequisites: e.target.value }))}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             />
           </div>
           <div className="md:col-span-2">
@@ -440,13 +440,14 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               value={formData.imageUrl}
               onChange={(url) => setFormData((prev) => ({ ...prev, imageUrl: url }))}
               label="Image de la formation"
+              hideUrlOption
             />
           </div>
         </div>
       </div>
 
-      <div className="bg-white border rounded-xl p-6 space-y-6">
-        <h2 className="text-lg font-semibold text-gray-900">Publication</h2>
+      <div className="admin-panel space-y-6 rounded-xl p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100">Publication</h2>
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <input
@@ -456,12 +457,12 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               onChange={(e) => setFormData((prev) => ({ ...prev, certificat: e.target.checked }))}
               className="w-4 h-4"
             />
-            <label htmlFor="certificat" className="text-sm text-gray-700">
+            <label htmlFor="certificat" className="text-sm text-gray-700 dark:text-slate-300">
               Certificat délivré
             </label>
           </div>
           <div>
-            <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="status" className="mb-1 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Statut *
             </label>
             <select
@@ -469,7 +470,7 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               required
               value={formData.status}
               onChange={(e) => setFormData((prev) => ({ ...prev, status: e.target.value }))}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-100"
             >
               <option value="BROUILLON">Brouillon</option>
               <option value="PUBLIEE">Publiée</option>
@@ -486,7 +487,7 @@ export default function FormationForm({ formationId, initialData }: FormationFor
               onChange={(e) => setFormData((prev) => ({ ...prev, published: e.target.checked }))}
               className="w-4 h-4"
             />
-            <label htmlFor="published" className="text-sm text-gray-700">
+            <label htmlFor="published" className="text-sm text-gray-700 dark:text-slate-300">
               Publié sur le site public
             </label>
           </div>
@@ -504,7 +505,7 @@ export default function FormationForm({ formationId, initialData }: FormationFor
         <button
           type="button"
           onClick={() => router.back()}
-          className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+          className="rounded-lg bg-gray-200 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
         >
           Annuler
         </button>

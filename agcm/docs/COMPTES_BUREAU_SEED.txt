@@ -1,0 +1,14 @@
+Mot de passe unique (seed) : AGCM-Bureau-Test-2026!
+
+Bureau exécutif (9) :
+  Président → president@seed.agcm.local (SUPER_ADMIN)
+  Secrétaire administratif → secretaire.administratif@seed.agcm.local
+  Secrétaire chargé à la formation et directeur des finances → formation.finance@seed.agcm.local
+  Trésorier → tresorier@seed.agcm.local
+  Secrétaire organisation → organisation@seed.agcm.local
+  Secrétaire communication → communication@seed.agcm.local
+  Secrétaire affaires sociales → affaires.sociales@seed.agcm.local
+  Secrétaire sécurité → securite@seed.agcm.local
+  Secrétaire sports, culture, environnement → sports.culture.environnement@seed.agcm.local
+
+Démo : user10@agcm.gn … user600@agcm.gn (MEMBER)

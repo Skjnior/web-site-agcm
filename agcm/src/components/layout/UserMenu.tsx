@@ -3,7 +3,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { signOut } from 'next-auth/react';
+import { signOutWithConfirmation } from '@/lib/sign-out-confirm';
 
 interface UserMenuProps {
   user: {
@@ -145,8 +145,11 @@ export default function UserMenu({ user }: UserMenuProps) {
           <div className="border-t border-gray-100 mt-2 pt-2">
             <button
               onClick={() => {
-                setIsOpen(false);
-                signOut({ callbackUrl: '/' });
+                void (async () => {
+                  if (await signOutWithConfirmation({ callbackUrl: '/' })) {
+                    setIsOpen(false);
+                  }
+                })();
               }}
               className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors w-full text-left"
             >

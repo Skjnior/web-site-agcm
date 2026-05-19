@@ -11,11 +11,12 @@ type Member = {
   nom: string;
   status: string;
   numeroMembre: string | null;
+  email?: string | null;
   user: {
     id: string;
     email: string;
     role: string;
-  };
+  } | null;
 };
 
 type MemberDetailActionsProps = {
@@ -122,8 +123,8 @@ export default function MemberDetailActions({ member, currentUserRole, canAct }:
 
   return (
     <>
-      <div className="bg-white border rounded-xl p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Actions</h2>
+      <div className="admin-panel rounded-xl p-6">
+        <h2 className="mb-4 text-lg font-semibold text-slate-100">Actions</h2>
         <div className="flex gap-3 flex-wrap">
           {canValidate && (
             <button

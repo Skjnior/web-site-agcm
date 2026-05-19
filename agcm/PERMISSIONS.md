@@ -212,13 +212,16 @@ Chaque membre du bureau a :
 - ❌ Modifier les projets
 - ❌ Publier finances au public sans validation
 
-### 3.8 Directeur des Finances
-#### ✅ Peut faire
-- ✅ Gérer :
-  - subventions
-  - budgets
-  - rapports financiers avancés
-- ✅ Superviser le Trésorier
+### 3.8 Secrétaire chargé à la formation et directeur des finances
+*(poste unique aligné règlement intérieur : fusion formation + responsabilités « directeur des finances »)*
+
+#### ✅ Peut faire (côté métier / documentation)
+- ✅ Piloter les **actions de formation** et la montée en compétences des membres
+- ✅ **Études et devis** des projets et événements ; validation des flux financiers avec le président
+- ✅ **Bilan financier** avec le trésorier (comme au règlement)
+
+#### Implémentation actuelle
+- Les écrans suivent le **rôle BUREAU** générique (contenus, projets, etc.), sans module séparé « formation » ou « finances » réservé à ce seul poste.
 
 ### 3.9 Secrétaire à la Sécurité
 #### ✅ Peut faire

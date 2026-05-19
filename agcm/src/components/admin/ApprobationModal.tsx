@@ -18,7 +18,8 @@ interface Content {
       member: {
         prenom: string;
         nom: string;
-        user: { email: string };
+        email: string | null;
+        user: { email: string } | null;
       };
     }>;
   };
@@ -80,11 +81,11 @@ export default function ApprobationModal({
     >
       <div className="fixed inset-0 bg-black/50" />
       <div
-        className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+        className="relative admin-panel shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between z-10">
-          <h2 className="text-2xl font-bold text-gray-900">Détails du contenu</h2>
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4 dark:border-slate-700 dark:bg-slate-900">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Détails du contenu</h2>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-4 w-4" />
           </Button>
@@ -92,7 +93,7 @@ export default function ApprobationModal({
 
         <div className="p-6 space-y-6">
           <div>
-            <h3 className="text-xl font-semibold text-gray-900">{content.titre}</h3>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-slate-100">{content.titre}</h3>
             <div className="flex flex-wrap gap-2 mt-2">
               <Badge variant={getStatusBadge(content.statutWorkflow)}>
                 {content.statutWorkflow}
@@ -102,9 +103,9 @@ export default function ApprobationModal({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div className="grid grid-cols-1 gap-4 text-sm text-gray-800 md:grid-cols-2 dark:text-slate-200">
             <div className="flex items-center gap-2">
-              <User className="h-4 w-4 text-gray-500" />
+              <User className="h-4 w-4 text-gray-500 dark:text-slate-400" />
               <span>
                 {auteur
                   ? `${auteur.prenom} ${auteur.nom} (${content.auteurPoste.nom})`
@@ -112,27 +113,27 @@ export default function ApprobationModal({
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-gray-500" />
+              <Calendar className="h-4 w-4 text-gray-500 dark:text-slate-400" />
               <span>{date.toLocaleDateString('fr-FR')}</span>
             </div>
             {content.approvedBy && (
               <div className="flex items-center gap-2">
-                <FileText className="h-4 w-4 text-gray-500" />
+                <FileText className="h-4 w-4 text-gray-500 dark:text-slate-400" />
                 <span>Approuvé par {content.approvedBy.email}</span>
               </div>
             )}
             {content.rejectionReason && (
-              <div className="md:col-span-2 p-3 bg-red-50 rounded-lg">
-                <p className="font-medium text-red-800">Motif du rejet :</p>
-                <p className="text-red-700">{content.rejectionReason}</p>
+              <div className="rounded-lg bg-red-50 p-3 dark:bg-red-950/40 dark:ring-1 dark:ring-red-500/30">
+                <p className="font-medium text-red-800 dark:text-red-300">Motif du rejet :</p>
+                <p className="text-red-700 dark:text-red-200">{content.rejectionReason}</p>
               </div>
             )}
           </div>
 
           {content.contenu && (
             <div className="border-t pt-4">
-              <h4 className="font-medium text-gray-700 mb-2">Contenu</h4>
-              <div className="prose prose-sm max-w-none text-gray-600 whitespace-pre-wrap">
+              <h4 className="mb-2 font-medium text-gray-800 dark:text-slate-200">Contenu</h4>
+              <div className="max-w-none whitespace-pre-wrap text-sm leading-relaxed text-gray-800 dark:text-slate-300">
                 {content.contenu}
               </div>
             </div>

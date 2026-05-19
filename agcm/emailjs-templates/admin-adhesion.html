@@ -1,0 +1,69 @@
+<!--
+  EmailJS – Adhésion · Template ID côté projet : template_b1lpr33 (surcharge EMAILJS_TEMPLATE_ADHESION)
+  Service Gmail : service_w0zlpfb
+  Variables : logo_url, prenom, nom, email, telephone, ville, pays, message, submitted_at
+-->
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.5; color: #1f2937; background-color: #f3f4f6; margin: 0; padding: 24px 12px;">
+  <tr>
+    <td align="center">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width: 600px; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb; box-shadow: 0 4px 24px rgba(15, 36, 23, 0.08);">
+        <tr>
+          <td style="background: linear-gradient(135deg, #0f2417 0%, #19533a 100%); padding: 20px 24px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td width="56" valign="middle">
+                  <img src="{{logo_url}}" width="56" height="56" alt="AGCM" style="display: block; border-radius: 10px; object-fit: cover; border: 2px solid rgba(255,215,0,0.35);" />
+                </td>
+                <td valign="middle" style="padding-left: 16px;">
+                  <div style="color: #ffffff; font-size: 18px; font-weight: 700;">AGCM</div>
+                  <div style="color: rgba(255,255,255,0.85); font-size: 11px; margin-top: 4px;">Association des Guinéens de la Charente-Maritime</div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 24px;">
+            <p style="margin: 0 0 8px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #DC143C;">Nouvelle demande · Adhésion</p>
+            <h1 style="margin: 0 0 16px; font-size: 20px; font-weight: 700; color: #0f2417;">Candidature reçue</h1>
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: #f9fafb; border-radius: 10px; border: 1px solid #e5e7eb;">
+              <tr>
+                <td style="padding: 18px 20px;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding: 6px 0; font-size: 13px; color: #6b7280; width: 140px;">Nom complet</td>
+                      <td style="padding: 6px 0; font-size: 14px; font-weight: 600; color: #111827;">{{prenom}} {{nom}}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 0; font-size: 13px; color: #6b7280;">E-mail</td>
+                      <td style="padding: 6px 0;"><a href="mailto:{{email}}" style="color: #19533a; text-decoration: none; font-size: 14px;">{{email}}</a></td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 0; font-size: 13px; color: #6b7280;">Téléphone</td>
+                      <td style="padding: 6px 0; font-size: 14px; color: #111827;">{{telephone}}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 0; font-size: 13px; color: #6b7280;">Ville / Pays</td>
+                      <td style="padding: 6px 0; font-size: 14px; color: #111827;">{{ville}} · {{pays}}</td>
+                    </tr>
+                    <tr>
+                      <td colspan="2" style="padding: 12px 0 4px; font-size: 12px; color: #9ca3af;">Reçu le {{submitted_at}}</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <div style="margin-top: 20px; padding: 16px; border-radius: 8px; border-left: 4px solid #19533a; background: #f0fdf4;">
+              <p style="margin: 0 0 8px; font-size: 12px; font-weight: 600; color: #166534; text-transform: uppercase;">Message / motivation</p>
+              <p style="margin: 0; font-size: 14px; color: #374151; white-space: pre-wrap;">{{message}}</p>
+            </div>
+
+            <p style="margin: 20px 0 0; font-size: 11px; color: #9ca3af;">Formulaire d’adhésion public · AGCM</p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>

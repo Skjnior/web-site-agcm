@@ -7,9 +7,19 @@ import { prisma } from '@/lib/prisma';
 import { logAction } from '@/lib/audit';
 import { z } from 'zod';
 
-const suspendSchema = z.object({
-  suspend: z.boolean(), // true = suspendre, false = réactiver
-});
+const suspendSchema = z.discriminatedUnion('suspend', [
+  z.object({
+    suspend: z.literal(true),
+    reason: z.string().max(2000).optional(),
+  }),
+  z.object({
+    suspend: z.literal(false),
+    reason: z
+      .string()
+      .min(3, 'La raison de la réactivation est obligatoire (minimum 3 caractères)')
+      .max(2000),
+  }),
+]);
 
 export async function PATCH(
   request: NextRequest,
@@ -22,12 +32,14 @@ export async function PATCH(
 
   try {
     const body = await request.json();
-    const { suspend } = suspendSchema.parse(body);
+    const parsed = suspendSchema.parse(body);
+    const suspend = parsed.suspend;
+    const reactivationReason = parsed.suspend === false ? parsed.reason.trim() : undefined;
 
-    // Empêcher la suspension de soi-même
+    // Empêcher la suspension ou la réactivation de soi-même
     if (id === session!.user.id) {
       return NextResponse.json(
-        { error: 'Vous ne pouvez pas suspendre votre propre compte' },
+        { error: 'Vous ne pouvez pas suspendre ou réactiver votre propre compte' },
         { status: 400 }
       );
     }
@@ -41,6 +53,16 @@ export async function PATCH(
       return NextResponse.json(
         { error: 'Utilisateur introuvable' },
         { status: 404 }
+      );
+    }
+
+    if (userBefore.deletedAt) {
+      return NextResponse.json(
+        {
+          error:
+            'Ce compte est archivé. Restaurez-le ou supprimez-le définitivement avant toute suspension / réactivation.',
+        },
+        { status: 400 }
       );
     }
 
@@ -74,13 +96,21 @@ export async function PATCH(
       include: { member: true },
     });
 
+    const afterDataForAudit =
+      !suspend && reactivationReason && userAfter
+        ? {
+            ...JSON.parse(JSON.stringify(userAfter)),
+            reactivationReason,
+          }
+        : userAfter;
+
     await logAction({
       userId: session!.user.id,
       action: suspend ? 'INACTIVATE' : 'UPDATE',
       entityType: 'User',
       entityId: id,
       beforeData: userBefore,
-      afterData: userAfter,
+      afterData: afterDataForAudit,
     });
 
     return NextResponse.json({
