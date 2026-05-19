@@ -298,7 +298,6 @@ export default function MembresPageClient({
             </SelectTrigger>
             <SelectContent className="z-[100]" position="popper">
               <SelectItem value="all">Tous les statuts</SelectItem>
-              <SelectItem value="EN_ATTENTE">En attente</SelectItem>
               <SelectItem value="ACTIF">Actif</SelectItem>
               <SelectItem value="INACTIF">Inactif</SelectItem>
               <SelectItem value="SUSPENDU">Suspendu</SelectItem>

@@ -47,7 +47,9 @@ export default async function MembresPage({ searchParams }: MembresPageProps) {
 
   const baseWhere: Prisma.MemberWhereInput = {};
   if (statusFilter && statusFilter !== 'all') {
-    baseWhere.statutMembre = statusFilter as StatutMembre;
+    if (['ACTIF', 'SUSPENDU', 'RADIE', 'INACTIF'].includes(statusFilter)) {
+      baseWhere.statutMembre = statusFilter as StatutMembre;
+    }
   }
   if (typeFilter) {
     // memberType n'existe pas dans le schéma
