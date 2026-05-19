@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { X, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 
@@ -140,6 +140,56 @@ export default function GalerieSection({ images: imagesProp, maxDisplay = 12 }: 
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Animation de défilement horizontal (aller et retour)
+  useEffect(() => {
+    if (images.length <= 1 || isPaused || isModalOpen) return;
+
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const scrollWidth = container.scrollWidth;
+    const clientWidth = container.clientWidth;
+    const maxScroll = scrollWidth - clientWidth;
+
+    if (maxScroll <= 0) return;
+
+    let scrollPosition = container.scrollLeft;
+    const scrollSpeed = 0.5;
+    let direction = 1; // 1 = droite, -1 = gauche
+    let animationFrame: number;
+
+    const scroll = () => {
+      if (isPaused) return;
+
+      scrollPosition += scrollSpeed * direction;
+
+      if (scrollPosition >= maxScroll) {
+        direction = -1;
+        scrollPosition = maxScroll;
+      } else if (scrollPosition <= 0) {
+        direction = 1;
+        scrollPosition = 0;
+      }
+
+      container.scrollTo({
+        left: scrollPosition,
+        behavior: 'auto',
+      });
+
+      animationFrame = requestAnimationFrame(scroll);
+    };
+
+    animationFrame = requestAnimationFrame(scroll);
+
+    return () => {
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
+    };
+  }, [images.length, isPaused, isModalOpen]);
 
   const handleImageClick = (index: number) => {
     setSelectedIndex(index);
@@ -197,32 +247,53 @@ export default function GalerieSection({ images: imagesProp, maxDisplay = 12 }: 
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-            {images.map((image, index) => (
-              <div
-                key={image.id}
-                className="group relative aspect-square rounded-lg overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:z-10"
-                onClick={() => handleImageClick(index)}
-              >
-                {/* Image */}
-                <Image
-                  src={image.url}
-                  alt={image.alt}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  unoptimized={image.url.startsWith('https://images.unsplash.com')}
-                />
+          <div 
+            className="relative overflow-x-hidden py-4 -mx-4 px-4"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+          >
+            <div
+              ref={scrollContainerRef}
+              className="overflow-x-auto pb-4 scrollbar-hide touch-pan-x"
+              style={{
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+              }}
+            >
+              <div className="grid grid-rows-2 grid-flow-col gap-3 md:gap-4 w-max">
+                {images.map((image, index) => (
+                  <div
+                    key={image.id}
+                    className="group relative w-48 h-48 sm:w-64 sm:h-64 rounded-lg overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:z-10"
+                    onClick={() => handleImageClick(index)}
+                  >
+                    {/* Image */}
+                    <Image
+                      src={image.url}
+                      alt={image.alt}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      unoptimized={image.url.startsWith('https://images.unsplash.com')}
+                    />
 
-                {/* Overlay au survol */}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
-                  <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
+                    {/* Overlay au survol */}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
+                      <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
 
-                {/* Gradient en bas pour le texte (optionnel) */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    {/* Gradient en bas pour le texte (optionnel) */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+            
+            <style jsx>{`
+              .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+              }
+            `}</style>
           </div>
         </div>
       </section>
