@@ -23,3 +23,5 @@ build/
 *.tsbuildinfo
 
 /generated/prisma
+.vercel
+.env*.local
