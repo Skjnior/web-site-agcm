@@ -3,7 +3,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { ImageUpload } from '@/components/ui/image-upload';
 
 type EvenementFormData = {
@@ -135,15 +134,17 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
               placeholder="ex-assemblee-generale"
             />
           </div>
-          <div className="md:col-span-2 space-y-2 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-900">
-            <div className="border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-600 dark:bg-slate-800/50">
-              <label htmlFor="description" className="block text-sm font-medium text-slate-700">
-                Description <span className="text-red-500">*</span>
-              </label>
-            </div>
-            <RichTextEditor
-              content={formData.description}
-              onChange={(description) => setFormData((prev) => ({ ...prev, description }))}
+          <div className="md:col-span-2 space-y-2">
+            <label htmlFor="description" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+              Description <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              id="description"
+              required
+              rows={6}
+              value={formData.description}
+              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100 resize-y"
               placeholder="Décrivez l'événement..."
             />
           </div>
@@ -307,15 +308,16 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
       <div className="admin-glass rounded-3xl p-8 shadow-sm space-y-8">
         <h2 className="text-xl font-semibold text-slate-900 border-b border-slate-200/50 pb-4 dark:border-slate-700 dark:text-slate-100">Programme & Média</h2>
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="md:col-span-2 space-y-2 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-900">
-            <div className="border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-600 dark:bg-slate-800/50">
-              <label htmlFor="programme" className="block text-sm font-medium text-slate-700">
-                Programme détaillé
-              </label>
-            </div>
-            <RichTextEditor
-              content={formData.programme || ''}
-              onChange={(programme) => setFormData((prev) => ({ ...prev, programme }))}
+          <div className="md:col-span-2 space-y-2">
+            <label htmlFor="programme" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+              Programme détaillé
+            </label>
+            <textarea
+              id="programme"
+              rows={8}
+              value={formData.programme || ''}
+              onChange={(e) => setFormData((prev) => ({ ...prev, programme: e.target.value }))}
+              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100 resize-y"
               placeholder="Détaillez le programme de l'événement..."
             />
           </div>
