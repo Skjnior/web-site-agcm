@@ -29,18 +29,10 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const now = new Date();
-
-    const passes = events.filter(e => {
-      const dateFin = e.dateFin || e.dateDebut;
-      return dateFin < now;
-    });
-
-    const enCours = events.filter(e => {
-      return e.dateDebut <= now && e.dateFin && e.dateFin >= now;
-    });
-
-    const aVenir = events.filter(e => e.dateDebut > now);
+    // Aligné sur le statut choisi dans l’admin (onglets À venir / En cours / Passés)
+    const passes = events.filter((e) => e.statut === 'PASSE');
+    const enCours = events.filter((e) => e.statut === 'EN_COURS');
+    const aVenir = events.filter((e) => e.statut === 'A_VENIR');
 
     return NextResponse.json({
       data: {

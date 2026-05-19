@@ -403,8 +403,10 @@ export default function EvenementForm({ evenementId, initialData }: EvenementFor
                 </svg>
               </div>
               <div>
-                <span className="text-sm font-medium text-slate-900 group-hover:text-blue-700 transition-colors">Publier sur le site public</span>
-                <p className="text-xs text-slate-500 mt-0.5">Si coché, l'événement apparaîtra dans l'agenda public.</p>
+                <span className="text-sm font-medium text-slate-900 dark:text-slate-100 group-hover:text-blue-700 transition-colors">Publier sur le site public</span>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Obligatoire pour afficher l&apos;événement sur la page d&apos;accueil et /evenements. Sans cette case, il reste visible uniquement dans l&apos;admin.
+                </p>
               </div>
             </label>
           </div>
