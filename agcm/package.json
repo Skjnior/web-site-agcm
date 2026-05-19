@@ -13,6 +13,7 @@
     "db:reset-bureau-passwords": "tsx prisma/reset-bureau-passwords.ts",
     "db:seed-bureau-prod": "tsx prisma/seed-bureau-prod.ts",
     "db:import-registre": "tsx prisma/import-registre-cotisations.ts",
+    "db:trim-demo-members": "tsx prisma/trim-demo-members.ts",
     "db:seed-partners": "tsx prisma/seed-partners.ts",
     "db:trim": "tsx prisma/trim-public-content.ts",
     "db:trim:dry": "DRY_RUN=1 tsx prisma/trim-public-content.ts",

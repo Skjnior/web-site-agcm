@@ -47,6 +47,7 @@ interface SidebarItem {
 interface AppSidebarProps {
   userRole: 'SUPER_ADMIN' | 'ADMIN' | 'MEMBER';
   isBureau?: boolean;
+  intranetHomeHref: string;
   posteNom?: string;
   /** Modules bureau autorisés (membres du bureau) ; absent = tout */
   allowedBureauModules?: BureauModule[];
@@ -57,6 +58,7 @@ interface AppSidebarProps {
 export default function AppSidebar({
   userRole,
   isBureau,
+  intranetHomeHref,
   posteNom,
   allowedBureauModules,
   mobileOpen,
@@ -68,7 +70,11 @@ export default function AppSidebar({
     // Extraire le chemin sans les query strings
     const hrefPath = href.split('?')[0];
 
-    // Cas spécial pour la racine du dashboard (routeur)
+    if (hrefPath === intranetHomeHref) {
+      return pathname === intranetHomeHref || pathname.startsWith(`${intranetHomeHref}/`);
+    }
+
+    // Cas spécial pour la racine du dashboard (routeur) — garder actif après redirection
     if (hrefPath === '/dashboard') {
       return pathname === '/dashboard';
     }
@@ -98,13 +104,6 @@ export default function AppSidebar({
   };
 
   // Menu commun à tous
-  const getDashboardHref = () => {
-    if (userRole === 'SUPER_ADMIN') return '/admin';
-    if (userRole === 'ADMIN') return '/admin';
-    if (isBureau) return '/bureau';
-    return '/';
-  };
-
   // Salon chat : bureau = privé, admin = privé, membre = pas d'accès
   const chatItem: SidebarItem = {
     label: isBureau || userRole !== 'MEMBER' ? 'Salon privé bureau' : 'Salon public',
@@ -115,7 +114,7 @@ export default function AppSidebar({
   const commonMenu: SidebarItem[] = [
     {
       label: 'Accueil',
-      href: getDashboardHref(),
+      href: intranetHomeHref,
       icon: LayoutDashboard,
     },
     ...(isBureau || userRole !== 'MEMBER' ? [chatItem] : []),

@@ -247,6 +247,20 @@ agcm/
 - **Vote** : Votes internes
 - **AuditLog** : Logs d'audit
 
+### Maintenance (registre / démo)
+
+Si la base contient encore des comptes `user<n>@agcm.gn` issus du seed legacy : simuler puis exécuter le nettoyage.
+
+```bash
+# Pointez DATABASE_URL vers la base ciblée ; dry-run par défaut
+DATABASE_URL='…' npm run db:trim-demo-members
+
+DATABASE_URL='…' TRIM_EXECUTE=1 npm run db:trim-demo-members
+```
+
+Réimporter le PDF si besoin : `DATABASE_URL='…' npm run db:import-registre`.  
+Sur `/bureau/registre-cotisations`, la portée **Registre PDF uniquement** (API `scope=pdf`, défaut) filtre les adhérents `@import.agcm.local` ; **Tout l’annuaire** correspond à `scope=all`.
+
 ### Relations
 
 Le schéma Prisma définit 24 tables avec des relations complexes pour gérer :

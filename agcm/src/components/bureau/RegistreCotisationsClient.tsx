@@ -54,6 +54,9 @@ export type RegistreHubStats = {
   situationVideOuSansLigne: number;
   absencesRenseignees: number;
   snapshotsEnBase: number;
+  /** Toujours rempli si stats chargées — sous-ensemble issue import PDF */
+  registrePdfMembresEnBase?: number;
+  registrePdfLignesPourDate?: number;
 };
 
 type PaginationMeta = {
@@ -125,6 +128,7 @@ export default function RegistreCotisationsClient({
   const [qDebounced, setQDebounced] = useState('');
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(50);
+  const [registreScope, setRegistreScope] = useState<'pdf' | 'all'>('pdf');
   const [registreFilter, setRegistreFilter] = useState('all');
   const [rows, setRows] = useState<RegistreRow[]>([]);
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
@@ -147,7 +151,7 @@ export default function RegistreCotisationsClient({
 
   useEffect(() => {
     setPage(1);
-  }, [qDebounced, dateReference, registreFilter, limit]);
+  }, [qDebounced, dateReference, registreFilter, limit, registreScope]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -158,6 +162,7 @@ export default function RegistreCotisationsClient({
         limit: String(limit),
         dateReference,
         registreFilter,
+        scope: registreScope,
       });
       if (qDebounced) params.set('q', qDebounced);
       const res = await fetch(`/api/bureau/registre-cotisations?${params}`, {
@@ -186,7 +191,7 @@ export default function RegistreCotisationsClient({
     } finally {
       setLoading(false);
     }
-  }, [page, limit, dateReference, qDebounced, registreFilter]);
+  }, [page, limit, dateReference, qDebounced, registreFilter, registreScope]);
 
   useEffect(() => {
     void load();
@@ -238,6 +243,7 @@ export default function RegistreCotisationsClient({
           limit: String(exportLimit),
           dateReference,
           registreFilter,
+          scope: registreScope,
         });
         if (qDebounced) params.set('q', qDebounced);
         const res = await fetch(`/api/bureau/registre-cotisations?${params}`, {
@@ -363,10 +369,22 @@ export default function RegistreCotisationsClient({
           <div className="rounded-xl border border-slate-700/60 bg-slate-900/50 p-4">
             <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-slate-500">
               <Users className="h-4 w-4 text-slate-400" />
-              Membres (base)
+              {registreScope === 'pdf' ? 'Adhérents registre PDF' : 'Adhérents en annuaire'}
             </div>
             <p className="mt-2 text-2xl font-semibold text-slate-100">{stats.totalMembres}</p>
-            <p className="mt-1 text-xs text-slate-500">Annuaire complet — tous mandats confondus</p>
+            <p className="mt-1 text-xs text-slate-500">
+              {registreScope === 'pdf'
+                ? 'Import PDF — lignes registre cotisations/absences uniquement.'
+                : 'Tous les fiches membres présentes dans la base (hors anciens seeds déjà purgés).'}
+            </p>
+            {stats.registrePdfMembresEnBase != null &&
+            stats.registrePdfLignesPourDate != null &&
+            registreScope === 'all' ? (
+              <p className="mt-2 rounded-md border border-slate-600/60 bg-slate-950/40 px-2 py-1.5 text-xs text-slate-400">
+                Sous-total PDF : <strong className="text-slate-200">{stats.registrePdfLignesPourDate}</strong> ligne(s)
+                sur <strong className="text-slate-200">{stats.registrePdfMembresEnBase}</strong> entrée(s) importées
+              </p>
+            ) : null}
           </div>
           <div className="rounded-xl border border-slate-700/60 bg-slate-900/50 p-4">
             <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-slate-500">
@@ -378,7 +396,8 @@ export default function RegistreCotisationsClient({
               <span className="text-base font-normal text-slate-500"> / {stats.totalMembres}</span>
             </p>
             <p className="mt-1 text-xs text-slate-500">
-              {stats.sansLignePourDate} sans ligne · progression situation ~{progressionSituation}%
+              {stats.sansLignePourDate} sans ligne · progression situation ~{progressionSituation}% · vue{' '}
+              {registreScope === 'pdf' ? 'PDF' : 'annuaire complet'}
             </p>
           </div>
           <div className="rounded-xl border border-emerald-500/20 bg-emerald-950/20 p-4">
@@ -405,7 +424,24 @@ export default function RegistreCotisationsClient({
       ) : null}
 
       {/* Contrôles */}
-      <div className="flex flex-col gap-4 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4 md:flex-row md:flex-wrap md:items-end">
+        <div className="flex flex-col gap-4 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4 md:flex-row md:flex-wrap md:items-end">
+        <div>
+          <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500">
+            Portée
+          </label>
+          <Select
+            value={registreScope}
+            onValueChange={(v) => setRegistreScope(v as 'pdf' | 'all')}
+          >
+            <SelectTrigger className="w-56 border-slate-600 bg-slate-950 text-slate-100">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pdf">Registre PDF uniquement (~167 lignes)</SelectItem>
+              <SelectItem value="all">Tout l&apos;annuaire en base</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         <div>
           <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500">
             Date de situation

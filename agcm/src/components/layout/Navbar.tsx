@@ -8,6 +8,7 @@ import { signOutWithConfirmation } from '@/lib/sign-out-confirm';
 import { Menu, X, LogOut, User, ChevronDown } from 'lucide-react';
 import Logo from '../Logo';
 import { publicNavForHeader } from '@/config/site-public-nav';
+import { getIntranetHomeHref } from '@/lib/intranet-home-href';
 
 const NAV_OFFSET = 80;
 
@@ -85,7 +86,13 @@ export default function Navbar() {
 
   const isLoggedIn = status === 'authenticated' && !!session?.user;
 
-  const u = session?.user as { role?: string; canAccessIntranet?: boolean } | undefined;
+  const u = session?.user as {
+    role?: string;
+    canAccessIntranet?: boolean;
+  } | undefined;
+  const intranetDashboardHref = getIntranetHomeHref(u?.role, {
+    canAccessIntranet: u?.canAccessIntranet === true,
+  });
   const showIntranetEntry =
     u?.role === 'SUPER_ADMIN' ||
     u?.role === 'ADMIN' ||
@@ -161,7 +168,7 @@ export default function Navbar() {
                     <div className="absolute right-0 z-50 mt-2 w-52 animate-in rounded-xl border border-agcm-700/60 bg-agcm-800 py-2 shadow-xl fade-in slide-in-from-top-2 duration-200">
                       {showIntranetEntry && (
                         <Link
-                          href="/dashboard"
+                          href={intranetDashboardHref}
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-200 transition-colors hover:bg-white/5 hover:text-white"
                         >
@@ -238,7 +245,7 @@ export default function Navbar() {
                   <>
                     {showIntranetEntry && (
                       <Link
-                        href="/dashboard"
+                        href={intranetDashboardHref}
                         onClick={() => setIsMenuOpen(false)}
                         className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/10 px-4 py-3 font-medium text-white"
                       >

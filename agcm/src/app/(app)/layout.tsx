@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import AppLayoutClient from '@/components/layout/AppLayoutClient';
 import { ALL_BUREAU_MODULES, getBureauPerimetreForPostes, type BureauModule } from '@/lib/bureau-poste-perimetre';
+import { getIntranetHomeHref } from '@/lib/intranet-home-href';
 
 export default async function AppLayout({
   children,
@@ -56,10 +57,13 @@ export default async function AppLayout({
       : ALL_BUREAU_MODULES;
   }
 
+  const intranetHomeHref = getIntranetHomeHref(userRole, { isBureau });
+
   return (
     <AppLayoutClient
       userRole={userRole}
       isBureau={isBureau}
+      intranetHomeHref={intranetHomeHref}
       posteNom={affectation?.poste.nom}
       allowedBureauModules={allowedBureauModules}
       userInfo={userInfo}

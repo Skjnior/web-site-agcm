@@ -13,6 +13,7 @@ import { formatRole } from '@/lib/role-utils';
 
 interface AppHeaderProps {
   userRole: 'SUPER_ADMIN' | 'ADMIN' | 'MEMBER';
+  intranetHomeHref: string;
   userInfo?: {
     name: string;
     email: string;
@@ -22,7 +23,7 @@ interface AppHeaderProps {
   onMobileMenuClick?: () => void;
 }
 
-export default function AppHeader({ userRole, userInfo, onMobileMenuClick }: AppHeaderProps) {
+export default function AppHeader({ userRole, intranetHomeHref, userInfo, onMobileMenuClick }: AppHeaderProps) {
   const { data: session } = useSession();
   const router = useRouter();
   const [notificationsCount, setNotificationsCount] = useState(0);
@@ -72,7 +73,7 @@ export default function AppHeader({ userRole, userInfo, onMobileMenuClick }: App
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/dashboard" className="flex items-center gap-3">
+          <Link href={intranetHomeHref} className="flex items-center gap-3">
             <Logo className="scale-90" variant="dark" />
           </Link>
 

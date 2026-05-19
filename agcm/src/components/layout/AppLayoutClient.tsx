@@ -8,6 +8,8 @@ import type { BureauModule } from '@/lib/bureau-poste-perimetre';
 interface AppLayoutClientProps {
   children: React.ReactNode;
   userRole: 'SUPER_ADMIN' | 'ADMIN' | 'MEMBER';
+  /** Accueil intranet (/admin, /bureau ou /dashboard) — évite double navigation */
+  intranetHomeHref: string;
   isBureau?: boolean;
   posteNom?: string;
   allowedBureauModules?: BureauModule[];
@@ -22,6 +24,7 @@ interface AppLayoutClientProps {
 export default function AppLayoutClient({
   children,
   userRole,
+  intranetHomeHref,
   isBureau,
   posteNom,
   allowedBureauModules,
@@ -42,6 +45,7 @@ export default function AppLayoutClient({
       <AppSidebar
         userRole={userRole}
         isBureau={isBureau}
+        intranetHomeHref={intranetHomeHref}
         posteNom={posteNom}
         allowedBureauModules={allowedBureauModules}
         mobileOpen={mobileMenuOpen}
@@ -51,6 +55,7 @@ export default function AppLayoutClient({
       <div className="flex flex-col flex-1 w-full h-full overflow-hidden relative z-10 min-w-0">
         <AppHeader
           userRole={userRole}
+          intranetHomeHref={intranetHomeHref}
           userInfo={userInfo}
           onMobileMenuClick={() => setMobileMenuOpen(true)}
         />

@@ -3,6 +3,7 @@ import type { Prisma } from '@prisma/client';
 import { requireRegistreCotisationsAccess } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
 import { parsePagination, createPaginatedResponse } from '@/lib/pagination';
+import { REGISTRE_PDF_MEMBER_SCOPE } from '@/lib/registre-pdf-member-scope';
 import {
   formatDateYYYYMMDD,
   parseDateParamYYYYMMDD,
@@ -19,6 +20,10 @@ const REGISTRE_FILTERS = [
 
 type RegistreFilter = (typeof REGISTRE_FILTERS)[number];
 
+function parseScope(raw: string | null): 'pdf' | 'all' {
+  return raw === 'all' ? 'all' : 'pdf';
+}
+
 function parseRegistreFilter(raw: string | null): RegistreFilter {
   if (raw && REGISTRE_FILTERS.includes(raw as RegistreFilter)) {
     return raw as RegistreFilter;
@@ -33,7 +38,10 @@ export async function GET(request: NextRequest) {
   const { page, limit, offset } = parsePagination(request);
   const q = request.nextUrl.searchParams.get('q')?.trim();
   const dateParam = request.nextUrl.searchParams.get('dateReference')?.trim();
-  const registreFilter = parseRegistreFilter(request.nextUrl.searchParams.get('registreFilter'));
+  const scope = parseScope(request.nextUrl.searchParams.get('scope'));
+  const registreFilter = parseRegistreFilter(
+    request.nextUrl.searchParams.get('registreFilter'),
+  );
 
   let dateReference: Date;
   if (dateParam) {
@@ -49,6 +57,9 @@ export async function GET(request: NextRequest) {
     });
     dateReference = latest?.dateReference ?? utcTodayDate();
   }
+
+  const scopeWhere: Prisma.MemberWhereInput =
+    scope === 'pdf' ? REGISTRE_PDF_MEMBER_SCOPE : {};
 
   const filterClause = (): Prisma.MemberWhereInput | undefined => {
     switch (registreFilter) {
@@ -101,8 +112,11 @@ export async function GET(request: NextRequest) {
     : undefined;
 
   const extra = filterClause();
+  const clauses = [scopeWhere, qClause, extra].filter(
+    (x): x is Prisma.MemberWhereInput => Boolean(x && Object.keys(x).length > 0),
+  );
   const whereMember: Prisma.MemberWhereInput =
-    qClause || extra ? { AND: [qClause, extra].filter(Boolean) as Prisma.MemberWhereInput[] } : {};
+    clauses.length > 0 ? { AND: clauses } : {};
 
   const includeStats = page === 1;
 
@@ -140,24 +154,49 @@ export async function GET(request: NextRequest) {
       : Promise.resolve([]),
     includeStats
       ? Promise.all([
-          prisma.member.count(),
-          prisma.memberRegistreCotisation.count({ where: { dateReference } }),
+          prisma.member.count({
+            where: scope === 'pdf' ? REGISTRE_PDF_MEMBER_SCOPE : {},
+          }),
           prisma.memberRegistreCotisation.count({
-            where: { dateReference, NOT: { situationText: '' } },
+            where: {
+              dateReference,
+              ...(scope === 'pdf' ? { member: REGISTRE_PDF_MEMBER_SCOPE } : {}),
+            },
+          }),
+          prisma.memberRegistreCotisation.count({
+            where: {
+              dateReference,
+              NOT: { situationText: '' },
+              ...(scope === 'pdf' ? { member: REGISTRE_PDF_MEMBER_SCOPE } : {}),
+            },
           }),
           prisma.memberRegistreCotisation.count({
             where: {
               dateReference,
               absencesText: { not: null },
               NOT: { absencesText: '' },
+              ...(scope === 'pdf' ? { member: REGISTRE_PDF_MEMBER_SCOPE } : {}),
+            },
+          }),
+          prisma.member.count({ where: REGISTRE_PDF_MEMBER_SCOPE }),
+          prisma.memberRegistreCotisation.count({
+            where: {
+              dateReference,
+              member: REGISTRE_PDF_MEMBER_SCOPE,
             },
           }),
         ])
-      : Promise.resolve([0, 0, 0, 0] as const),
+      : Promise.resolve([0, 0, 0, 0, 0, 0] as const),
   ]);
 
-  const [totalMembersAll, lignesPourDate, situationRenseignee, absencesRenseignees] =
-    statsBundle;
+  const [
+    totalMembersAll,
+    lignesPourDate,
+    situationRenseignee,
+    absencesRenseignees,
+    registrePdfMembresTotaux,
+    registrePdfLignesPourDate,
+  ] = statsBundle;
 
   const rows = members.map((m, index) => {
     const reg = m.registreCotisations[0];
@@ -183,6 +222,7 @@ export async function GET(request: NextRequest) {
       availableDates: includeStats
         ? dateRows.map((r) => formatDateYYYYMMDD(r.dateReference))
         : undefined,
+      scope,
       registreFilter,
       stats: includeStats
         ? {
@@ -193,6 +233,8 @@ export async function GET(request: NextRequest) {
             situationVideOuSansLigne: Math.max(0, totalMembersAll - situationRenseignee),
             absencesRenseignees,
             snapshotsEnBase: dateRows.length,
+            registrePdfMembresEnBase: registrePdfMembresTotaux,
+            registrePdfLignesPourDate,
           }
         : undefined,
     },
