@@ -69,7 +69,6 @@ export default function ActualitesTable({ actualites, isSuperAdmin }: Actualites
                     )}
                     <div className="flex flex-col min-w-0">
                       <span className="font-medium text-slate-900 transition-colors group-hover:text-blue-600 dark:text-slate-100 truncate">{actualite.titre}</span>
-                      <span className="text-xs text-slate-500 truncate">/{actualite.slug}</span>
                     </div>
                   </div>
                 </td>
