@@ -6,13 +6,32 @@ export type RegistrePdfParsedRow = {
   nom: string;
   prenom: string;
   telephone: string | null;
-  /** Situation cotisation / absences (texte après le téléphone, ou ligne complète si pas de tel). */
+  /** Situation cotisation (texte après le téléphone). */
   situationText: string;
+  /** Colonne absence du PDF (ex. « 3 mois », « demissionne »). */
+  absencesText: string | null;
 };
 
-/** Numéro français 06/07 ou indicatifs internationaux usuels dans le PDF AGCM. */
+/** Numéro français 06/07 (10 chiffres) ou indicatifs internationaux usuels dans le PDF AGCM. */
 const PHONE_RE =
-  /\b(0[67](?:\s\d{2}){4,5}|224\s[\d\s]{8,}|212\s[\d\s]{8,}|241\s[\d\s]{6,}|351\s[\d\s]{8,}|34\s[\d\s]{8,})\b/;
+  /\b(0[67](?:\s\d{2}){4}\b|224\s[\d\s]{8,}|212\s[\d\s]{8,}|241\s[\d\s]{6,}|351\s[\d\s]{8,}|34\s[\d\s]{8,})\b/;
+
+/** Colonne « absence » en fin de ligne (PDF avril 2026). */
+const ABSENCE_TAIL_RE =
+  /\s+((?:\d+\s*mois|absence\s*\+\s*de\s*\d+\s+an[^\n]*|demissionne[^\n]*|exc\s*\d*\s*mois|N\s*A[^\n]*mois|plus\s+a\s+la\s+rochelle|inconnu))\s*$/i;
+
+export function splitSituationAndAbsences(situationText: string): {
+  situationText: string;
+  absencesText: string | null;
+} {
+  const raw = situationText.trim();
+  if (!raw) return { situationText: '', absencesText: null };
+  const m = raw.match(ABSENCE_TAIL_RE);
+  if (!m) return { situationText: raw, absencesText: null };
+  const absencesText = m[1].trim();
+  const situation = raw.slice(0, m.index).trim();
+  return { situationText: situation, absencesText: absencesText || null };
+}
 
 function splitNomPrenom(namePart: string): { nom: string; prenom: string } {
   const t = namePart.trim().split(/\s+/).filter(Boolean);
@@ -37,7 +56,7 @@ export function parseRegistrePdfExtract(content: string): RegistrePdfParsedRow[]
     if (!line || /^num\s+NOM/i.test(line)) continue;
     if (/^--\s*\d+\s+of\s+\d+\s+--/.test(line)) continue;
 
-    const m = line.match(/^(\d+)\s+(.+)$/);
+    const m = line.match(/^\s*(\d+)\s+(.+)$/);
     if (!m) continue;
 
     const lignePdf = parseInt(m[1], 10);
@@ -67,19 +86,31 @@ export function parseRegistrePdfExtract(content: string): RegistrePdfParsedRow[]
         prenom: sp.prenom,
         telephone: null,
         situationText: '',
+        absencesText: null,
       });
       continue;
     }
 
     const { nom, prenom } = splitNomPrenom(namePart);
-    rows.push({ lignePdf, nom, prenom, telephone, situationText });
+    const split = splitSituationAndAbsences(situationText);
+    rows.push({
+      lignePdf,
+      nom,
+      prenom,
+      telephone,
+      situationText: split.situationText,
+      absencesText: split.absencesText,
+    });
   }
 
   return rows;
 }
 
-export function loadRegistrePdfParsedRows(): RegistrePdfParsedRow[] {
-  const p = path.join(__dirname, 'data', 'registre-pdf-extract.txt');
+export function loadRegistrePdfParsedRows(sourcePath?: string): RegistrePdfParsedRow[] {
+  const p =
+    sourcePath ??
+    process.env.REGISTRE_EXTRACT_PATH ??
+    path.join(__dirname, 'data', 'registre-pdf-extract.txt');
   const txt = fs.readFileSync(p, 'utf8');
   return parseRegistrePdfExtract(txt);
 }

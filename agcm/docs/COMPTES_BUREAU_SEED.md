@@ -1,8 +1,25 @@
 # Comptes de test — bureau exécutif (seed Prisma)
 
-Après `npm run seed` (ou `npx tsx prisma/seed.ts`), le **mot de passe unique** pour **tous** les comptes générés est :
+Après `npm run seed:fresh`, le mot de passe par défaut du seed est **`AGCM-Bureau-Test-2026!`** (défini dans `prisma/bureau-reglement-seed.ts`).
 
-**`AGCM-Bureau-Test-2026!`**
+Si les mots de passe ont été changés ou avant une mise en production, **réinitialisez** tous les comptes bureau :
+
+```bash
+# Nouveau mot de passe (recommandé en prod)
+BUREAU_PASSWORD='VotreMotDePasseSecurise2026!' npm run db:reset-bureau-passwords
+```
+
+**Production** (remplacez `DATABASE_URL` par celle de Vercel) :
+
+```bash
+DATABASE_URL="postgresql://USER:PASS@hote:5432/agcm?sslmode=require" \
+BUREAU_PASSWORD='VotreMotDePasseSecurise2026!' \
+npm run db:reset-bureau-passwords
+```
+
+Ne commitez **jamais** `BUREAU_PASSWORD` dans Git. Transmettez-le aux membres du bureau par un canal privé.
+
+Dans **`.env`**, si le mot de passe contient `#`, utilisez des **guillemets** : `BUREAU_PASSWORD="AGCM-Prod-2026#Bureau!"` (sinon `#` coupe le mot de passe).
 
 **Avant le seed**, appliquez les migrations sur la base cible (sinon erreur Prisma `P2022` / colonne manquante sur `members`) :
 

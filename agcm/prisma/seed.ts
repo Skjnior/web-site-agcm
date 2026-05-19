@@ -184,6 +184,7 @@ async function main() {
     const situation =
       row.situationText.trim() ||
       '(Pas de détail situation dans l’extrait ; voir PDF ou compléter dans le registre.)';
+    const absences = row.absencesText?.trim() || null;
 
     const member = await prisma.member.upsert({
       where: { email },
@@ -218,10 +219,11 @@ async function main() {
         memberId: member.id,
         dateReference: DATE_REGISTRE_PDF,
         situationText: situation.slice(0, 8000),
-        absencesText: null,
+        absencesText: absences ? absences.slice(0, 8000) : null,
       },
       update: {
         situationText: situation.slice(0, 8000),
+        absencesText: absences ? absences.slice(0, 8000) : null,
       },
     });
     importCount++;
