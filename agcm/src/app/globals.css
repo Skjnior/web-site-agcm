@@ -217,7 +217,7 @@ section[id] {
 }
 
 .animate-partners-scroll {
-  animation: partners-scroll 40s linear infinite;
+  animation: partners-scroll 120s linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
