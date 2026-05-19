@@ -261,6 +261,8 @@ DATABASE_URL='…' TRIM_EXECUTE=1 npm run db:trim-demo-members
 Réimporter le PDF si besoin : `DATABASE_URL='…' npm run db:import-registre`.  
 Sur `/bureau/registre-cotisations`, la portée **Registre PDF uniquement** (API `scope=pdf`, défaut) filtre les adhérents `@import.agcm.local` ; **Tout l’annuaire** correspond à `scope=all`.
 
+Voir aussi **`docs/NETTOYAGE_BASE_PROD_REGISTRE.md`** — scripts pour ne conserver que le registre PDF + bureau sur une base donnée (`DATABASE_URL`).
+
 ### Relations
 
 Le schéma Prisma définit 24 tables avec des relations complexes pour gérer :

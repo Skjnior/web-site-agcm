@@ -125,9 +125,78 @@ export default function AppSidebar({
     },
   ];
 
-  // Menu Super Admin - TOUTES les options disponibles avec CRUD complet
+  // Menu Super Admin - aligné sur AdminSidebar (fullNavigation + superAdminExtras)
+  // pour que la barre latérale reste cohérente quand on navigue entre /admin/* et /bureau/*.
   const superAdminMenu: SidebarItem[] = [
-    // ========== SECTION 1: GESTION SYSTÈME ==========
+    // ========== SECTION 1: ADMINISTRATION COURANTE ==========
+    {
+      label: 'Mon profil',
+      href: '/admin/profil',
+      icon: User,
+      section: 'Administration',
+    },
+    {
+      label: 'Registre cotisations',
+      href: '/admin/registre-cotisations',
+      icon: ClipboardList,
+      section: 'Administration',
+    },
+    {
+      label: 'Approbations',
+      href: '/admin/approbations',
+      icon: CheckCircle,
+      section: 'Administration',
+    },
+    {
+      label: 'Actualités',
+      href: '/admin/actualites',
+      icon: FileText,
+      section: 'Administration',
+    },
+    {
+      label: 'Événements',
+      href: '/admin/evenements',
+      icon: Calendar,
+      section: 'Administration',
+    },
+    {
+      label: 'Galerie site',
+      href: '/admin/galerie',
+      icon: Images,
+      section: 'Administration',
+    },
+    {
+      label: 'Partenaires',
+      href: '/admin/partenaires',
+      icon: Handshake,
+      section: 'Administration',
+    },
+    {
+      label: 'Membres',
+      href: '/admin/membres',
+      icon: Users,
+      section: 'Administration',
+    },
+    {
+      label: 'Cartes adhérent',
+      href: '/admin/carte-membres',
+      icon: BookOpen,
+      section: 'Administration',
+    },
+    {
+      label: 'Demandes',
+      href: '/admin/demandes',
+      icon: ClipboardList,
+      section: 'Administration',
+    },
+    {
+      label: 'Messages contact',
+      href: '/admin/messages-contact',
+      icon: Mail,
+      section: 'Administration',
+    },
+
+    // ========== SECTION 2: GESTION SYSTÈME (SUPER_ADMIN) ==========
     {
       label: 'Utilisateurs',
       href: '/admin/users',
@@ -158,13 +227,25 @@ export default function AppSidebar({
       icon: History,
       section: 'Système',
     },
+    {
+      label: 'Visites',
+      href: '/admin/logs/visits',
+      icon: Database,
+      section: 'Système',
+    },
+    {
+      label: 'Site vitrine',
+      href: '/admin/site-vitrine',
+      icon: Newspaper,
+      section: 'Système',
+    },
 
-    // ========== SECTION 2: GESTION ADMINISTRATIVE (NOUVEAU PANEL) ==========
+    // ========== SECTION 3: PANEL ==========
     {
       label: 'Panel d\'Administration',
       href: '/admin',
       icon: Shield,
-      section: 'Administration',
+      section: 'Panel',
     },
   ];
 

@@ -110,6 +110,18 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
   }
 
   // ============================================
+  // AUTORISATION VERCEL CRON
+  // ============================================
+  if (path === '/api/admin/facebook/sync') {
+    const authHeader = req.headers.get('authorization');
+    // On autorise la requête si elle contient le bon secret Cron
+    if (authHeader === `Bearer ${process.env.CRON_SECRET}`) {
+      const response = NextResponse.next();
+      return addSecurityHeaders(response);
+    }
+  }
+
+  // ============================================
   // PROTECTION : INTERDICTION /register et /inscription
   // ============================================
   if (path === '/register' || path === '/inscription') {
