@@ -71,8 +71,12 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     if (data.actions !== undefined) updateData.actions = data.actions === '' ? null : data.actions;
     if (data.statut !== undefined) updateData.statut = data.statut;
     if (data.visibiliteSite !== undefined) updateData.visibiliteSite = data.visibiliteSite;
-    if (data.responsablePosteId !== undefined) updateData.responsablePosteId = data.responsablePosteId;
-    if (data.mandatId !== undefined) updateData.mandatId = data.mandatId;
+    if (data.responsablePosteId) {
+      updateData.responsablePoste = { connect: { id: data.responsablePosteId } };
+    }
+    if (data.mandatId) {
+      updateData.mandat = { connect: { id: data.mandatId } };
+    }
 
     await prisma.$transaction(async (tx) => {
       if (data.medias !== undefined) {

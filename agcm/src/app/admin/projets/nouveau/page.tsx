@@ -27,7 +27,12 @@ export default function NouveauProjetPage() {
   const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type, checked } = e.target;
+    const target = e.target;
+    const name = target.name;
+    const type = target.type;
+    const value = target.value;
+    const checked = target.type === 'checkbox' ? (target as HTMLInputElement).checked : false;
+
     setForm((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,

@@ -56,7 +56,12 @@ export default function EditProjetPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     if (!projet) return;
-    const { name, value, type, checked } = e.target;
+    const target = e.target;
+    const name = target.name;
+    const type = target.type;
+    const value = target.value;
+    const checked = target.type === 'checkbox' ? (target as HTMLInputElement).checked : false;
+
     setProjet({
       ...projet,
       [name]: type === 'checkbox' ? checked : value,
