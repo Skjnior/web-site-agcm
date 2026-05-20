@@ -1,4 +1,4 @@
-Mot de passe unique (seed) : AGCM-Prod-2026-Bureau!
+Mot de passe unique (seed) : git
 
 Bureau exécutif (9)
   Président → president@seed.agcm.local (SUPER_ADMIN)
