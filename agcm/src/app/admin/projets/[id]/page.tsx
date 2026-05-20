@@ -1,6 +1,8 @@
 // src/app/admin/projets/[id]/page.tsx
 'use client';
 
+
+
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
