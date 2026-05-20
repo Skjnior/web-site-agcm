@@ -75,11 +75,12 @@ export default function NouveauProjetPage() {
     setLoading(true);
     setError(null);
 
-    const res = await fetch('/api/admin/projets', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    });
+        try {
+      const res = await fetch('/api/admin/projets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
       if (!res.ok) {
         const err = await res.json();
         console.error('Server error creating project:', err);
