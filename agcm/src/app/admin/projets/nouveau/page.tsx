@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Plus, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface MediaItem {
   url: string;
@@ -25,6 +26,9 @@ export default function NouveauProjetPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // New state for image upload preview
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const target = e.target;
@@ -44,6 +48,18 @@ export default function NouveauProjetPage() {
       ...prev,
       medias: [...prev.medias, { url: '', type: 'IMAGE' }],
     }));
+  };
+
+  // Handle image file selection and preview
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setImageFile(file);
+    if (file) {
+      const preview = URL.createObjectURL(file);
+      setImagePreview(preview);
+    } else {
+      setImagePreview(null);
+    }
   };
 
   const handleMediaChange = (index: number, field: keyof MediaItem, value: string) => {
@@ -178,6 +194,17 @@ export default function NouveauProjetPage() {
           <button type="button" onClick={handleMediaAdd} className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
             <Plus className="w-4 h-4" /> Ajouter un média
           </button>
+          {/* Image Upload */}
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Image du projet</label>
+            <input type="file" accept="image/*" onChange={handleImageChange} className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+            {imagePreview && (
+              <div className="mt-4 flex items-center gap-4">
+                <Image src={imagePreview} alt="Preview" width={200} height={120} className="object-cover rounded-lg" />
+                <a href={imagePreview} download className="text-blue-600 hover:underline">Télécharger l'image</a>
+              </div>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-4 pt-4">
           <button type="submit" disabled={loading} className="px-8 py-3 bg-blue-600 font-medium text-white rounded-xl hover:bg-blue-700 transition-all hover:scale-105 hover:shadow-md disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none flex items-center gap-2">
