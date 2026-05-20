@@ -77,47 +77,56 @@ export default function NouveauProjetPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <Link href="/admin/projets" className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-800 mb-4">
+    <div className="max-w-4xl mx-auto p-6 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <Link href="/admin/projets" className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 mb-4 transition-colors">
         <ArrowLeft className="h-4 w-4" /> Retour aux projets
       </Link>
-      <h1 className="text-2xl font-bold text-agcm-900 mb-4">Créer un nouveau projet</h1>
-      {error && <p className="text-red-600 mb-2">{error}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">Créer un nouveau projet</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-1">Ajouter un nouveau projet dans le système</p>
+      </div>
+      {error && (
+        <div className="rounded-xl border border-red-800/60 bg-red-950/40 px-4 py-3 text-sm text-red-100">
+          {error}
+        </div>
+      )}
+      <form onSubmit={handleSubmit} className="admin-glass rounded-3xl p-8 shadow-sm space-y-6">
+        <h2 className="border-b border-slate-200/50 pb-4 text-xl font-semibold text-slate-900 dark:border-slate-700 dark:text-slate-100">Informations générales</h2>
         <div>
-          <label className="block text-sm font-medium text-slate-700">Titre *</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Titre *</label>
           <input
             name="titre"
             value={form.titre}
             onChange={handleChange}
             required
-            className="mt-1 block w-full border rounded-md p-2"
+            className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700">Objectif *</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Objectif *</label>
           <textarea
             name="objectif"
             value={form.objectif}
             onChange={handleChange}
             required
-            className="mt-1 block w-full border rounded-md p-2"
+            className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700">Description *</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Description *</label>
           <textarea
             name="description"
             value={form.description}
             onChange={handleChange}
             required
-            className="mt-1 block w-full border rounded-md p-2"
+            rows={4}
+            className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100 resize-none"
           />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700">Statut</label>
-            <select name="statut" value={form.statut} onChange={handleChange} className="mt-1 block w-full border rounded-md p-2">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Statut</label>
+            <select name="statut" value={form.statut} onChange={handleChange} className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100">
               <option value="BROUILLON">Brouillon</option>
               <option value="EN_COURS">En cours</option>
               <option value="TERMINE">Terminé</option>
@@ -125,39 +134,56 @@ export default function NouveauProjetPage() {
               <option value="ANNULE">Annulé</option>
             </select>
           </div>
-          <div className="flex items-center mt-6">
-            <input type="checkbox" name="visibiliteSite" checked={form.visibiliteSite} onChange={handleChange} className="mr-2" />
-            <span className="text-sm text-slate-700">Visible sur le site public</span>
+          <div className="flex items-center mt-8">
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <div className="relative flex items-center justify-center mt-1">
+                <input
+                  type="checkbox"
+                  name="visibiliteSite"
+                  checked={form.visibiliteSite}
+                  onChange={handleChange}
+                  className="peer sr-only"
+                />
+                <div className="w-5 h-5 border-2 border-slate-300 rounded peer-checked:bg-blue-600 peer-checked:border-blue-600 transition-colors"></div>
+                <svg className="absolute w-3 h-3 text-white peer-checked:opacity-100 opacity-0 transition-opacity pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <span className="text-sm font-medium text-slate-900 dark:text-slate-200 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">Visible sur le site public</span>
+            </label>
           </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-700">Responsable (ID)</label>
-          <input name="responsablePosteId" value={form.responsablePosteId} onChange={handleChange} className="mt-1 block w-full border rounded-md p-2" />
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Responsable (ID)</label>
+            <input name="responsablePosteId" value={form.responsablePosteId} onChange={handleChange} className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Mandat (ID)</label>
+            <input name="mandatId" value={form.mandatId} onChange={handleChange} className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100" />
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-700">Mandat (ID)</label>
-          <input name="mandatId" value={form.mandatId} onChange={handleChange} className="mt-1 block w-full border rounded-md p-2" />
-        </div>
-        <div>
-          <h2 className="text-lg font-semibold text-slate-800 mb-2">Médias</h2>
-          {form.medias.map((m, idx) => (
-            <div key={idx} className="grid grid-cols-3 gap-2 mb-2">
-              <input placeholder="URL" value={m.url} onChange={(e) => handleMediaChange(idx, 'url', e.target.value)} className="col-span-2 border rounded-md p-2" />
-              <select value={m.type} onChange={(e) => handleMediaChange(idx, 'type', e.target.value as any)} className="border rounded-md p-2">
-                <option value="IMAGE">Image</option>
-                <option value="DOCUMENT">Document</option>
+        
+        <div className="pt-4 border-t border-slate-200/50 dark:border-slate-700">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">Médias</h2>
+          <div className="space-y-3 mb-4">
+            {form.medias.map((m, idx) => (
+              <div key={idx} className="grid grid-cols-3 gap-3">
+                <input placeholder="URL du média" value={m.url} onChange={(e) => handleMediaChange(idx, 'url', e.target.value)} className="col-span-2 w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100" />
+                <select value={m.type} onChange={(e) => handleMediaChange(idx, 'type', e.target.value as any)} className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100">
               </select>
-            </div>
-          ))}
-          <button type="button" onClick={handleMediaAdd} className="inline-flex items-center gap-1 text-blue-600">
-            + Ajouter un média
+              </div>
+            ))}
+          </div>
+          <button type="button" onClick={handleMediaAdd} className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
+            <Plus className="w-4 h-4" /> Ajouter un média
           </button>
         </div>
-        <div className="flex items-center gap-4">
-          <button type="submit" disabled={loading} className="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md">
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />} Créer
+        <div className="flex items-center gap-4 pt-4">
+          <button type="submit" disabled={loading} className="px-8 py-3 bg-blue-600 font-medium text-white rounded-xl hover:bg-blue-700 transition-all hover:scale-105 hover:shadow-md disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none flex items-center gap-2">
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />} Créer le projet
           </button>
-          <Link href="/admin/projets" className="text-slate-600 hover:underline">Annuler</Link>
+          <Link href="/admin/projets" className="rounded-xl border border-slate-200 bg-white px-8 py-3 font-medium text-slate-700 transition-all hover:bg-slate-50 hover:text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">Annuler</Link>
         </div>
       </form>
     </div>
