@@ -6,7 +6,7 @@ import { getAdminDashboardChartData } from '@/lib/admin/dashboard-stats';
 import AdminDashboardCharts from '@/components/admin/AdminDashboardCharts';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ClipboardList, Users, Calendar, AlertCircle, Mail, HandHeart, Building2 } from 'lucide-react';
+import { CheckCircle, ClipboardList, Users, Calendar, AlertCircle, Mail, HandHeart, Building2, FolderOpen } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Administration - AGCM',
@@ -37,6 +37,7 @@ export default async function AdminDashboardPage() {
     totalMembers,
     activeMembers,
     totalEvents,
+    totalProjets,
     dashboardCharts,
   ] = await Promise.all([
     prisma.demandeAdhesion.count({
@@ -56,6 +57,7 @@ export default async function AdminDashboardPage() {
       where: { statutMembre: 'ACTIF' },
     }),
     prisma.event.count(),
+    prisma.projet.count(),
     getAdminDashboardChartData(),
   ]);
 
@@ -181,7 +183,7 @@ export default async function AdminDashboardPage() {
       )}
 
       {/* Statistiques */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           href="/admin/demandes"
           title="Demandes"
@@ -213,6 +215,16 @@ export default async function AdminDashboardPage() {
           borderClass="border-purple-500/20"
           glowClass="bg-purple-500"
         />
+        <StatCard
+          href="/admin/projets"
+          title="Projets"
+          value={totalProjets}
+          icon={FolderOpen}
+          colorClass="text-amber-400"
+          bgClass="bg-amber-500/10"
+          borderClass="border-amber-500/20"
+          glowClass="bg-amber-500"
+        />
       </div>
 
       <AdminDashboardCharts data={dashboardCharts} />
@@ -228,16 +240,22 @@ export default async function AdminDashboardPage() {
               <span className="font-medium">Créer Actualité</span>
             </Button>
           </Link>
-          <Link href="/admin/demandes">
-            <Button className="group flex h-14 w-full items-center justify-center gap-3 rounded-2xl border border-slate-700/50 bg-slate-800/50 text-slate-300 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-indigo-500/50 hover:bg-indigo-500/20 hover:text-indigo-400">
-              <ClipboardList className="h-5 w-5 text-slate-500 transition-all group-hover:text-indigo-400 group-hover:drop-shadow-[0_0_8px_rgba(129,140,248,0.5)]" />
-              <span className="font-medium">Traiter demandes</span>
+          <Link href="/admin/projets">
+            <Button className="group flex h-14 w-full items-center justify-center gap-3 rounded-2xl border border-slate-700/50 bg-slate-800/50 text-slate-300 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-amber-500/50 hover:bg-amber-500/20 hover:text-amber-400">
+              <FolderOpen className="h-5 w-5 text-slate-500 transition-all group-hover:text-amber-400 group-hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
+              <span className="font-medium">Gérer projets</span>
             </Button>
           </Link>
           <Link href="/admin/membres">
             <Button className="group flex h-14 w-full items-center justify-center gap-3 rounded-2xl border border-slate-700/50 bg-slate-800/50 text-slate-300 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/50 hover:bg-emerald-500/20 hover:text-emerald-400">
               <Users className="h-5 w-5 text-slate-500 transition-all group-hover:text-emerald-400 group-hover:drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
               <span className="font-medium">Gérer membres</span>
+            </Button>
+          </Link>
+          <Link href="/admin/demandes">
+            <Button className="group flex h-14 w-full items-center justify-center gap-3 rounded-2xl border border-slate-700/50 bg-slate-800/50 text-slate-300 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-indigo-500/50 hover:bg-indigo-500/20 hover:text-indigo-400">
+              <ClipboardList className="h-5 w-5 text-slate-500 transition-all group-hover:text-indigo-400 group-hover:drop-shadow-[0_0_8px_rgba(129,140,248,0.5)]" />
+              <span className="font-medium">Traiter demandes</span>
             </Button>
           </Link>
         </div>

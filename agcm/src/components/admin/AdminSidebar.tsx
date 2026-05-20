@@ -55,6 +55,7 @@ export default function AdminSidebar({ role, allowedBureauModules }: SidebarProp
         { name: 'Registre cotisations', href: '/admin/registre-cotisations', icon: ClipboardList },
         { name: 'Approbations', href: '/admin/approbations', icon: CheckSquare },
         { name: 'Actualités', href: '/admin/actualites', icon: FileText },
+        { name: 'Projets', href: '/admin/projets', icon: FolderOpen },
         { name: 'Événements', href: '/admin/evenements', icon: Calendar },
         { name: 'Galerie site', href: '/admin/galerie', icon: Images },
         { name: 'Partenaires', href: '/admin/partenaires', icon: Handshake },

@@ -154,6 +154,12 @@ export default function AppSidebar({
       section: 'Administration',
     },
     {
+      label: 'Projets',
+      href: '/admin/projets',
+      icon: FolderOpen,
+      section: 'Administration',
+    },
+    {
       label: 'Événements',
       href: '/admin/evenements',
       icon: Calendar,
