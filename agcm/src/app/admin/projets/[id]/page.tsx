@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, Loader2, Save } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, Plus } from 'lucide-react';
 import Link from 'next/link';
 
 interface MediaItem {
