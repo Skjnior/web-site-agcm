@@ -56,6 +56,7 @@ export default function AdminSidebar({ role, allowedBureauModules }: SidebarProp
         { name: 'Approbations', href: '/admin/approbations', icon: CheckSquare },
         { name: 'Actualités', href: '/admin/actualites', icon: FileText },
         { name: 'Événements', href: '/admin/evenements', icon: Calendar },
+        { name: 'Projets', href: '/bureau/projets', icon: FolderOpen },
         { name: 'Galerie site', href: '/admin/galerie', icon: Images },
         { name: 'Partenaires', href: '/admin/partenaires', icon: Handshake },
         { name: 'Membres', href: '/admin/membres', icon: Users },

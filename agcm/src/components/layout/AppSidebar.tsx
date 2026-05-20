@@ -160,6 +160,12 @@ export default function AppSidebar({
       section: 'Administration',
     },
     {
+      label: 'Projets',
+      href: '/bureau/projets',
+      icon: FolderOpen,
+      section: 'Administration',
+    },
+    {
       label: 'Galerie site',
       href: '/admin/galerie',
       icon: Images,
