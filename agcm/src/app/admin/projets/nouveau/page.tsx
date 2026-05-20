@@ -74,15 +74,22 @@ export default function NouveauProjetPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    try {
-      const res = await fetch('/api/admin/projets', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
+
+    const res = await fetch('/api/admin/projets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.error || 'Erreur lors de la création');
+        console.error('Server error creating project:', err);
+        const message = err.error || err.message || 'Erreur lors de la création';
+        if (err.details) {
+          setError(message + ': ' + JSON.stringify(err.details));
+        } else {
+          setError(message);
+        }
+        return;
       }
       router.push('/admin/projets');
     } catch (e: any) {
