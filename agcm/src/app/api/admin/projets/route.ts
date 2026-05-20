@@ -112,15 +112,13 @@ export async function POST(request: NextRequest) {
         visibiliteSite: data.visibiliteSite,
         responsablePosteId: data.responsablePosteId,
         mandatId: data.mandatId,
-        ...(medias.length > 0 && {
-          medias: {
-            create: medias.map((m, i) => ({
-              url: m.url,
-              type: m.type,
-              ordre: m.ordre ?? i,
-            })),
-          },
-        }),
+        medias: {
+          create: medias.map((m, i) => ({
+            url: m.url,
+            type: m.type,
+            ordre: m.ordre ?? i,
+          })),
+        },
       },
       include: { medias: true },
     });
