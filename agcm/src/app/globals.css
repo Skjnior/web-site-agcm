@@ -217,11 +217,30 @@ section[id] {
 }
 
 .animate-partners-scroll {
-  animation: partners-scroll 40s linear infinite;
+  animation: partners-scroll 22s linear infinite;
+}
+
+@keyframes gallery-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-gallery-scroll {
+  animation: gallery-scroll 45s linear infinite;
+}
+
+.animate-gallery-scroll-slow {
+  animation: gallery-scroll 65s linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-partners-scroll {
+  .animate-partners-scroll,
+  .animate-gallery-scroll,
+  .animate-gallery-scroll-slow {
     animation: none;
     flex-wrap: wrap;
     width: 100% !important;

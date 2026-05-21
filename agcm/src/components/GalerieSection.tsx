@@ -121,7 +121,55 @@ function GalerieModal({ images, currentIndex, isOpen, onClose, onNext, onPrev }:
   );
 }
 
-export default function GalerieSection({ images: imagesProp, maxDisplay = 12 }: GalerieSectionProps) {
+type MarqueeRowProps = {
+  rowImages: GalerieImage[];
+  baseOffset: number;
+  onClickImage: (globalIndex: number) => void;
+  animationClass: string;
+};
+
+function MarqueeRow({ rowImages, baseOffset, onClickImage, animationClass }: MarqueeRowProps) {
+  if (rowImages.length === 0) return null;
+  // On duplique le tableau pour obtenir une boucle infinie sans saut visible.
+  const doubled = [...rowImages, ...rowImages];
+
+  return (
+    <div className="overflow-hidden">
+      <div
+        className={`flex gap-3 md:gap-4 w-max ${animationClass} hover:[animation-play-state:paused]`}
+      >
+        {doubled.map((image, idx) => {
+          // L'index réel dans le tableau initial des images (utilisé pour la lightbox)
+          const realIndex = baseOffset + (idx % rowImages.length);
+          return (
+            <button
+              type="button"
+              key={`${image.id}-${idx}`}
+              onClick={() => onClickImage(realIndex)}
+              className="group relative h-40 w-56 sm:h-48 sm:w-64 md:h-52 md:w-72 lg:h-56 lg:w-80 shrink-0 overflow-hidden rounded-xl shadow-md ring-1 ring-slate-200/60 transition-transform duration-300 hover:scale-[1.03] hover:shadow-2xl hover:z-10"
+              aria-label={`Agrandir : ${image.alt}`}
+            >
+              <Image
+                src={image.url}
+                alt={image.alt}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                sizes="320px"
+                unoptimized={image.url.startsWith('https://images.unsplash.com')}
+              />
+              <div className="absolute inset-0 bg-black/0 transition-all duration-300 group-hover:bg-black/40 flex items-center justify-center">
+                <ZoomIn className="h-8 w-8 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              </div>
+              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export default function GalerieSection({ images: imagesProp, maxDisplay = 24 }: GalerieSectionProps) {
   const [fetched, setFetched] = useState<GalerieImage[] | null>(null);
 
   useEffect(() => {
@@ -154,10 +202,9 @@ export default function GalerieSection({ images: imagesProp, maxDisplay = 12 }: 
     setSelectedIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  // Navigation clavier
   useEffect(() => {
     if (!isModalOpen) return;
-    
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') {
         e.preventDefault();
@@ -181,10 +228,19 @@ export default function GalerieSection({ images: imagesProp, maxDisplay = 12 }: 
     return null;
   }
 
+  // On répartit les images en deux lignes pour le marquee
+  const half = Math.ceil(images.length / 2);
+  const row1 = images.slice(0, half);
+  const row2 = images.slice(half);
+
+  // Cas limite : si on n'a qu'une poignée d'images (1 à 3), pas la peine de faire
+  // 2 lignes maigres — on retombe sur une seule ligne avec ce qu'on a.
+  const useSingleRow = images.length < 4;
+
   return (
     <>
-      <section id="galerie" className="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
-        <div className="max-w-6xl mx-auto">
+      <section id="galerie" className="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 overflow-hidden">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8">
             <span className="text-red-600 font-semibold text-sm uppercase tracking-wide">
               Galerie
@@ -193,41 +249,39 @@ export default function GalerieSection({ images: imagesProp, maxDisplay = 12 }: 
               Moments partagés
             </h2>
             <p className="text-slate-600 mt-2 max-w-2xl mx-auto">
-              Découvrez les moments forts de nos événements et activités
+              Découvrez les moments forts de nos événements et activités. Cliquez sur une image
+              pour la voir en grand.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-            {images.map((image, index) => (
-              <div
-                key={image.id}
-                className="group relative aspect-square rounded-lg overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:z-10"
-                onClick={() => handleImageClick(index)}
-              >
-                {/* Image */}
-                <Image
-                  src={image.url}
-                  alt={image.alt}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  unoptimized={image.url.startsWith('https://images.unsplash.com')}
+          <div className="-mx-4 space-y-3 sm:-mx-6 md:space-y-4">
+            {useSingleRow ? (
+              <MarqueeRow
+                rowImages={images}
+                baseOffset={0}
+                onClickImage={handleImageClick}
+                animationClass="animate-gallery-scroll"
+              />
+            ) : (
+              <>
+                <MarqueeRow
+                  rowImages={row1}
+                  baseOffset={0}
+                  onClickImage={handleImageClick}
+                  animationClass="animate-gallery-scroll"
                 />
-
-                {/* Overlay au survol */}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
-                  <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-
-                {/* Gradient en bas pour le texte (optionnel) */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </div>
-            ))}
+                <MarqueeRow
+                  rowImages={row2}
+                  baseOffset={half}
+                  onClickImage={handleImageClick}
+                  animationClass="animate-gallery-scroll-slow"
+                />
+              </>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Modal */}
       <GalerieModal
         images={images}
         currentIndex={selectedIndex}
