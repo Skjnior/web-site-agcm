@@ -1,17 +1,14 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   ArrowRight,
-  ChevronLeft,
-  ChevronRight,
   MapPin,
   Target,
   Briefcase,
 } from 'lucide-react';
 import Image from 'next/image';
 import ProjetModal from './ProjetModal';
-import { useBreakpoint } from '@/hooks/useMediaQuery';
 
 interface Projet {
   id: string;
@@ -32,36 +29,108 @@ const STATUT_CONFIG: Record<string, { label: string; color: string; dot: string 
   ANNULE: { label: 'Annulé', color: 'bg-red-100 text-red-600', dot: 'bg-red-500' },
 };
 
-// Palette gradient par index pour les fallback sans image
-const GRADIENTS = [
-  'from-red-500 to-red-700',
-  'from-emerald-500 to-emerald-700',
-  'from-blue-500 to-blue-700',
-  'from-amber-500 to-amber-700',
-  'from-purple-500 to-purple-700',
-  'from-teal-500 to-teal-700',
-];
+type ProjetCardProps = {
+  projet: Projet;
+  onSelect: (projet: Projet) => void;
+  size?: 'lg' | 'md';
+};
+
+function ProjetCard({ projet, onSelect, size = 'md' }: ProjetCardProps) {
+  const statut = STATUT_CONFIG[projet.statut] || STATUT_CONFIG.EN_COURS;
+  const imageHeight = size === 'lg' ? 'h-56' : 'h-48';
+  const titleSize = size === 'lg' ? 'text-xl' : 'text-base';
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => onSelect(projet)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect(projet);
+        }
+      }}
+      className="group cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-2xl"
+    >
+      <div className={`relative w-full bg-slate-200 ${imageHeight}`}>
+        <Image
+          src={
+            projet.image ||
+            'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80'
+          }
+          alt={projet.titre}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-110"
+          sizes="(max-width: 640px) 280px, 320px"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+
+        <div className="absolute top-3 left-3">
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${statut.color}`}
+          >
+            <span className={`h-1.5 w-1.5 rounded-full ${statut.dot}`} />
+            {statut.label}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-3 p-5">
+        <h3
+          className={`font-bold leading-tight text-agcm-900 ${titleSize} line-clamp-2 transition-colors duration-200 group-hover:text-red-600`}
+        >
+          {projet.titre}
+        </h3>
+
+        {projet.objectif && (
+          <div className="flex items-start gap-2 text-xs text-slate-600">
+            <Target className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-red-400" />
+            <span className="line-clamp-2">{projet.objectif}</span>
+          </div>
+        )}
+
+        {projet.responsablePoste && (
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            <Briefcase className="h-3.5 w-3.5 flex-shrink-0 text-slate-400" />
+            <span className="truncate">{projet.responsablePoste.nom}</span>
+          </div>
+        )}
+
+        <div className="border-t border-slate-100 pt-1">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600 transition-all duration-200 group-hover:gap-2.5">
+            En savoir plus <ArrowRight className="h-3.5 w-3.5" />
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function ProjetsGuineeSection() {
   const [projets, setProjets] = useState<Projet[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedProjet, setSelectedProjet] = useState<Projet | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const { cardsVisible } = useBreakpoint();
-  const CARDS_VISIBLE = Math.max(1, cardsVisible);
 
   useEffect(() => {
     const fetchProjets = async () => {
       try {
-        const response = await fetch('/api/public/projets?visible=true&limit=9');
+        const response = await fetch('/api/public/projets?visible=true&limit=12');
         if (response.ok) {
           const data = await response.json();
-          const mapped = (data.data || []).map((p: any) => ({
+          const mapped = (data.data || []).map((p: {
+            id: string;
+            titre: string;
+            slug: string;
+            description?: string | null;
+            objectif?: string | null;
+            statut?: string | null;
+            responsablePoste?: { nom: string } | null;
+            medias?: Array<{ url: string }>;
+          }) => ({
             id: p.id,
             titre: p.titre,
             slug: p.slug,
@@ -69,7 +138,7 @@ export default function ProjetsGuineeSection() {
             objectif: p.objectif || '',
             image: p.medias?.[0]?.url || null,
             statut: p.statut || 'EN_COURS',
-            responsablePoste: p.responsablePoste,
+            responsablePoste: p.responsablePoste ?? null,
           }));
           setProjets(mapped);
         }
@@ -82,57 +151,65 @@ export default function ProjetsGuineeSection() {
     fetchProjets();
   }, []);
 
-  const canGoNext = projets.length > CARDS_VISIBLE;
-  const maxIndex = Math.max(0, projets.length - CARDS_VISIBLE);
-
-  const goNext = useCallback(() => {
-    if (isAnimating || !canGoNext) return;
-    setIsAnimating(true);
-    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
-    setTimeout(() => setIsAnimating(false), 400);
-  }, [isAnimating, canGoNext, maxIndex]);
-
-  const goPrev = useCallback(() => {
-    if (isAnimating || !canGoNext) return;
-    setIsAnimating(true);
-    setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
-    setTimeout(() => setIsAnimating(false), 400);
-  }, [isAnimating, canGoNext, maxIndex]);
-
-  // Auto-scroll toutes les 3.5s
+  // Auto-scroll horizontal quand on a plusieurs projets (même mécanisme que EvenementsSection)
   useEffect(() => {
-    if (!isPaused && canGoNext) {
-      intervalRef.current = setInterval(goNext, 3500);
-    }
+    if (loading || projets.length <= 1 || isPaused) return;
+
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const scrollWidth = container.scrollWidth;
+    const clientWidth = container.clientWidth;
+    const maxScroll = scrollWidth - clientWidth;
+    if (maxScroll <= 0) return;
+
+    let scrollPosition = 0;
+    const scrollSpeed = 0.5; // px/frame
+    let animationFrame: number;
+
+    const scroll = () => {
+      if (isPaused) return;
+      scrollPosition += scrollSpeed;
+      if (scrollPosition >= maxScroll) scrollPosition = 0;
+      container.scrollTo({ left: scrollPosition, behavior: 'auto' });
+      animationFrame = requestAnimationFrame(scroll);
+    };
+    animationFrame = requestAnimationFrame(scroll);
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (animationFrame) cancelAnimationFrame(animationFrame);
     };
-  }, [isPaused, goNext, canGoNext]);
+  }, [loading, projets, isPaused]);
 
-  // Keyboard navigation
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') goPrev();
-      if (e.key === 'ArrowRight') goNext();
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [goNext, goPrev]);
+  const openProjet = (projet: Projet) => {
+    setSelectedProjet(projet);
+    setIsModalOpen(true);
+  };
 
   if (loading) {
     return (
-      <div className="flex gap-4 sm:gap-5 overflow-hidden">
-        {[...Array(Math.min(3, CARDS_VISIBLE))].map((_, i) => (
-          <div key={i} className={`flex-shrink-0 bg-slate-50 rounded-2xl overflow-hidden animate-pulse ${CARDS_VISIBLE === 1 ? 'w-full' : CARDS_VISIBLE === 2 ? 'w-[calc(50%-10px)]' : 'w-[calc(33.333%-14px)]'}`}>
+      <div className="flex justify-center gap-4 sm:gap-5 overflow-hidden">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="hidden w-72 animate-pulse overflow-hidden rounded-2xl bg-slate-50 sm:block"
+          >
             <div className="h-48 bg-slate-200" />
-            <div className="p-5 space-y-3">
-              <div className="h-4 bg-slate-200 rounded w-1/3" />
-              <div className="h-5 bg-slate-200 rounded w-3/4" />
-              <div className="h-3 bg-slate-200 rounded w-full" />
-              <div className="h-3 bg-slate-200 rounded w-2/3" />
+            <div className="space-y-3 p-5">
+              <div className="h-4 w-1/3 rounded bg-slate-200" />
+              <div className="h-5 w-3/4 rounded bg-slate-200" />
+              <div className="h-3 w-full rounded bg-slate-200" />
+              <div className="h-3 w-2/3 rounded bg-slate-200" />
             </div>
           </div>
         ))}
+        <div className="block w-full animate-pulse overflow-hidden rounded-2xl bg-slate-50 sm:hidden">
+          <div className="h-48 bg-slate-200" />
+          <div className="space-y-3 p-5">
+            <div className="h-4 w-1/3 rounded bg-slate-200" />
+            <div className="h-5 w-3/4 rounded bg-slate-200" />
+            <div className="h-3 w-full rounded bg-slate-200" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -140,139 +217,59 @@ export default function ProjetsGuineeSection() {
   if (projets.length === 0) {
     return (
       <div className="text-center py-14">
-        <MapPin className="w-14 h-14 text-slate-300 mx-auto mb-4" />
-        <p className="text-slate-500 text-lg">Aucun projet disponible pour le moment.</p>
+        <MapPin className="mx-auto mb-4 h-14 w-14 text-slate-300" />
+        <p className="text-lg text-slate-500">Aucun projet disponible pour le moment.</p>
       </div>
     );
   }
 
   return (
-    <div
-      className="relative"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-    >
-      {/* Viewport masqué avec overflow-hidden */}
-      <div className="overflow-hidden rounded-2xl">
-        {/* Track qui se déplace */}
+    <>
+      {projets.length === 1 ? (
+        // Une seule carte : centrée, format vertical large
+        <div className="flex justify-center">
+          <div className="w-full max-w-md">
+            <ProjetCard projet={projets[0]} onSelect={openProjet} size="lg" />
+          </div>
+        </div>
+      ) : (
+        // Plusieurs : scroll horizontal avec auto-scroll continu
         <div
-          ref={trackRef}
-          className="flex gap-5"
-          style={{
-            transform: `translateX(calc(-${currentIndex} * (100% / ${CARDS_VISIBLE} + ${(4 * (CARDS_VISIBLE - 1)) / CARDS_VISIBLE}px)))`,
-            transition: isAnimating ? 'transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)' : 'none',
-            width: `calc(${projets.length} * (100% / ${CARDS_VISIBLE}) + ${(projets.length - 1) * 20}px / ${CARDS_VISIBLE})`,
-          }}
+          className="relative overflow-x-hidden"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
         >
-          {projets.map((projet, i) => {
-            const statut = STATUT_CONFIG[projet.statut] || STATUT_CONFIG.EN_COURS;
-            const gradient = GRADIENTS[i % GRADIENTS.length];
-
-            return (
-              <div
-                key={projet.id}
-                className="group flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
-                style={{ width: `calc(100% / ${CARDS_VISIBLE} - ${(20 * (CARDS_VISIBLE - 1)) / CARDS_VISIBLE}px)` }}
-                onClick={() => {
-                  setSelectedProjet(projet);
-                  setIsModalOpen(true);
-                }}
-              >
-                {/* Image */}
-                <div className="relative h-44 overflow-hidden">
-                  <Image
-                  src={projet.image || 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80'}
-                  alt={projet.titre}
-                  fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-
-                  {/* Badge statut */}
-                  <div className="absolute top-3 left-3">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full ${statut.color}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${statut.dot}`} />
-                      {statut.label}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Contenu */}
-                <div className="p-5 flex flex-col gap-3">
-                  <h3 className="font-bold text-agcm-900 text-base leading-tight line-clamp-2 group-hover:text-red-600 transition-colors duration-200">
-                    {projet.titre}
-                  </h3>
-
-                  {projet.objectif && (
-                    <div className="flex items-start gap-2 text-xs text-slate-600">
-                      <Target className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-red-400" />
-                      <span className="line-clamp-2">{projet.objectif}</span>
-                    </div>
-                  )}
-
-                  {projet.responsablePoste && (
-                    <div className="flex items-center gap-2 text-xs text-slate-500">
-                      <Briefcase className="w-3.5 h-3.5 flex-shrink-0 text-slate-400" />
-                      <span className="truncate">{projet.responsablePoste.nom}</span>
-                    </div>
-                  )}
-
-                  <div className="pt-1 border-t border-slate-100">
-                    <span className="inline-flex items-center gap-1.5 text-red-600 font-semibold text-xs group-hover:gap-2.5 transition-all duration-200">
-                      En savoir plus <ArrowRight className="w-3.5 h-3.5" />
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Navigation arrows (visibles seulement si > 3 projets) */}
-      {canGoNext && (
-        <>
-          <button
-            onClick={goPrev}
-            className="absolute left-2 sm:left-0 top-1/2 -translate-y-1/2 sm:-translate-x-4 z-10
-              w-9 h-9 sm:w-10 sm:h-10 bg-white shadow-lg rounded-full flex items-center justify-center
-              text-agcm-900 hover:bg-red-600 hover:text-white transition-colors duration-200
-              border border-slate-200"
-            aria-label="Précédent"
+          <div
+            ref={scrollContainerRef}
+            className="overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide touch-pan-x"
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+            }}
           >
-            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
-          <button
-            onClick={goNext}
-            className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 sm:translate-x-4 z-10
-              w-9 h-9 sm:w-10 sm:h-10 bg-white shadow-lg rounded-full flex items-center justify-center
-              text-agcm-900 hover:bg-red-600 hover:text-white transition-colors duration-200
-              border border-slate-200"
-            aria-label="Suivant"
-          >
-            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
-        </>
-      )}
+            <div
+              className="flex gap-4 sm:gap-6 min-w-max"
+              style={{ width: 'max-content' }}
+            >
+              {projets.map((projet) => (
+                <div
+                  key={projet.id}
+                  className="flex-shrink-0 w-[280px] sm:w-72 md:w-80"
+                >
+                  <ProjetCard projet={projet} onSelect={openProjet} />
+                </div>
+              ))}
+            </div>
+          </div>
 
-      {/* Indicateurs de position (dots) */}
-      {canGoNext && (
-        <div className="flex justify-center gap-1.5 mt-5">
-          {Array.from({ length: maxIndex + 1 }).map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentIndex(i)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${i === currentIndex
-                  ? 'bg-red-600 w-5'
-                  : 'bg-slate-300 hover:bg-slate-400'
-                }`}
-              aria-label={`Page ${i + 1}`}
-            />
-          ))}
+          <style jsx>{`
+            .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+            }
+          `}</style>
         </div>
       )}
 
-      {/* Modal */}
       <ProjetModal
         projet={selectedProjet}
         isOpen={isModalOpen}
@@ -281,6 +278,6 @@ export default function ProjetsGuineeSection() {
           setSelectedProjet(null);
         }}
       />
-    </div>
+    </>
   );
 }

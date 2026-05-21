@@ -217,7 +217,7 @@ section[id] {
 }
 
 .animate-partners-scroll {
-  animation: partners-scroll 22s linear infinite;
+  animation: partners-scroll 60s linear infinite;
 }
 
 @keyframes gallery-scroll {
