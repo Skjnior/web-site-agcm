@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 /**
  * Incrémenter après tout ajout/suppression de modèle ou changement notable du schéma Prisma.
@@ -63,4 +63,39 @@ export const prisma = needsNewClient ? buildClient() : globalForPrisma.prisma!;
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;
   globalForPrisma.prismaSchemaRev = PRISMA_SCHEMA_REV;
+}
+
+/**
+ * Exécute une opération Prisma avec un retry léger sur les erreurs transitoires
+ * de pool (P2037 « too many connections », P1008 timeout, P1017 connexion fermée).
+ * Utiliser cette fonction sur les requêtes critiques effectuées au SSR
+ * (Server Components, layouts) pour éviter qu'un pic de saturation ne fasse
+ * tomber toute la page.
+ *
+ * NB : ne pas l'utiliser en boucle massive — c'est juste un filet de sécurité
+ * pour les ~5 requêtes que font les layouts/dashboards.
+ */
+export async function prismaRetry<T>(
+  fn: () => Promise<T>,
+  opts: { retries?: number; delayMs?: number } = {},
+): Promise<T> {
+  const retries = opts.retries ?? 3;
+  const delayMs = opts.delayMs ?? 250;
+  let lastErr: unknown;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastErr = e;
+      const code =
+        e instanceof Prisma.PrismaClientKnownRequestError ? e.code : undefined;
+      const initErr = e instanceof Prisma.PrismaClientInitializationError;
+      const isTransient =
+        code === 'P2037' || code === 'P1008' || code === 'P1017' || initErr;
+      if (!isTransient || attempt === retries) throw e;
+      const wait = delayMs * Math.pow(2, attempt); // 250, 500, 1000ms
+      await new Promise((r) => setTimeout(r, wait));
+    }
+  }
+  throw lastErr;
 }
