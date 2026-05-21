@@ -37,51 +37,15 @@ export async function POST(request: NextRequest) {
     const data = projetCreateSchema.parse(body);
     const medias = data.medias ?? [];
 
-    // Garde-fou : vérifier que le poste et le mandat existent toujours en base.
-    // Cela évite un P2003 (FK violée) opaque côté client.
-    const [posteOk, mandatOk] = await Promise.all([
-      prisma.poste.findUnique({
-        where: { id: ctx.primaryAffectation.posteId },
-        select: { id: true, nom: true, estActif: true },
-      }),
-      prisma.mandat.findUnique({
-        where: { id: ctx.mandatId },
-        select: { id: true, titre: true, statut: true },
-      }),
-    ]);
-
-    if (!posteOk) {
-      console.error(
-        `[POST /api/bureau/projets] Poste introuvable: id=${ctx.primaryAffectation.posteId} pour user=${session!.user.id}`,
-      );
-      return NextResponse.json(
-        {
-          error:
-            'Votre poste actuel n\'existe plus en base. Demandez à un super-admin de réaffecter votre poste sur le mandat actif.',
-        },
-        { status: 409 },
-      );
-    }
-    if (!mandatOk) {
-      console.error(
-        `[POST /api/bureau/projets] Mandat introuvable: id=${ctx.mandatId} pour user=${session!.user.id}`,
-      );
-      return NextResponse.json(
-        {
-          error:
-            'Le mandat actif n\'existe plus en base. Demandez à un super-admin de recréer un mandat ACTIF.',
-        },
-        { status: 409 },
-      );
-    }
-
-    // Générer le slug avec retry simple sur collision (P2002)
+    // On ne pré-vérifie plus l'existence du poste/mandat en parallèle :
+    // chaque requête supplémentaire consomme une connexion sur le pool
+    // Prisma Postgres (très petit en tier gratuit). La contrainte FK du
+    // create lèvera P2003 si poste/mandat manquent — géré dans le catch.
+    //
+    // De même, on ne pré-check pas l'unicité du slug : on tente le create
+    // direct, et si P2002 on retry avec un suffixe.
     const baseSlug = slugify(data.titre) || 'projet';
     let finalSlug = baseSlug;
-    const existing = await prisma.projet.findUnique({ where: { slug: finalSlug } });
-    if (existing) {
-      finalSlug = `${baseSlug}-${Date.now()}`;
-    }
 
     let projet;
     try {
@@ -172,6 +136,17 @@ export async function POST(request: NextRequest) {
         error.message,
         error.meta,
       );
+
+      if (error.code === 'P2037') {
+        return NextResponse.json(
+          {
+            error:
+              'Le serveur de base de données est saturé (trop de connexions ouvertes). Réessayez dans quelques secondes.',
+          },
+          { status: 503 },
+        );
+      }
+
       return NextResponse.json(
         {
           error: `Erreur base de données (${error.code}) : ${

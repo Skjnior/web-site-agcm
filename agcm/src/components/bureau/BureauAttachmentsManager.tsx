@@ -99,63 +99,81 @@ export function BureauAttachmentsManager(props: Props) {
     return { url, name };
   };
 
-  const appendItems = async (file: File, asDocument: boolean) => {
-    if (items.length >= max) {
-      alert(`Maximum ${max} éléments`);
+  const appendOne = async (file: File, asDocument: boolean) => {
+    let url: string;
+    let suggestedLabel: string | undefined;
+
+    if (asDocument) {
+      const r = await uploadDocument(file);
+      url = r.url;
+      suggestedLabel = r.name;
+    } else {
+      if (!file.type.startsWith('image/')) {
+        throw new Error(`« ${file.name} » n’est pas une image.`);
+      }
+      url = await uploadImage(file);
+    }
+
+    if (variant === 'event') {
+      const next = [...props.items];
+      const principale =
+        next.length === 0 && !asDocument && !looksLikePdf(url) ? true : false;
+      next.push({ url, isPrincipale: principale, ordre: next.length });
+      props.onChange(next);
       return;
     }
-    setBusy(asDocument ? 'document' : 'image');
-    try {
-      let url: string;
-      let suggestedLabel: string | undefined;
 
-      if (asDocument) {
-        const r = await uploadDocument(file);
-        url = r.url;
-        suggestedLabel = r.name;
-      } else {
-        if (!file.type.startsWith('image/')) {
-          alert('Ce fichier n’est pas une image.');
-          return;
-        }
-        url = await uploadImage(file);
-      }
-
-      if (variant === 'event') {
-        const next = [...props.items];
-        const principale =
-          next.length === 0 && !asDocument && !looksLikePdf(url)
-            ? true
-            : false;
-        next.push({
-          url,
-          isPrincipale: principale,
-          ordre: next.length,
-        });
-        props.onChange(next);
-        return;
-      }
-
-      if (variant === 'projet') {
-        const next = [...props.items];
-        next.push({
-          url,
-          type: asDocument ? 'DOCUMENT' : 'IMAGE',
-          ordre: next.length,
-        });
-        props.onChange(next);
-        return;
-      }
-
+    if (variant === 'projet') {
       const next = [...props.items];
       next.push({
         url,
-        kind: asDocument ? 'DOCUMENT' : 'IMAGE',
-        label: suggestedLabel,
+        type: asDocument ? 'DOCUMENT' : 'IMAGE',
+        ordre: next.length,
       });
       props.onChange(next);
-    } catch (e) {
-      alert(e instanceof Error ? e.message : 'Erreur upload');
+      return;
+    }
+
+    const next = [...props.items];
+    next.push({
+      url,
+      kind: asDocument ? 'DOCUMENT' : 'IMAGE',
+      label: suggestedLabel,
+    });
+    props.onChange(next);
+  };
+
+  const appendItems = async (files: FileList | File[], asDocument: boolean) => {
+    const list = Array.from(files);
+    if (list.length === 0) return;
+
+    const slotsLeft = max - items.length;
+    if (slotsLeft <= 0) {
+      alert(`Maximum ${max} éléments`);
+      return;
+    }
+    const toUpload = list.slice(0, slotsLeft);
+    if (toUpload.length < list.length) {
+      alert(
+        `Limite de ${max} éléments : seuls ${toUpload.length} fichier(s) sur ${list.length} seront ajoutés.`,
+      );
+    }
+
+    setBusy(asDocument ? 'document' : 'image');
+    const errors: string[] = [];
+    try {
+      for (const f of toUpload) {
+        try {
+          await appendOne(f, asDocument);
+        } catch (e) {
+          errors.push(
+            `${f.name} : ${e instanceof Error ? e.message : 'erreur upload'}`,
+          );
+        }
+      }
+      if (errors.length > 0) {
+        alert(`Certains fichiers n’ont pas pu être ajoutés :\n• ${errors.join('\n• ')}`);
+      }
     } finally {
       setBusy(null);
       if (imgRef.current) imgRef.current.value = '';
@@ -198,7 +216,10 @@ export function BureauAttachmentsManager(props: Props) {
 
   const addAttachmentActions: TableRowAction[] = [
     {
-      label: busy === 'image' ? 'Ajouter une image…' : 'Ajouter une image',
+      label:
+        busy === 'image'
+          ? 'Ajout des images…'
+          : 'Ajouter des images (plusieurs possibles)',
       icon:
         busy === 'image' ? (
           <Loader2 className="h-4 w-4 shrink-0 animate-spin" />
@@ -210,7 +231,10 @@ export function BureauAttachmentsManager(props: Props) {
       variant: 'add',
     },
     {
-      label: busy === 'document' ? 'Ajouter un document…' : 'Ajouter un document (PDF…)',
+      label:
+        busy === 'document'
+          ? 'Ajout des documents…'
+          : 'Ajouter des documents PDF (plusieurs possibles)',
       icon:
         busy === 'document' ? (
           <Loader2 className="h-4 w-4 shrink-0 animate-spin" />
@@ -250,19 +274,22 @@ export function BureauAttachmentsManager(props: Props) {
         ref={imgRef}
         type="file"
         accept="image/*"
+        multiple
         className="hidden"
         onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (f) void appendItems(f, false);
+          const files = e.target.files;
+          if (files && files.length > 0) void appendItems(files, false);
         }}
       />
       <input
         ref={docRef}
         type="file"
+        accept=".pdf,application/pdf"
+        multiple
         className="hidden"
         onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (f) void appendItems(f, true);
+          const files = e.target.files;
+          if (files && files.length > 0) void appendItems(files, true);
         }}
       />
 
