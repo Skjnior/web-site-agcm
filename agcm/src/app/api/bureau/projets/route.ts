@@ -2,6 +2,7 @@
 // CRUD des projets (bureau)
 
 import { NextRequest, NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
 import { requireBureauModule } from '@/lib/require-auth';
 import { prisma } from '@/lib/prisma';
 import { projetCreateSchema } from '@/lib/validators/projet';
@@ -36,36 +37,111 @@ export async function POST(request: NextRequest) {
     const data = projetCreateSchema.parse(body);
     const medias = data.medias ?? [];
 
-    // Générer le slug
-    const slug = slugify(data.titre);
-    
-    // Vérifier l'unicité du slug
-    const existing = await prisma.projet.findUnique({ where: { slug } });
-    const finalSlug = existing ? `${slug}-${Date.now()}` : slug;
+    // Garde-fou : vérifier que le poste et le mandat existent toujours en base.
+    // Cela évite un P2003 (FK violée) opaque côté client.
+    const [posteOk, mandatOk] = await Promise.all([
+      prisma.poste.findUnique({
+        where: { id: ctx.primaryAffectation.posteId },
+        select: { id: true, nom: true, estActif: true },
+      }),
+      prisma.mandat.findUnique({
+        where: { id: ctx.mandatId },
+        select: { id: true, titre: true, statut: true },
+      }),
+    ]);
 
-    const projet = await prisma.projet.create({
-      data: {
-        titre: data.titre,
-        slug: finalSlug,
-        objectif: data.objectif,
-        description: data.description,
-        actions: data.actions,
-        statut: data.statut,
-        visibiliteSite: data.visibiliteSite,
-        responsablePosteId: ctx.primaryAffectation.posteId,
-        mandatId: ctx.mandatId,
-        ...(medias.length > 0 && {
-          medias: {
-            create: medias.map((m, i) => ({
-              url: m.url,
-              type: m.type,
-              ordre: m.ordre ?? i,
-            })),
+    if (!posteOk) {
+      console.error(
+        `[POST /api/bureau/projets] Poste introuvable: id=${ctx.primaryAffectation.posteId} pour user=${session!.user.id}`,
+      );
+      return NextResponse.json(
+        {
+          error:
+            'Votre poste actuel n\'existe plus en base. Demandez à un super-admin de réaffecter votre poste sur le mandat actif.',
+        },
+        { status: 409 },
+      );
+    }
+    if (!mandatOk) {
+      console.error(
+        `[POST /api/bureau/projets] Mandat introuvable: id=${ctx.mandatId} pour user=${session!.user.id}`,
+      );
+      return NextResponse.json(
+        {
+          error:
+            'Le mandat actif n\'existe plus en base. Demandez à un super-admin de recréer un mandat ACTIF.',
+        },
+        { status: 409 },
+      );
+    }
+
+    // Générer le slug avec retry simple sur collision (P2002)
+    const baseSlug = slugify(data.titre) || 'projet';
+    let finalSlug = baseSlug;
+    const existing = await prisma.projet.findUnique({ where: { slug: finalSlug } });
+    if (existing) {
+      finalSlug = `${baseSlug}-${Date.now()}`;
+    }
+
+    let projet;
+    try {
+      projet = await prisma.projet.create({
+        data: {
+          titre: data.titre,
+          slug: finalSlug,
+          objectif: data.objectif,
+          description: data.description,
+          actions: data.actions,
+          statut: data.statut,
+          visibiliteSite: data.visibiliteSite,
+          responsablePosteId: ctx.primaryAffectation.posteId,
+          mandatId: ctx.mandatId,
+          ...(medias.length > 0 && {
+            medias: {
+              create: medias.map((m, i) => ({
+                url: m.url,
+                type: m.type,
+                ordre: m.ordre ?? i,
+              })),
+            },
+          }),
+        },
+        include: { medias: true },
+      });
+    } catch (createErr) {
+      // Retry une fois si conflit slug (race-condition entre findUnique et create)
+      if (
+        createErr instanceof Prisma.PrismaClientKnownRequestError &&
+        createErr.code === 'P2002'
+      ) {
+        finalSlug = `${baseSlug}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+        projet = await prisma.projet.create({
+          data: {
+            titre: data.titre,
+            slug: finalSlug,
+            objectif: data.objectif,
+            description: data.description,
+            actions: data.actions,
+            statut: data.statut,
+            visibiliteSite: data.visibiliteSite,
+            responsablePosteId: ctx.primaryAffectation.posteId,
+            mandatId: ctx.mandatId,
+            ...(medias.length > 0 && {
+              medias: {
+                create: medias.map((m, i) => ({
+                  url: m.url,
+                  type: m.type,
+                  ordre: m.ordre ?? i,
+                })),
+              },
+            }),
           },
-        }),
-      },
-      include: { medias: true },
-    });
+          include: { medias: true },
+        });
+      } else {
+        throw createErr;
+      }
+    }
 
     await logAction({
       userId: session!.user.id,
@@ -75,22 +151,50 @@ export async function POST(request: NextRequest) {
       afterData: projet,
     });
 
-    return NextResponse.json(
-      { success: true, projet },
-      { status: 201 }
-    );
+    return NextResponse.json({ success: true, projet }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
+      const detail = error.issues
+        .map((i) => `${i.path.join('.') || '(racine)'}: ${i.message}`)
+        .join(' ; ');
       return NextResponse.json(
-        { error: 'Données invalides', details: error.issues },
-        { status: 400 }
+        {
+          error: `Données invalides — ${detail}`,
+          details: error.issues,
+        },
+        { status: 400 },
       );
     }
 
-    console.error('Erreur lors de la création du projet:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.error(
+        `[POST /api/bureau/projets] Prisma ${error.code} :`,
+        error.message,
+        error.meta,
+      );
+      return NextResponse.json(
+        {
+          error: `Erreur base de données (${error.code}) : ${
+            error.code === 'P2002'
+              ? 'doublon détecté sur ' + JSON.stringify(error.meta?.target ?? '?')
+              : error.code === 'P2003'
+                ? 'contrainte FK violée sur ' + JSON.stringify(error.meta?.constraint ?? '?')
+                : error.message
+          }`,
+        },
+        { status: 500 },
+      );
+    }
+
+    console.error('[POST /api/bureau/projets] Erreur inconnue :', error);
     return NextResponse.json(
-      { error: 'Erreur serveur' },
-      { status: 500 }
+      {
+        error:
+          error instanceof Error
+            ? `Erreur serveur : ${error.message}`
+            : 'Erreur serveur inconnue',
+      },
+      { status: 500 },
     );
   }
 }

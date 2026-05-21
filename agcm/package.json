@@ -16,6 +16,8 @@
     "db:trim-demo-members": "tsx prisma/trim-demo-members.ts",
     "db:trim-to-registre-bureau": "tsx prisma/trim-to-registre-pdf-and-bureau.ts",
     "db:trim-all-public": "tsx prisma/trim-all-public-content.ts",
+    "db:diag-president": "tsx prisma/diag-president.ts",
+    "db:cleanup-mandats-postes": "tsx prisma/cleanup-mandats-postes.ts",
     "db:seed-partners": "tsx prisma/seed-partners.ts",
     "db:trim": "tsx prisma/trim-public-content.ts",
     "db:trim:dry": "DRY_RUN=1 tsx prisma/trim-public-content.ts",
