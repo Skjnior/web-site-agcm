@@ -99,48 +99,21 @@ export function BureauAttachmentsManager(props: Props) {
     return { url, name };
   };
 
-  const appendOne = async (file: File, asDocument: boolean) => {
-    let url: string;
-    let suggestedLabel: string | undefined;
+  type UploadOutcome = { url: string; suggestedLabel?: string };
 
+  const uploadOne = async (
+    file: File,
+    asDocument: boolean,
+  ): Promise<UploadOutcome> => {
     if (asDocument) {
       const r = await uploadDocument(file);
-      url = r.url;
-      suggestedLabel = r.name;
-    } else {
-      if (!file.type.startsWith('image/')) {
-        throw new Error(`« ${file.name} » n’est pas une image.`);
-      }
-      url = await uploadImage(file);
+      return { url: r.url, suggestedLabel: r.name };
     }
-
-    if (variant === 'event') {
-      const next = [...props.items];
-      const principale =
-        next.length === 0 && !asDocument && !looksLikePdf(url) ? true : false;
-      next.push({ url, isPrincipale: principale, ordre: next.length });
-      props.onChange(next);
-      return;
+    if (!file.type.startsWith('image/')) {
+      throw new Error(`« ${file.name} » n’est pas une image.`);
     }
-
-    if (variant === 'projet') {
-      const next = [...props.items];
-      next.push({
-        url,
-        type: asDocument ? 'DOCUMENT' : 'IMAGE',
-        ordre: next.length,
-      });
-      props.onChange(next);
-      return;
-    }
-
-    const next = [...props.items];
-    next.push({
-      url,
-      kind: asDocument ? 'DOCUMENT' : 'IMAGE',
-      label: suggestedLabel,
-    });
-    props.onChange(next);
+    const url = await uploadImage(file);
+    return { url };
   };
 
   const appendItems = async (files: FileList | File[], asDocument: boolean) => {
@@ -161,16 +134,54 @@ export function BureauAttachmentsManager(props: Props) {
 
     setBusy(asDocument ? 'document' : 'image');
     const errors: string[] = [];
+    const outcomes: UploadOutcome[] = [];
     try {
+      // On accumule les uploads dans un tableau local (les états React ne sont pas
+      // rafraîchis dans la closure entre deux itérations, on ne peut donc pas
+      // appeler onChange à chaque fichier sans écraser les précédents).
       for (const f of toUpload) {
         try {
-          await appendOne(f, asDocument);
+          const o = await uploadOne(f, asDocument);
+          outcomes.push(o);
         } catch (e) {
           errors.push(
             `${f.name} : ${e instanceof Error ? e.message : 'erreur upload'}`,
           );
         }
       }
+
+      if (outcomes.length > 0) {
+        if (variant === 'event') {
+          const next = [...props.items];
+          for (const o of outcomes) {
+            const principale =
+              next.length === 0 && !asDocument && !looksLikePdf(o.url) ? true : false;
+            next.push({ url: o.url, isPrincipale: principale, ordre: next.length });
+          }
+          props.onChange(next);
+        } else if (variant === 'projet') {
+          const next = [...props.items];
+          for (const o of outcomes) {
+            next.push({
+              url: o.url,
+              type: asDocument ? 'DOCUMENT' : 'IMAGE',
+              ordre: next.length,
+            });
+          }
+          props.onChange(next);
+        } else {
+          const next = [...props.items];
+          for (const o of outcomes) {
+            next.push({
+              url: o.url,
+              kind: asDocument ? 'DOCUMENT' : 'IMAGE',
+              label: o.suggestedLabel,
+            });
+          }
+          props.onChange(next);
+        }
+      }
+
       if (errors.length > 0) {
         alert(`Certains fichiers n’ont pas pu être ajoutés :\n• ${errors.join('\n• ')}`);
       }
