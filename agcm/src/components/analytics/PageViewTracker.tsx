@@ -4,6 +4,36 @@ import { useEffect, useRef } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
+const SESSION_TRACKED_KEY = 'agcm:page-views-tracked';
+
+/** Pages qu'on ne tracke pas (admin/bureau/dashboard internes : peu d'intérêt analytique
+ * et risquent de saturer le tracker en navigation). */
+function shouldSkip(path: string): boolean {
+  return (
+    path.startsWith('/api/') ||
+    path.startsWith('/_next/') ||
+    path.startsWith('/admin') ||
+    path.startsWith('/bureau') ||
+    path.startsWith('/dashboard') ||
+    path.startsWith('/app/')
+  );
+}
+
+/** On dédup par session-storage : chaque path n'est tracké qu'une fois par
+ * onglet/onglet. Évite des milliers d'appels lors d'une navigation rapide. */
+function alreadyTrackedThisSession(path: string): boolean {
+  try {
+    const raw = sessionStorage.getItem(SESSION_TRACKED_KEY);
+    const set = new Set<string>(raw ? (JSON.parse(raw) as string[]) : []);
+    if (set.has(path)) return true;
+    set.add(path);
+    sessionStorage.setItem(SESSION_TRACKED_KEY, JSON.stringify([...set].slice(-50)));
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 export default function PageViewTracker() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -11,40 +41,55 @@ export default function PageViewTracker() {
   const lastPath = useRef<string>('');
 
   useEffect(() => {
-    // Éviter de tracker les pages de connexion/administration pour ne pas polluer (optionnel)
-    if (pathname.startsWith('/api/') || pathname.startsWith('/_next/')) return;
+    if (shouldSkip(pathname)) return;
 
-    const fullPath = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '');
-    
-    // Éviter le double tracking sur le même chemin (Next.js peut trigger l'effect plusieurs fois)
+    const fullPath =
+      pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '');
+
     if (lastPath.current === fullPath) return;
     lastPath.current = fullPath;
 
-    const track = async () => {
+    if (alreadyTrackedThisSession(fullPath)) return;
+
+    const payload = JSON.stringify({
+      path: fullPath,
+      method: 'GET',
+      userAgent: navigator.userAgent,
+      referer: document.referrer || undefined,
+      userId: session?.user?.id || null,
+    });
+
+    // Stratégie : sendBeacon est non bloquant et survit à la navigation. Mais
+    // il ne permet pas d'ajouter des headers personnalisés (notre x-internal-secret).
+    // On part donc sur fetch() avec keepalive=true en arrière-plan, en silencieux.
+    const send = () => {
       try {
-        await fetch('/api/internal/page-view', {
+        void fetch('/api/internal/page-view', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-internal-secret': 'internal-page-view-secret', // On utilise la clé par défaut pour simplifier
+            'x-internal-secret': 'internal-page-view-secret',
           },
-          body: JSON.stringify({
-            path: fullPath,
-            method: 'GET',
-            userAgent: navigator.userAgent,
-            referer: document.referrer || undefined,
-            userId: session?.user?.id || null,
-            // L'IP sera détectée côté serveur par l'API
-          }),
+          body: payload,
+          keepalive: true,
+        }).catch(() => {
+          /* silently ignore tracking errors */
         });
-      } catch (e) {
-        // Silently fail
+      } catch {
+        /* noop */
       }
     };
 
-    // Petit délai pour s'assurer que le titre de la page est à jour si besoin
-    const timeout = setTimeout(track, 500);
-    return () => clearTimeout(timeout);
+    // requestIdleCallback si dispo pour ne pas pénaliser le rendu critique
+    type IdleCb = (cb: () => void) => number;
+    const ric = (window as unknown as { requestIdleCallback?: IdleCb })
+      .requestIdleCallback;
+    if (typeof ric === 'function') {
+      ric(send);
+    } else {
+      const timeout = setTimeout(send, 800);
+      return () => clearTimeout(timeout);
+    }
   }, [pathname, searchParams, session]);
 
   return null;

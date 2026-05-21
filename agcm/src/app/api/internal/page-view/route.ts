@@ -3,10 +3,14 @@
 // Appelée depuis le middleware via fetch non-bloquant
 
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma, prismaRetry } from '@/lib/prisma';
 
 // Clé secrète pour protéger cet endpoint interne
 const INTERNAL_SECRET = process.env.INTERNAL_API_SECRET || 'internal-page-view-secret';
+
+// Coupe-circuit : positionner DISABLE_PAGE_VIEWS=1 dans Vercel pour désactiver
+// totalement le tracking en cas de saturation du pool.
+const DISABLED = process.env.DISABLE_PAGE_VIEWS === '1';
 
 interface GeoData {
   country?: string;
@@ -56,57 +60,82 @@ async function geolocateIP(ip: string): Promise<GeoData> {
 }
 
 export async function POST(request: NextRequest) {
-  // Vérifier la clé secrète interne
+  // Vérifier la clé secrète interne (sans BDD).
   const secret = request.headers.get('x-internal-secret');
   if (secret !== INTERNAL_SECRET) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  try {
-    const body = await request.json();
-    const {
-      path,
-      method = 'GET',
-      ipAddress,
-      userAgent,
-      referer,
-      sessionId,
-      userId,
-    } = body;
-
-    if (!path) {
-      return NextResponse.json({ error: 'path required' }, { status: 400 });
-    }
-
-    // Géolocalisation en parallèle avec l'insertion
-    const geoData = ipAddress ? await geolocateIP(ipAddress) : {};
-
-    await prisma.pageView.create({
-      data: {
-        path,
-        method,
-        ipAddress: ipAddress || null,
-        userAgent: userAgent || null,
-        referer: referer || null,
-        sessionId: sessionId || null,
-        userId: userId || null,
-        country: geoData.country || null,
-        countryCode: geoData.countryCode || null,
-        city: geoData.city || null,
-        region: geoData.region || null,
-        isp: geoData.isp || null,
-        isProxy: geoData.proxy || false,
-      },
-    });
-
-    return NextResponse.json({ success: true });
-  } catch (error: any) {
-    console.error('[page-view] Error details:', {
-      message: error.message,
-      stack: error.stack,
-      code: error.code,
-      meta: error.meta
-    });
-    return NextResponse.json({ error: 'Server error', message: error.message }, { status: 500 });
+  // Coupe-circuit : on accepte la requête mais on ne fait rien.
+  if (DISABLED) {
+    return NextResponse.json({ skipped: true }, { status: 202 });
   }
+
+  let body: Record<string, unknown> = {};
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'invalid json' }, { status: 400 });
+  }
+
+  const {
+    path,
+    method = 'GET',
+    ipAddress,
+    userAgent,
+    referer,
+    sessionId,
+    userId,
+  } = body as {
+    path?: string;
+    method?: string;
+    ipAddress?: string;
+    userAgent?: string;
+    referer?: string;
+    sessionId?: string;
+    userId?: string;
+  };
+
+  if (!path) {
+    return NextResponse.json({ error: 'path required' }, { status: 400 });
+  }
+
+  // Le tracking ne doit JAMAIS faire planter l'expérience visiteur. On répond
+  // toujours 202 « accepted » — l'écriture se fait au mieux en arrière-plan
+  // avec retry, et toute erreur est logguée mais pas remontée au client.
+  // Important : sur Prisma Postgres direct, le pool peut saturer (P2037),
+  // c'est exactement ce contre quoi on se protège ici.
+  void (async () => {
+    try {
+      const geoData = ipAddress ? await geolocateIP(ipAddress) : {};
+      await prismaRetry(
+        () =>
+          prisma.pageView.create({
+            data: {
+              path,
+              method,
+              ipAddress: ipAddress || null,
+              userAgent: userAgent || null,
+              referer: referer || null,
+              sessionId: sessionId || null,
+              userId: userId || null,
+              country: geoData.country || null,
+              countryCode: geoData.countryCode || null,
+              city: geoData.city || null,
+              region: geoData.region || null,
+              isp: geoData.isp || null,
+              isProxy: geoData.proxy || false,
+            },
+          }),
+        { retries: 2, delayMs: 300 },
+      );
+    } catch (error: unknown) {
+      // On log seulement le code et le message court — pas la stack — pour
+      // ne pas inonder Vercel logs en cas de saturation continue.
+      const msg = error instanceof Error ? error.message.split('\n')[0] : String(error);
+      console.warn('[page-view] write skipped (DB busy) :', msg);
+    }
+  })();
+
+  return NextResponse.json({ accepted: true }, { status: 202 });
 }
