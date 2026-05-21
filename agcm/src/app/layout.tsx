@@ -4,7 +4,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import Navbar from "@/components/layout/Navbar";
 import ScrollToTop from "@/components/layout/ScrollToTop";
-import PageViewTracker from "@/components/analytics/PageViewTracker";
+import PageViewTrackerGate from "@/components/analytics/PageViewTrackerGate";
 import { Suspense } from "react";
 
 /** Indispensable pour le responsive mobile (évite la mise à l’échelle « page bureau » sur téléphone). */
@@ -43,7 +43,7 @@ export default function RootLayout({
       <body className="bg-gradient-to-b from-agcm-900 via-agcm-800 to-agcm-900 text-white overflow-x-hidden antialiased" suppressHydrationWarning>
         <Providers>
           <Suspense fallback={null}>
-            <PageViewTracker />
+            <PageViewTrackerGate />
           </Suspense>
           <Navbar />
           {children}

@@ -4,13 +4,10 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma, prismaRetry } from '@/lib/prisma';
+import { isPageViewTrackingEnabled } from '@/lib/page-view-config';
 
 // Clé secrète pour protéger cet endpoint interne
 const INTERNAL_SECRET = process.env.INTERNAL_API_SECRET || 'internal-page-view-secret';
-
-// Coupe-circuit : positionner DISABLE_PAGE_VIEWS=1 dans Vercel pour désactiver
-// totalement le tracking en cas de saturation du pool.
-const DISABLED = process.env.DISABLE_PAGE_VIEWS === '1';
 
 interface GeoData {
   country?: string;
@@ -66,8 +63,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Coupe-circuit : on accepte la requête mais on ne fait rien.
-  if (DISABLED) {
+  if (!isPageViewTrackingEnabled()) {
     return NextResponse.json({ skipped: true }, { status: 202 });
   }
 

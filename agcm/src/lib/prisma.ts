@@ -32,7 +32,8 @@ function ensureConnectionLimit(rawUrl: string | undefined): string | undefined {
   if (/[?&]connection_limit=/.test(rawUrl)) return rawUrl;
 
   const sep = rawUrl.includes('?') ? '&' : '?';
-  const extras = `connection_limit=3&pool_timeout=20`;
+  // 1 connexion par instance lambda — limite la saturation P2037 sur Vercel.
+  const extras = `connection_limit=1&pool_timeout=20`;
   return `${rawUrl}${sep}${extras}`;
 }
 
@@ -64,10 +65,10 @@ const needsNewClient = !globalForPrisma.prisma || staleSingleton;
 
 export const prisma = needsNewClient ? buildClient() : globalForPrisma.prisma!;
 
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma;
-  globalForPrisma.prismaSchemaRev = PRISMA_SCHEMA_REV;
-}
+// Singleton aussi en production (recommandé Next.js / Vercel) : évite de recréer
+// un PrismaClient à chaque requête dans la même instance lambda.
+globalForPrisma.prisma = prisma;
+globalForPrisma.prismaSchemaRev = PRISMA_SCHEMA_REV;
 
 /**
  * Exécute une opération Prisma avec un retry léger sur les erreurs transitoires

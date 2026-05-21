@@ -1,12 +1,14 @@
-import { prisma } from '@/lib/prisma';
+import { prisma, prismaRetry } from '@/lib/prisma';
 import { SITE_PUBLIC_DEFAULT_PAYLOAD } from '@/config/site-public-default-payload';
 import type { SitePublicPayload } from '@/types/site-public';
 
 export async function getSitePublicPayload(): Promise<SitePublicPayload> {
   try {
-    const row = await prisma.sitePublicPage.findUnique({
-      where: { id: 'default' },
-    });
+    const row = await prismaRetry(() =>
+      prisma.sitePublicPage.findUnique({
+        where: { id: 'default' },
+      }),
+    );
     if (
       row?.payload &&
       typeof row.payload === 'object' &&

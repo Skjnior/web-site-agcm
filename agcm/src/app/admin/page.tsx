@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { prisma, prismaRetry } from '@/lib/prisma';
 import { getAdminDashboardChartData } from '@/lib/admin/dashboard-stats';
 import AdminDashboardCharts from '@/components/admin/AdminDashboardCharts';
 import Link from 'next/link';
@@ -20,44 +20,67 @@ export default async function AdminDashboardPage() {
     redirect('/connexion');
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-  });
+  let user;
+  try {
+    user = await prismaRetry(() =>
+      prisma.user.findUnique({
+        where: { id: session.user.id },
+      }),
+    );
+  } catch (err) {
+    console.error('[AdminDashboard] user lookup failed:', err);
+    throw err;
+  }
 
   if (!user || (user.roleSysteme !== 'ADMIN' && user.roleSysteme !== 'SUPER_ADMIN')) {
     redirect('/dashboard');
   }
 
-  // Récupérer les statistiques
-  const [
-    pendingAdhesions,
-    pendingPartenariats,
-    pendingDons,
-    pendingContactMessages,
-    totalMembers,
-    activeMembers,
-    totalEvents,
-    dashboardCharts,
-  ] = await Promise.all([
-    prisma.demandeAdhesion.count({
-      where: { statut: 'EN_ATTENTE' },
-    }),
-    prisma.demandePartenariat.count({
-      where: { statut: 'EN_ATTENTE' },
-    }),
-    prisma.donationIntent.count({
-      where: { statut: 'NOUVEAU' },
-    }),
-    prisma.messageContact.count({
-      where: { statut: 'NOUVEAU' },
-    }),
-    prisma.member.count(),
-    prisma.member.count({
-      where: { statutMembre: 'ACTIF' },
-    }),
-    prisma.event.count(),
-    getAdminDashboardChartData(),
-  ]);
+  let pendingAdhesions: number;
+  let pendingPartenariats: number;
+  let pendingDons: number;
+  let pendingContactMessages: number;
+  let totalMembers: number;
+  let activeMembers: number;
+  let totalEvents: number;
+  let dashboardCharts: Awaited<ReturnType<typeof getAdminDashboardChartData>>;
+
+  try {
+    [
+      pendingAdhesions,
+      pendingPartenariats,
+      pendingDons,
+      pendingContactMessages,
+      totalMembers,
+      activeMembers,
+      totalEvents,
+      dashboardCharts,
+    ] = await prismaRetry(() =>
+      Promise.all([
+        prisma.demandeAdhesion.count({
+          where: { statut: 'EN_ATTENTE' },
+        }),
+        prisma.demandePartenariat.count({
+          where: { statut: 'EN_ATTENTE' },
+        }),
+        prisma.donationIntent.count({
+          where: { statut: 'NOUVEAU' },
+        }),
+        prisma.messageContact.count({
+          where: { statut: 'NOUVEAU' },
+        }),
+        prisma.member.count(),
+        prisma.member.count({
+          where: { statutMembre: 'ACTIF' },
+        }),
+        prisma.event.count(),
+        getAdminDashboardChartData(),
+      ]),
+    );
+  } catch (err) {
+    console.error('[AdminDashboard] stats failed:', err);
+    throw err;
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">

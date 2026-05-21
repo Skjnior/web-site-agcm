@@ -30,7 +30,7 @@ Le client lit `DATABASE_URL` **ou**, en secours, `agcm_db_DATABASE_URL` (nom inj
    - `agcm_db_DATABASE_URL`
 3. **Ne pas vous fier** à l’affichage de `&connection_limit=3` dans l’UI : après redeploy il peut disparaître alors que le runtime l’ajoute quand même.
 4. Redéployer la branche **`develop`** (dernier fix pool + page-view) : Deployments → Redeploy, option **sans cache** si doute.
-5. En urgence si P2037 persiste : ajouter `DISABLE_PAGE_VIEWS=1` (coupe le tracker `/api/internal/page-view`).
+5. **Tracking visites** : désactivé en production par défaut (depuis le correctif pool). Pour le réactiver : `ENABLE_PAGE_VIEWS=1`. En urgence : `DISABLE_PAGE_VIEWS=1`.
 
 ## Option durable côté infra
 

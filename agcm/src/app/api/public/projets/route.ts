@@ -2,7 +2,7 @@
 // Projets publics (site public)
 
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma, prismaRetry } from '@/lib/prisma';
 import { parsePagination, createPaginatedResponse } from '@/lib/pagination';
 
 export async function GET(request: NextRequest) {
@@ -18,7 +18,8 @@ export async function GET(request: NextRequest) {
       },
     };
 
-    const [total, projets] = await Promise.all([
+    const [total, projets] = await prismaRetry(() =>
+      Promise.all([
       prisma.projet.count({ where }),
       prisma.projet.findMany({
         where,
@@ -56,7 +57,8 @@ export async function GET(request: NextRequest) {
         skip: offset,
         take: limit,
       }),
-    ]);
+    ]),
+    );
 
     return NextResponse.json(createPaginatedResponse(projets, total, page, limit));
   } catch (error) {

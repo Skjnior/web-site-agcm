@@ -10,7 +10,7 @@
 // - Projets actifs : projet en statut `EN_COURS` (non filtré par une visibilité « site » côté schéma).
 
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma, prismaRetry } from '@/lib/prisma';
 
 export async function GET() {
   try {
@@ -18,20 +18,22 @@ export async function GET() {
     const yearStart = new Date(currentYear, 0, 1);
     const yearEnd = new Date(currentYear, 11, 31, 23, 59, 59, 999);
 
-    const [membresActifs, evenementsAnnee, projetsActifs] = await Promise.all([
-      prisma.member.count({
-        where: { statutMembre: 'ACTIF' },
-      }),
-      prisma.event.count({
-        where: {
-          dateDebut: { gte: yearStart, lte: yearEnd },
-          afficheSite: true,
-        },
-      }),
-      prisma.projet.count({
-        where: { statut: 'EN_COURS' },
-      }),
-    ]);
+    const [membresActifs, evenementsAnnee, projetsActifs] = await prismaRetry(() =>
+      Promise.all([
+        prisma.member.count({
+          where: { statutMembre: 'ACTIF' },
+        }),
+        prisma.event.count({
+          where: {
+            dateDebut: { gte: yearStart, lte: yearEnd },
+            afficheSite: true,
+          },
+        }),
+        prisma.projet.count({
+          where: { statut: 'EN_COURS' },
+        }),
+      ]),
+    );
 
     return NextResponse.json({
       stats: [

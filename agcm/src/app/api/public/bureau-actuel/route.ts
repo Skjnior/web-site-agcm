@@ -2,10 +2,11 @@
 // Bureau exécutif actuel (mandat en cours)
 
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma, prismaRetry } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
+    return await prismaRetry(async () => {
     // Trouver le mandat actif
     const mandatActif = await prisma.mandat.findFirst({
       where: {
@@ -67,6 +68,7 @@ export async function GET(request: NextRequest) {
         dateDebut: mandatActif.dateDebut.toISOString(),
         dateFin: mandatActif.dateFin.toISOString(),
       },
+    });
     });
   } catch (error) {
     console.error('Erreur lors de la récupération du bureau:', error);

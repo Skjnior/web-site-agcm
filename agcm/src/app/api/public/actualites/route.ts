@@ -2,7 +2,7 @@
 // Actualités publiques (contenus approuvés et publiés)
 
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma, prismaRetry } from '@/lib/prisma';
 import { parsePagination, createPaginatedResponse } from '@/lib/pagination';
 
 export async function GET(request: NextRequest) {
@@ -14,7 +14,8 @@ export async function GET(request: NextRequest) {
       visibiliteCible: 'PUBLIC_SITE' as const,
     };
 
-    const [total, contents] = await Promise.all([
+    const [total, contents] = await prismaRetry(() =>
+      Promise.all([
       prisma.content.count({ where }),
       prisma.content.findMany({
         where,
@@ -41,7 +42,8 @@ export async function GET(request: NextRequest) {
         skip: offset,
         take: limit,
       }),
-    ]);
+    ]),
+    );
 
     return NextResponse.json(createPaginatedResponse(contents, total, page, limit));
   } catch (error) {
