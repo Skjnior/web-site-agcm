@@ -7,7 +7,8 @@ import {
   Target,
   Briefcase,
 } from 'lucide-react';
-import Image from 'next/image';
+import { SmartImage } from '@/components/ui/smart-image';
+import { pickFirstImageMediaUrl } from '@/lib/media-display-url';
 import ProjetModal from './ProjetModal';
 
 interface Projet {
@@ -17,6 +18,7 @@ interface Projet {
   description: string;
   objectif: string;
   image: string | null;
+  images: string[];
   statut: string;
   responsablePoste: { nom: string } | null;
 }
@@ -54,11 +56,8 @@ function ProjetCard({ projet, onSelect, size = 'md' }: ProjetCardProps) {
       className="group cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-2xl"
     >
       <div className={`relative w-full bg-slate-200 ${imageHeight}`}>
-        <Image
-          src={
-            projet.image ||
-            'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80'
-          }
+        <SmartImage
+          src={projet.image || 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80'}
           alt={projet.titre}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -129,17 +128,24 @@ export default function ProjetsGuineeSection() {
             objectif?: string | null;
             statut?: string | null;
             responsablePoste?: { nom: string } | null;
-            medias?: Array<{ url: string }>;
-          }) => ({
+            medias?: Array<{ url: string; type?: string }>;
+          }) => {
+            const imageMedias = (p.medias ?? []).filter(
+              (m) => !m.type || m.type === 'IMAGE',
+            );
+            const images = imageMedias.map((m) => m.url);
+            return {
             id: p.id,
             titre: p.titre,
             slug: p.slug,
             description: p.description || p.objectif || '',
             objectif: p.objectif || '',
-            image: p.medias?.[0]?.url || null,
+            image: pickFirstImageMediaUrl(imageMedias) ?? null,
+            images,
             statut: p.statut || 'EN_COURS',
             responsablePoste: p.responsablePoste ?? null,
-          }));
+          };
+          });
           setProjets(mapped);
         }
       } catch (error) {

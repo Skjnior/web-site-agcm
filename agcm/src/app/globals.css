@@ -217,7 +217,8 @@ section[id] {
 }
 
 .animate-partners-scroll {
-  animation: partners-scroll 60s linear infinite;
+  /* Secours si classe globale utilisée ailleurs — vitesse alignée bureau (~40s / 9 cartes) */
+  animation: partners-scroll 40s linear infinite;
 }
 
 @keyframes gallery-scroll {

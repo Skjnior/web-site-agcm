@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
             orderBy: {
               ordre: 'asc',
             },
-            take: 1, // Image principale
+            take: 12,
           },
           partenaires: {
             include: {

@@ -40,7 +40,11 @@ function buildClient() {
   const devLogs: ('query' | 'error' | 'warn')[] =
     process.env.PRISMA_LOG_QUERIES === '1' ? ['query', 'error', 'warn'] : ['error', 'warn'];
 
-  const datasourceUrl = ensureConnectionLimit(process.env.DATABASE_URL);
+  // Vercel + intégration Prisma injecte souvent `agcm_db_DATABASE_URL` et peut
+  // réécraser `DATABASE_URL` à chaque deploy — on accepte les deux noms.
+  const rawDbUrl =
+    process.env.DATABASE_URL ?? process.env.agcm_db_DATABASE_URL;
+  const datasourceUrl = ensureConnectionLimit(rawDbUrl);
 
   return new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? devLogs : ['error'],
