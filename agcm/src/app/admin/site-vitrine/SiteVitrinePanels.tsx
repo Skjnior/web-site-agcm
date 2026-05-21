@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Loader2, Plus, Trash2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { ImagePlus, Loader2, Plus, Trash2 } from 'lucide-react';
 import type { SiteGalleryItem, SiteHighlightIcon, SitePublicPayload } from '@/types/site-public';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +24,96 @@ function SaveRow({ saving, onSave }: { saving: boolean; onSave: () => void }) {
         {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
         Enregistrer cette section
       </Button>
+    </div>
+  );
+}
+
+/**
+ * Champ « image » pour l'admin du site vitrine :
+ *   - URL éditable (pour coller un lien externe si besoin)
+ *   - bouton « Téléverser une image » qui upload via /api/admin/upload-image
+ *   - aperçu de l'image
+ */
+function ImageUrlField({
+  label = 'Image',
+  value,
+  onChange,
+  previewClassName = 'max-h-44 w-auto rounded border border-slate-700 object-contain',
+}: {
+  label?: string;
+  value: string;
+  onChange: (url: string) => void;
+  previewClassName?: string;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+
+  const upload = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      alert('Le fichier sélectionné n’est pas une image.');
+      return;
+    }
+    setBusy(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/api/admin/upload-image', { method: 'POST', body: fd });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(typeof data.error === 'string' ? data.error : 'Échec upload image');
+      }
+      const url = typeof data.imageUrl === 'string' ? data.imageUrl : '';
+      if (!url) throw new Error('Réponse upload invalide');
+      onChange(url);
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Erreur upload');
+    } finally {
+      setBusy(false);
+      if (inputRef.current) inputRef.current.value = '';
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <Input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="https://… (ou téléverser ci-contre)"
+          className="border-slate-600 bg-slate-950/50"
+        />
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => inputRef.current?.click()}
+          disabled={busy}
+          className="shrink-0 border-slate-600"
+        >
+          {busy ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <ImagePlus className="mr-2 h-4 w-4" />
+          )}
+          {busy ? 'Envoi…' : 'Téléverser une image'}
+        </Button>
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) void upload(f);
+          }}
+        />
+      </div>
+      {value ? (
+        <div className="pt-1">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={value} alt="Aperçu" className={previewClassName} />
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -312,10 +402,11 @@ export function ProjetsLocauxPanel({ payload, saving, savePatch }: PanelProps) {
         <Label>Lead</Label>
         <Textarea value={d.lead} onChange={(e) => setD({ ...d, lead: e.target.value })} rows={3} className="border-slate-600 bg-slate-950/50" />
       </div>
-      <div className="space-y-2">
-        <Label>Image (URL)</Label>
-        <Input value={d.imageUrl} onChange={(e) => setD({ ...d, imageUrl: e.target.value })} className="border-slate-600 bg-slate-950/50" />
-      </div>
+      <ImageUrlField
+        label="Image principale"
+        value={d.imageUrl}
+        onChange={(url) => setD({ ...d, imageUrl: url })}
+      />
       <div className="space-y-2">
         <Label>Puces (une par ligne)</Label>
         <Textarea value={bulletsRaw} onChange={(e) => setBulletsRaw(e.target.value)} rows={5} className="border-slate-600 bg-slate-950/50" />
