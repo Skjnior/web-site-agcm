@@ -62,6 +62,23 @@ section[id] {
   display: none;
 }
 
+/* Landing publique — évite débordements horizontaux sur petits écrans */
+@layer utilities {
+  .landing-safe {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .landing-heading {
+    @apply text-2xl sm:text-3xl md:text-4xl font-bold text-balance;
+  }
+
+  .landing-hero-title {
+    @apply text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight text-balance;
+  }
+}
+
 /* Custom scrollbar styles */
 .scrollbar-thin {
   scrollbar-width: thin;

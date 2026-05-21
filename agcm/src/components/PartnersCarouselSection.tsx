@@ -88,7 +88,7 @@ export default function PartnersCarouselSection({
                 {doubled.map((p, i) => (
                   <article
                     key={`${p.id}-${i}`}
-                    className="min-w-[280px] max-w-[320px] shrink-0 bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+                    className="min-w-[min(280px,85vw)] max-w-[320px] shrink-0 bg-slate-50 border border-slate-200 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
                   >
                     <div className="flex items-start gap-4">
                       {p.logo ? (

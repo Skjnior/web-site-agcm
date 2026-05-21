@@ -260,7 +260,7 @@ export default function ProjetsGuineeSection() {
               {projets.map((projet) => (
                 <div
                   key={projet.id}
-                  className="flex-shrink-0 w-[280px] sm:w-72 md:w-80"
+                  className="flex-shrink-0 w-[min(280px,85vw)] sm:w-72 md:w-80"
                 >
                   <ProjetCard projet={projet} onSelect={openProjet} />
                 </div>

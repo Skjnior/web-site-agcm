@@ -26,6 +26,7 @@ import ProjetsGuineeSection from './ProjetsGuineeSection'
 import ActualitesSection from './ActualitesSection'
 import GalerieSection from './GalerieSection'
 import PartnersCarouselSection from './PartnersCarouselSection'
+import ProjetsLocauxSection from './ProjetsLocauxSection'
 import SectionDivider from './SectionDivider'
 import Footer from './layout/Footer'
 import PresidentMessageSection from './PresidentMessageSection'
@@ -213,7 +214,7 @@ export default function AGCMLanding() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-agcm-900 via-agcm-800 to-agcm-900">
+    <div className="min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-gradient-to-b from-agcm-900 via-agcm-800 to-agcm-900">
 
       {/* Hero */}
       <section id="top" className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
@@ -221,15 +222,15 @@ export default function AGCMLanding() {
           <Image src={site.hero.backgroundUrl} alt="Communauté" fill className="object-cover" priority />
         </div>
         <div className="absolute inset-0 bg-gradient-to-br from-agcm-900/92 via-agcm-800/90 to-agcm-700/90"></div>
-        <div className="max-w-6xl mx-auto relative z-10 grid lg:grid-cols-2 gap-10 items-center">
-          <div className="space-y-6">
-            <span className="inline-flex items-center gap-2 bg-white/10 text-white px-4 py-2 rounded-full border border-white/20 text-xs uppercase tracking-wide">
+        <div className="max-w-6xl mx-auto landing-safe relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center">
+          <div className="space-y-5 sm:space-y-6 min-w-0 order-1">
+            <span className="inline-flex items-center gap-2 bg-white/10 text-white px-3 sm:px-4 py-2 rounded-full border border-white/20 text-xs uppercase tracking-wide">
               {site.hero.badge}
             </span>
-            <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-white">
+            <h1 className="landing-hero-title text-white">
               {site.hero.title}
             </h1>
-            <p className="text-lg text-slate-200">
+            <p className="text-base sm:text-lg text-slate-200 leading-relaxed">
               {site.hero.paragraph}
             </p>
             <StatsSection />
@@ -242,9 +243,9 @@ export default function AGCMLanding() {
               </a>
             </div>
           </div>
-          <div className="relative lg:h-[520px]">
+          <div className="relative min-h-[300px] sm:min-h-[380px] lg:h-[520px] w-full min-w-0 order-2">
             <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 via-yellow-500/15 to-red-600/20 rounded-3xl blur-3xl"></div>
-            <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-white/10 border-2 border-white/20 backdrop-blur-xl rounded-3xl p-6 h-full flex flex-col justify-between shadow-2xl hover:shadow-red-500/20 transition-shadow duration-300">
+            <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-white/10 border-2 border-white/20 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 h-full flex flex-col justify-between shadow-2xl hover:shadow-red-500/20 transition-shadow duration-300">
               <div className="space-y-3 overflow-hidden scrollbar-hide flex-1 min-h-0">
                 {site.hero.highlights.map((h, i) => {
                   const st = HIGHLIGHT_CARD_STYLES[i % HIGHLIGHT_CARD_STYLES.length]
@@ -284,7 +285,7 @@ export default function AGCMLanding() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8">
             <span className="text-red-600 font-semibold text-sm uppercase">Actualités</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-agcm-900 mt-2">Dernières nouvelles</h2>
+            <h2 className="landing-heading text-agcm-900 mt-2">Dernières nouvelles</h2>
             <p className="text-slate-600 text-sm mt-2">Découvrez les dernières actualités de l'association</p>
           </div>
           <ActualitesSection />
@@ -302,7 +303,7 @@ export default function AGCMLanding() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10">
             <span className="text-red-600 font-semibold text-sm uppercase">Nos axes</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-agcm-900 mt-2">Les piliers d'action</h2>
+            <h2 className="landing-heading text-agcm-900 mt-2">Les piliers d'action</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-4">
             {site.axes.map((a, i) => (
@@ -317,10 +318,10 @@ export default function AGCMLanding() {
 
       {/* À propos / Histoire & valeurs */}
       <section id="about" className="py-14 px-4 sm:px-6 lg:px-8 bg-agcm-sand">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center">
-          <div className="space-y-4">
+        <div className="max-w-6xl mx-auto landing-safe grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-start lg:items-center">
+          <div className="space-y-4 min-w-0">
             <span className="text-agcm-600 font-semibold text-sm uppercase">{site.history.tagline}</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-agcm-900">{site.history.title}</h2>
+            <h2 className="landing-heading text-agcm-900">{site.history.title}</h2>
             <p className="text-agcm-800 leading-relaxed">
               {site.history.body}
             </p>
@@ -333,7 +334,7 @@ export default function AGCMLanding() {
               ))}
             </div>
           </div>
-          <div className="bg-white border border-agcm-400/40 rounded-3xl p-6 shadow-xl lg:col-span-2">
+          <div className="bg-white border border-agcm-400/40 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xl w-full min-w-0 lg:col-span-2">
             <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 text-agcm-900"><Users size={18} /> Bureau exécutif</h3>
             <p className="text-agcm-800 text-sm mb-3">{site.history.bureauTeaser}</p>
             <BureauSectionCompact />
@@ -374,7 +375,7 @@ export default function AGCMLanding() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8">
             <span className="text-red-600 font-semibold text-sm uppercase">{site.jeunesse.tagline}</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-agcm-900 mt-2">{site.jeunesse.title}</h2>
+            <h2 className="landing-heading text-agcm-900 mt-2">{site.jeunesse.title}</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-4 text-sm text-slate-700">
             {site.jeunesse.items.map((item, i) => (
@@ -395,7 +396,7 @@ export default function AGCMLanding() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10">
             <span className="text-red-600 font-semibold text-sm uppercase">{site.guineeSection.eyebrow}</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-agcm-900 mt-2">{site.guineeSection.title}</h2>
+            <h2 className="landing-heading text-agcm-900 mt-2">{site.guineeSection.title}</h2>
             <p className="text-slate-700 text-sm mt-2 max-w-2xl mx-auto">
               {site.guineeSection.intro}
             </p>
@@ -407,28 +408,7 @@ export default function AGCMLanding() {
       {/* Section Dons */}
       <DonationSection />
 
-      {/* Projets locaux */}
-      <section id="projets-locaux" className="py-14 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-agcm-900 via-agcm-800 to-agcm-900 text-white">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center">
-          <div className="relative h-72">
-            <Image src={site.projetsLocaux.imageUrl} alt="Projets locaux" fill className="object-cover rounded-3xl shadow-2xl" />
-          </div>
-          <div className="space-y-4">
-            <span className="text-red-300 font-semibold text-sm uppercase">{site.projetsLocaux.eyebrow}</span>
-            <h2 className="text-3xl font-bold">{site.projetsLocaux.title}</h2>
-            <p className="text-slate-200 text-sm leading-relaxed">
-              {site.projetsLocaux.lead}
-            </p>
-            <ul className="space-y-2 text-sm text-slate-100">
-              {site.projetsLocaux.bullets.map((b, idx) => (
-                <li key={idx} className="flex gap-2 items-start">
-                  <CheckCircle size={16} className="text-red-300 mt-0.5" /> {b}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
+      <ProjetsLocauxSection data={site.projetsLocaux} />
 
 
       {/* Galerie */}
@@ -470,10 +450,10 @@ export default function AGCMLanding() {
 
       {/* Contact */}
       <section id="contact" className="py-14 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center">
-          <div className="space-y-4">
+        <div className="max-w-6xl mx-auto landing-safe grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-start">
+          <div className="space-y-4 min-w-0">
             <span className="text-red-600 font-semibold text-sm uppercase">{site.contact.eyebrow}</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-agcm-900">{site.contact.title}</h2>
+            <h2 className="landing-heading text-agcm-900">{site.contact.title}</h2>
             <p className="text-slate-700 text-sm">{site.contact.lead}</p>
             <div className="space-y-3 text-slate-800 text-sm">
               <div className="flex items-center gap-3">
@@ -499,7 +479,8 @@ export default function AGCMLanding() {
                 loading="lazy"
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
-                className="rounded-xl border border-slate-200"
+                title="Carte Charente-Maritime"
+                className="w-full min-h-[200px] sm:min-h-[260px] max-h-[50vh] rounded-xl border border-slate-200 aspect-video"
               ></iframe>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm">
@@ -519,8 +500,8 @@ export default function AGCMLanding() {
 
       {/* Modal Contact */}
       {showContactModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowContactModal(false)}>
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowContactModal(false)}>
+          <div className="bg-white rounded-2xl p-5 sm:p-6 max-w-md w-full max-h-[92vh] sm:max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-agcm-900">Formulaire de contact</h3>
               <button onClick={() => setShowContactModal(false)} className="text-slate-400 hover:text-slate-600">
@@ -578,8 +559,8 @@ export default function AGCMLanding() {
 
       {/* Modal Adhésion */}
       {showAdhesionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowAdhesionModal(false)}>
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowAdhesionModal(false)}>
+          <div className="bg-white rounded-2xl p-5 sm:p-6 max-w-md w-full max-h-[92vh] sm:max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-agcm-900">Formulaire d'adhésion</h3>
               <button onClick={() => setShowAdhesionModal(false)} className="text-slate-400 hover:text-slate-600">
@@ -653,8 +634,8 @@ export default function AGCMLanding() {
 
       {/* Modal Partenaire */}
       {showPartenaireModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowPartenaireModal(false)}>
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowPartenaireModal(false)}>
+          <div className="bg-white rounded-2xl p-5 sm:p-6 max-w-md w-full max-h-[92vh] sm:max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-agcm-900">Devenir partenaire</h3>
               <button onClick={() => setShowPartenaireModal(false)} className="text-slate-400 hover:text-slate-600">
@@ -721,8 +702,8 @@ export default function AGCMLanding() {
 
       {/* Modal Événement */}
       {showEvenementModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowEvenementModal(false)}>
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowEvenementModal(false)}>
+          <div className="bg-white rounded-2xl p-5 sm:p-6 max-w-md w-full max-h-[92vh] sm:max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-agcm-900">Proposer un événement</h3>
               <button onClick={() => setShowEvenementModal(false)} className="text-slate-400 hover:text-slate-600">

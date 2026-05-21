@@ -143,20 +143,20 @@ export default function EvenementsSection({ onProposerEvenement }: EvenementsSec
   }
 
   return (
-    <section id="evenements" className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-8">
+    <section id="evenements" className="py-12 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
+      <div className="max-w-7xl mx-auto w-full min-w-0">
+        <div className="text-center mb-8 px-1">
           <span className="text-red-600 font-semibold text-sm uppercase">Événements</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-agcm-900 mt-2">Nos événements</h2>
+          <h2 className="landing-heading text-agcm-900 mt-2">Nos événements</h2>
           <p className="text-slate-600 text-sm mt-2">Découvrez les événements de l'association</p>
         </div>
 
         {/* Filtres */}
-        <div className="flex justify-center gap-3 mb-8 flex-wrap">
+        <div className="flex justify-center gap-2 sm:gap-3 mb-8 flex-wrap px-1">
           {events?.aVenir.length ? (
             <button
               onClick={() => setActiveFilter('aVenir')}
-              className={`px-6 py-2 rounded-lg font-semibold transition-all ${activeFilter === 'aVenir'
+              className={`px-4 sm:px-6 py-2 text-sm sm:text-base rounded-lg font-semibold transition-all ${activeFilter === 'aVenir'
                 ? 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg'
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                 }`}
@@ -167,7 +167,7 @@ export default function EvenementsSection({ onProposerEvenement }: EvenementsSec
           {events?.enCours.length ? (
             <button
               onClick={() => setActiveFilter('enCours')}
-              className={`px-6 py-2 rounded-lg font-semibold transition-all ${activeFilter === 'enCours'
+              className={`px-4 sm:px-6 py-2 text-sm sm:text-base rounded-lg font-semibold transition-all ${activeFilter === 'enCours'
                 ? 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg'
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                 }`}
@@ -178,7 +178,7 @@ export default function EvenementsSection({ onProposerEvenement }: EvenementsSec
           {events?.passes.length ? (
             <button
               onClick={() => setActiveFilter('passes')}
-              className={`px-6 py-2 rounded-lg font-semibold transition-all ${activeFilter === 'passes'
+              className={`px-4 sm:px-6 py-2 text-sm sm:text-base rounded-lg font-semibold transition-all ${activeFilter === 'passes'
                 ? 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg'
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                 }`}

@@ -390,6 +390,12 @@ export function ProjetsLocauxPanel({ payload, saving, savePatch }: PanelProps) {
 
   return (
     <div className="space-y-4 max-w-3xl">
+      <p className="text-sm text-slate-400 rounded-lg border border-slate-700/60 bg-slate-900/40 px-3 py-2">
+        Contenu affiché sur la page d&apos;accueil, section{' '}
+        <strong className="text-slate-200">Projets locaux</strong> (ancre{' '}
+        <code className="text-xs text-red-300">#projets-locaux</code>). Modifiez l&apos;image
+        ci-dessous puis cliquez sur <strong className="text-slate-200">Enregistrer cette section</strong>.
+      </p>
       <div className="space-y-2">
         <Label>Surtitre</Label>
         <Input value={d.eyebrow} onChange={(e) => setD({ ...d, eyebrow: e.target.value })} className="border-slate-600 bg-slate-950/50" />
@@ -403,9 +409,10 @@ export function ProjetsLocauxPanel({ payload, saving, savePatch }: PanelProps) {
         <Textarea value={d.lead} onChange={(e) => setD({ ...d, lead: e.target.value })} rows={3} className="border-slate-600 bg-slate-950/50" />
       </div>
       <ImageUrlField
-        label="Image principale"
+        label="Image de la section (photo Charente-Maritime)"
         value={d.imageUrl}
         onChange={(url) => setD({ ...d, imageUrl: url })}
+        previewClassName="max-h-56 w-full max-w-md rounded-lg border border-slate-700 object-cover"
       />
       <div className="space-y-2">
         <Label>Puces (une par ligne)</Label>
